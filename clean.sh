@@ -26,6 +26,7 @@ function clean_project {
 clean_project core
 clean_project block/spy
 clean_project block/shell
+clean_project block/viewer3d
 
 clean_project block/joint
 
