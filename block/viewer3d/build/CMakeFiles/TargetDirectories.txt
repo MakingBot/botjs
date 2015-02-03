@@ -1,0 +1,2 @@
+/home/rodriguez/dev/botjs/block/viewer3d/build/CMakeFiles/viewer3d.dir
+/home/rodriguez/dev/botjs/block/viewer3d/build/CMakeFiles/viewer3d_automoc.dir

@@ -1,0 +1,4 @@
+/home/rodriguez/opt/botjs/block/libviewer3d.so
+/home/rodriguez/opt/botjs/include/Glub.hpp
+/home/rodriguez/opt/botjs/include/Viewer.hpp
+/home/rodriguez/opt/botjs/include/Viewer3DBlock.hpp

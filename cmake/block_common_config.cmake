@@ -1,0 +1,17 @@
+# Tell CMake to create the library
+ADD_LIBRARY(${CMAKE_PROJECT_NAME}
+    SHARED
+    ${PROJECT_HEADER_FILES}
+    ${PROJECT_SOURCE_FILES}
+    )
+
+# Link libraries
+QT5_USE_MODULES(${CMAKE_PROJECT_NAME}
+    Qml
+    Gui
+    Core
+    Widgets
+    )
+
+INSTALL(TARGETS ${CMAKE_PROJECT_NAME}   DESTINATION block)
+INSTALL(FILES   ${PROJECT_HEADER_FILES} DESTINATION include)
