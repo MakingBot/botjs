@@ -14,7 +14,7 @@ void Glub::Cylinder(
 {
     // Set buffer param
     const GLuint index = param.index;
-    param.nbElement = 2 + 2 * slices;
+    param.size = 2 + 5 * slices;
     
     // Compute const
     const qreal height2 = height/2;

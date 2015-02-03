@@ -10,7 +10,7 @@
 #include <QMatrix4x4>
 
 //! Buffer helper
-#define GLUB_BUFFER_OFFSET(i) ((void*)(i))
+#define GLUB_BUFFER_OFFSET(i) ((void*)(i*sizeof(GLuint)))
 
 //!
 //! Provide parameter structure to draw a previous stored vbo object
@@ -18,9 +18,11 @@
 class BufferParam
 {
 public:
-    BufferParam(GLuint i=0, GLuint nb=1) : index(i), nbElement(nb) { }
+    BufferParam(GLuint i=0, GLuint s=1) : index(i), size(s) { }
+    //! Start index of the object in the VBO
     GLuint index;
-    GLuint nbElement;
+    //! Size of the object in number of indice
+    GLuint size;
 };
 
 //!
@@ -36,7 +38,7 @@ public:
     //!
     //! Compute vertex and indice to draw a cylinder on axe Z
     //!
-    void Cylinder(
+    static void Cylinder(
         qreal radius, qreal height, GLuint slices,
         QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
 

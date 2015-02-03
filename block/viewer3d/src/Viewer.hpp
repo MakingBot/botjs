@@ -38,6 +38,9 @@ public:
     void onBlockPropertiesChanged();
 
 protected:
+
+    BufferParam _testparam;
+
     // === VIEWER MANAGEMENT ===
 
     //! Up vector
@@ -82,6 +85,9 @@ protected:
     QGLBuffer                   _indiceBuffer;
 
     // === FUNCTIONS ===
+
+    //! To load VBO from arrays
+    void loadBuffers();
 
     //! QOpenGLWidget
     virtual void paintGL();

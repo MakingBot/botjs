@@ -2,10 +2,8 @@
 #include <iostream>
 #include <Viewer3DBlock.hpp>
 
-
 //! Maximum vertice in the obj
-#define MAX_VERTEX_USED 500
-
+#define MAX_VERTEX_USED 2000
 
 /* ============================================================================
  *
@@ -17,6 +15,7 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
     , _parentBlock  (parent_block)
     , _vertexBuffer (QGLBuffer::VertexBuffer)
     , _indiceBuffer (QGLBuffer::IndexBuffer )
+    , _testparam(0,0)
 {
     connect( getSharedparentBlock().data(), SIGNAL(propertyValuesChanged()), this, SLOT(onBlockPropertiesChanged()) );
     onBlockPropertiesChanged();
@@ -45,6 +44,22 @@ void Viewer::onBlockPropertiesChanged()
     
     // Update view
     updateGL();
+}
+
+/* ============================================================================
+ *
+ * */
+void Viewer::loadBuffers()
+{
+    // Write vertex data in vertex buffer
+    _vertexBuffer.bind();
+    _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
+    _vertexBuffer.release();
+
+    // Write indice data in indice buffer
+    _indiceBuffer.bind();
+    _indiceBuffer.write(0, _indiceArray.constData(), _indiceArray.size()  * sizeof(GLuint));
+    _indiceBuffer.release();
 }
 
 
@@ -120,14 +135,33 @@ void Viewer::paintGL()
                 _up.x() ,  _up.y() ,  _up.z() );
 
 
-    glBegin(GL_TRIANGLES);
-    glColor3f(0.1, 0.2, 0.3);
-    glVertex3f(0, 0, 0);
-    glVertex3f(2, 0, 0);
-    glVertex3f(0, 2, 0);
-    glEnd();
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        glEnable( GL_LINE_SMOOTH );
+    // Bind vertex buffer
+    _vertexBuffer.bind();
+    glVertexPointer(3, GL_FLOAT, 0, NULL);
+    _vertexBuffer.release();
+
+    // Bind indice buffer
+    _indiceBuffer.bind();
+
+    // Draw triangles
+    glDrawElements(GL_TRIANGLES, _testparam.size, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_testparam.index) );
+
+    // Release indice buffer
+    _indiceBuffer.release();
+
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+
+
+
+
+
+
+    glEnable( GL_LINE_SMOOTH );
     glColor3f(1.0f, 0.0f, 0.0f);
     glLineWidth( 1.5 );
     glBegin(GL_LINES);
@@ -173,6 +207,12 @@ void Viewer::initializeGL()
     _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
     _indiceBuffer.allocate(MAX_VERTEX_USED * sizeof(GLuint    ));
     _indiceBuffer.release();
+
+    Glub::Cylinder(
+    1, 5, 32,
+    _vertexArray, _indiceArray, _testparam);
+    
+    loadBuffers();
 }
 
 
