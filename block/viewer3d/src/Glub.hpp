@@ -35,6 +35,14 @@ class Glub
 
 public:
 
+    static void Cuboid(
+        qreal rx, qreal ry, qreal rz,
+        QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
+
+    static void Sphere(
+        qreal radius, GLuint slices,
+        QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
+
     //!
     //! Compute vertex and indice to draw a cylinder on axe Z
     //!
