@@ -78,10 +78,17 @@ public:
     //!
     void createBigBlock();
 
+    //! Core block getter
+    QSharedPointer<BotBlock> getCoreBlock() { return _bigBlock; }
+
     //!
     //! Return the name of the available blocks
     //!
     QStringList availableBlockNames();
+
+    //! Return the list of all father chain
+    //! It represents every blocks of the system
+    QStringList getAllFatherChains();
 
 signals:
 

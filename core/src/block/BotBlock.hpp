@@ -122,6 +122,9 @@ public:
     //! Shared pointer on this object
     QSharedPointer<BotBlock> getBlockSharedFromThis() { return _wThis.toStrongRef(); }
 
+    //! Javascript Engine getter
+    QSharedPointer<BotEngine> getBlockEngine() { return _jsEngine; }
+
     // === === === I-PROPERTIES === === ===
 
     //! Interactive properties getter
@@ -158,13 +161,70 @@ public:
     //! Block father setter
     void setBlockFather(QWeakPointer<BotBlock> father) { _father = father; }
 
-    //! Block sons number getter
-    virtual int getBlockNumberOfSons() const { return _sons.size(); }
+    //! Block fathers chain
+    //! the chain from core block until this block separated by '.'
+    QString getBlockFathersChain()
+    {
+        QString ret;
+        QWeakPointer<BotBlock> fw = getBlockFather();
+        if( fw )
+        {
+            QSharedPointer<BotBlock> fs = fw.toStrongRef();
+            ret += fs->getBlockFathersChain();
+            ret += ".";
+        }
+        ret += getBlockName();
+        return ret;
+    }
+    
+    //! Return the pointer on the block defined by the fathers chain 
+    BotBlock* getBlockFromFathersChain(const QString& chain)
+    {
+        // Split the chain
+        QStringList chainstr = chain.split(".");
+        
+        // Chain must have block
+        if(chainstr.isEmpty()) { }
+        
+        // The chain must start with the core block
+        if(chainstr.first().compare("core") != 0) { }
+        chainstr.removeFirst();
+        
+        // Pointer on core
+        BotBlock* ptr = _jsEngine->getCoreBlock().data();
+        
+        // Find the end pointer
+        foreach(QString str, chainstr)
+        {
+            BotBlock* son = ptr->getBlockSon(str);
+            if(son) { ptr = son; }
+        }
+        return ptr;
+    }
+
+    //! Block sons getter
+    virtual const QList<QSharedPointer<BotBlock> >& getBlockSons() const { return _sons; }
+    
+    //! Block son getter by name
+    virtual BotBlock* getBlockSon(const QString& name)
+    {
+        foreach(QSharedPointer<BotBlock> son, _sons)
+        {
+            if(son->getBlockName().compare(name) == 0) { return son.data(); }
+        }
+        return 0;
+    }
 
     //!
     //! Append a son to the list
     //!
     virtual void appendSon(QSharedPointer<BotBlock> son) { if( _sons.indexOf(son) == -1 ) { _sons << son; } }
+
+    //! Block sons number getter
+    virtual int getBlockNumberOfSons() const { return _sons.size(); }
+
+    //! Easy way to get this information
+    virtual bool hasSons() const { if(getBlockNumberOfSons()>0) { return true; } else { return false; } }
 
 public slots:
 

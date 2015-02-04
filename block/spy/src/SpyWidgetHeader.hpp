@@ -4,6 +4,8 @@
 #include <BotBlock.hpp>
 #include <widget/DoubleLabel.hpp>
 
+class SpyBlock;
+
 //!
 //! Header of the spy widget
 //!

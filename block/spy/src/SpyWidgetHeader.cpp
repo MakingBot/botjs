@@ -1,4 +1,5 @@
 #include <SpyWidgetHeader.hpp>
+#include <SpyBlock.hpp>
 #include <QEvent>
 #include <QPainter>
 #include <QGridLayout>

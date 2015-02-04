@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <BotBlock.hpp>
 
+class SpyBlock;
+
 //!
 //! Widget that display personal block properties 
 //!

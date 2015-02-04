@@ -12,6 +12,8 @@ class SpyBlock;
 //!
 //! Widget that display information from the block
 //!
+//! \author [XR]MakingBot ( http://makingbot.fr )
+//!
 class SpyWidget : public QWidget
 {
     Q_OBJECT

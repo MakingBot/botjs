@@ -1,4 +1,5 @@
 #include <SpyWidgetBody.hpp>
+#include <SpyBlock.hpp>
 
 #include <iostream>
 

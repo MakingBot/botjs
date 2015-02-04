@@ -17,6 +17,7 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     , _spyblock         (spy_block)
     , _header           (new SpyWidgetHeader())
     , _body             (new SpyWidgetBody()  )
+    , _footer           (spy_block)
 {
     // Basic verification
     if(!getSharedSpyBlock()) {
@@ -35,8 +36,6 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     ((QGridLayout*)layout())->addWidget(_body  , 1, 0);
     ((QGridLayout*)layout())->addWidget(&_footer, 2, 0, Qt::AlignBottom);
     
-    
-
     // Connect update signals
     connect(getSharedSpyBlock().data(), SIGNAL(spiedBlockChanged()), this, SLOT(onSpiedBlockChange()));
 }
@@ -65,8 +64,8 @@ void SpyWidget::onSpiedBlockChange()
         _footer.setSpiedBlock(spied->getBlockWeakFromThis());
 
         // Connect events
-        connect( spied.data(), SIGNAL(propertyValuesChanged   ()), _body, SLOT(updateValues   ()) );
-        connect( spied.data(), SIGNAL(propertyStructureChanged()), _body, SLOT(updateStructure()) );
+        // connect( spied.data(), SIGNAL(propertyValuesChanged   ()), _body, SLOT(updateValues   ()) );
+        // connect( spied.data(), SIGNAL(propertyStructureChanged()), _body, SLOT(updateStructure()) );
 
         // TODO connect structure change
     

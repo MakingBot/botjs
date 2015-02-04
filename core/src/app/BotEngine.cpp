@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QFile>
+#include <QStack>
 #include <BotBlock.hpp>
 #include <BotEngine.hpp>
 #include <QCoreApplication>
@@ -129,3 +130,38 @@ QStringList BotEngine::availableBlockNames()
     return names;
 }
 
+/* ============================================================================
+ * TODO Create a cash system
+ * */
+QStringList BotEngine::getAllFatherChains()
+{
+    // Result chain
+    QStringList chains;
+
+    // Create stack and store the core block to start
+    QStack<QSharedPointer<BotBlock> > blocks;
+    blocks.push(_bigBlock); 
+
+    // Block after block    
+    while(!blocks.isEmpty())
+    {
+        // Get the current block
+        QSharedPointer<BotBlock> block = blocks.pop();
+
+        // Get its father chain
+        chains << block->getBlockFathersChain();
+
+        //! Add every son
+        foreach(QSharedPointer<BotBlock> son, block->getBlockSons())
+        {
+            blocks.push(son);
+        }
+
+
+    }
+
+
+
+    // Return
+    return chains;
+}

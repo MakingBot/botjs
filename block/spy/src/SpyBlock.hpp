@@ -6,6 +6,8 @@
 //!
 //! The Spy Block povide a way to get and modify block properties and data 
 //!
+//! \author [XR]MakingBot ( http://makingbot.fr )
+//!
 class SpyBlock : public BotBlock
 {
     Q_OBJECT
