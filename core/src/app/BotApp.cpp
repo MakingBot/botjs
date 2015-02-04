@@ -1,6 +1,8 @@
 #include <QDir>
 #include <QDebug>
 #include <QtGlobal>
+#include <QProxyStyle>
+#include <QFontDatabase>
 
 #include <cstdlib>
 #include <iostream>
@@ -23,6 +25,9 @@ BotApp::BotApp(int & argc, char** argv)
 
     // Initialize js engine and add it the system module
     intializeJsEnvironment();
+
+    // Style
+    setTweaksStyle();
 }
 
 /* ============================================================================
@@ -86,4 +91,30 @@ void BotApp::intializeModuleDirectory()
 void BotApp::intializeJsEnvironment()
 {
     _jsEngine->createBigBlock();
+}
+
+/* ============================================================================
+ *
+ * */
+class Style_tweaks : public QProxyStyle
+{
+    public:
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+                       QPainter *painter, const QWidget *widget) const
+    {
+        /* do not draw focus rectangles - this permits modern styling */
+        if (element == QStyle::PE_FrameFocusRect)
+            return;
+
+        QProxyStyle::drawPrimitive(element, option, painter, widget);
+    }
+};
+
+/* ============================================================================
+ *
+ * */
+void BotApp::setTweaksStyle()
+{
+    // Set tweaks style
+    this->setStyle(new Style_tweaks);
 }

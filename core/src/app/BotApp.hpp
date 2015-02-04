@@ -44,18 +44,23 @@ private:
     //!
     //! Set application attributes: name, version...
     //!
-    void setApplicationAttributes();
+    inline void setApplicationAttributes();
 
     //!
     //! Add module directory to the dynamic search path of Qt
     //!
-    void intializeModuleDirectory();
+    inline void intializeModuleDirectory();
 
     //!
     //! Initialize js engine and first prime modules
     //!
-    void intializeJsEnvironment();
+    inline void intializeJsEnvironment();
 
+    //!
+    //! Set the tweaks style to create modern ui
+    //! Avoid orange focus on ubuntu
+    //!
+    inline void setTweaksStyle();
 };
 
 #endif // BOTAPP_HPP
