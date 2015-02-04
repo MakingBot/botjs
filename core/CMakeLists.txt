@@ -28,4 +28,7 @@ SET(PROJECT_SOURCE_FILES
 # Call common configs
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../cmake/module/")
 INCLUDE(../cmake/common_config.cmake)
+
+QT5_ADD_RESOURCES(PROJECT_RCC_FILES rsc/ressources.qrc)
+
 INCLUDE(../cmake/app_common_config.cmake)
