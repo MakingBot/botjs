@@ -64,9 +64,16 @@ void SpyWidgetBody::updateStructure()
         switch(property.value().type())
         {
             case IProperty::IPTypeBool:
-                widget = new QComboBox();
-                ((QComboBox*)widget)->addItems( {"TRUE", "FALSE"} );
-                //connect( (QComboBox*)widget, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onComboBoxEnum(const QString&)) );
+                if(property.value().isWritable())
+                {
+                    widget = new QComboBox();
+                    ((QComboBox*)widget)->addItems( {"TRUE", "FALSE"} );
+                    connect( (QComboBox*)widget, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onComboBoxBool(const QString&)) );
+                }
+                else
+                {
+
+                }
                 break;
 
             case IProperty::IPTypeInt:
@@ -120,37 +127,50 @@ void SpyWidgetBody::updateValueEnum(QSharedPointer<BotBlock> spied, BotBlock::In
  * */
 void SpyWidgetBody::updateValues()
 {
-    /*
     QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
     if(spied)
     {
         // Get properties
-        BotBlock::InteractivePropertyMap properties = spied->iProperties();
-       
+        const QMap<QString, IProperty>& properties = spied->iProperties();
+
         // Go through widgets
         QMapIterator<QString, QWidget*> widget(_widgetMap);
         while (widget.hasNext())
         {
+            // Get widget and property associated
             widget.next();
+            IProperty property = properties[widget.key()];
 
-            switch(properties[widget.key()].type)
+            switch(property.type())
             {
-                case InteractiveObject::IPTypeReal:
+                // BOOL
+                case IProperty::IPTypeBool:
+                    if(property.isWritable())
+                    {
+                        if( spied->property(widget.key().toStdString().c_str()).toBool() )
+                        { ((QComboBox*)widget.value())->setCurrentIndex( ((QComboBox*)widget.value())->findText("TRUE")  ); }
+                        else
+                        { ((QComboBox*)widget.value())->setCurrentIndex( ((QComboBox*)widget.value())->findText("FALSE") ); }
+                    }
+                    else
+                    {
+                        if( spied->property(widget.key().toStdString().c_str()).toBool() )
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
                     break;
 
-                case InteractiveObject::IPTypeEnum:
-
-                    updateValueEnum(spied, properties, widget);
-
-
-                    break;
 
                 default:
                     break;
             }
         }
     }
-    */
 }
 
 /* ============================================================================
@@ -197,9 +217,53 @@ void SpyWidgetBody::onLineTextEdited(const QString& text)
 /* ============================================================================
  *
  * */
-void SpyWidgetBody::onComboBoxBool( int index )
+void SpyWidgetBody::onComboBoxBool(const QString& text)
 {
+    // Get spied
+    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    if(!spied) { return; }
+    
+    // Get sender
+    QObject* sender = QObject::sender();
+    if(!sender) { return; }
 
+    // Get properties
+    const QMap<QString, IProperty>& properties = spied->iProperties();
+
+    // Go through widgets
+    QMapIterator<QString, QWidget*> widget(_widgetMap);
+    while (widget.hasNext())
+    {
+        // Get widget and property associated
+        widget.next();
+
+        // Check if the sender is this property widget
+        if( widget.value() != sender )
+        {
+            continue;
+        }
+
+        // Get property and values
+        IProperty property = properties[widget.key()];
+        bool new_value;
+        bool old_value = spied->property(widget.key().toStdString().c_str()).toBool();
+
+        switch(property.type())
+        {
+            // BOOL
+            case IProperty::IPTypeBool:
+                if( text.compare("TRUE")  == 0 ) { new_value = true;  }
+                else                             { new_value = false; }
+                if( old_value != new_value )
+                {
+                    spied->setProperty(widget.key().toStdString().c_str(), new_value);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
 /* ============================================================================

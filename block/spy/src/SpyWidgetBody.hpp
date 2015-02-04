@@ -47,7 +47,7 @@ public slots:
     void onLineTextEdited(const QString& text);
 
     //! For combobox that manage boolean switch
-    void onComboBoxBool( int index );
+    void onComboBoxBool( const QString & text );
 
     //! For combobox that manage enum
     void onComboBoxEnum( const QString & text );
@@ -62,7 +62,6 @@ protected:
 
     //! Delete all current widgets
     void destroyStructure();
-
 
 
     // void updateValueEnum(QSharedPointer<BotBlock> spied, BotBlock::InteractivePropertyMap& properties, QMapIterator<QString, QWidget*>& widget);

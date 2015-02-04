@@ -92,19 +92,15 @@ public slots:
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master=true);
 
-    //!
     //! Widget visibility setter
-    //!
     virtual void show()
     { 
         createWidgetIfRequired();
-        _widget->show(); _visible = true;  /* emit propertyValuesChanged(); */
+        _widget->show(); _visible = true; emit blockiPropertyValuesChanged();
     }
 
-    //!
     //! Widget visibility setter
-    //!
-    virtual void hide() { _widget->hide(); _visible = false; /* emit propertyValuesChanged(); */ }
+    virtual void hide() { _widget->hide(); _visible = false; emit blockiPropertyValuesChanged(); }
 
 protected:
     //! Widget visibility
