@@ -1,43 +1,21 @@
 BotJs
 =====
 
-BotJs is a modular C++ application scriptable and composable through JavaScript. The aim is to create a system adaptable to any robot and host system.
+BotJs is an adaptable application for robots control.
 
-## Build
+## Aim
 
-### Qt
+The aim is to create a adaptable system to control any robot. But it is also a software that you can put on your host computer to monitor your robot evolution.
 
-BotJs use QT5.4 with cmake configuration. It has to be installed and configured before the build.
+**BotJs key words**
 
-### Build on Ubuntu
+- Adaptable: BotJs can be used in any robot and operating system.
+- Dynamic: Every block of BotJs can be loaded and unloaded separatly. Moreover if you touch a BotJs block the all application change.
+- Easy to use: Robotic application are often complex and not well documented, it is not the case with BotJs.
 
-The build process is entirely managed by a bash script. It builds and install the core and modules of the project. Each module have it own cmake script to build it.
+## Getting Start
 
-```bash
-# Start BotJs build
-cd botjs
-./build
-```
+You want start? Just follow tutorials:
 
-Clean is also possible, it remove all build directories
-
-```bash
-# Start BotJs clean
-cd botjs
-./clean
-```
-
-
-## Usage
-
-```bash
-# Start BotJs in console mode
-botjs
-```
-
-```bash
-# Start BotJs with the user configuration script
-botjs script.js
-```
-
-See the tutorial section for more information about the use of BotJs.
+- [00 Installation of your build environment](tutorial/00_build_environment)
+- [01 Usage of spies blocks](tutorial/00_build_environment)
