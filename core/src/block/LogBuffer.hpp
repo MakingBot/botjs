@@ -9,6 +9,12 @@
 #include <QTextStream>
 #include <QSharedPointer>
 
+class LogEnder
+{
+public:
+    LogEnder() {}
+};
+
 //!
 //! Buffer to store log messages
 //!
@@ -94,18 +100,33 @@ public:
         {
             std::cout << "1" << std::endl;
 
-            (*_filestream.data()) << val << endl;
+            (*_filestream.data()) << val;
             if( _state >= (StateInitialized+StateEnabled+StateTalking) )
             {
 
             std::cout << "2" << std::endl;
 
-                _coutstream << val << endl;
+                _coutstream << val;
             }
         }     
     }
 
-    // QTextStream& endLog()
+    void endLog()
+    {
+
+        std::cout << "3" << std::endl;
+
+        if( _state >= (StateInitialized+StateEnabled) )
+        {
+            (*_filestream.data()) << endl;
+            if( _state >= (StateInitialized+StateEnabled+StateTalking) )
+            {
+                _coutstream << endl;
+            }
+        }     
+    }
+
+    //LogEnder endLog() { }
     // {
     //     return QTextStream(endl);
 
@@ -131,7 +152,9 @@ public:
     //LogBuffer& operator<< ( LogBuffer& b ) { return *this; }
     
 
-    LogBuffer& operator<< (QChar c) { streamlog<QChar>(c); return *this; }
+    LogBuffer& operator<< ( LogEnder le ) { endLog(); return *this; }
+    
+    LogBuffer& operator<< ( QChar c     ) { streamlog<QChar>(c); return *this; }
     LogBuffer& operator<< ( signed short i ) { streamlog<signed short>(i); return *this; }
     LogBuffer& operator<< ( float f ) { streamlog<float>(f); return *this; }
     LogBuffer& operator<< ( const QString & string ) { streamlog<const QString &>(string); return *this; }

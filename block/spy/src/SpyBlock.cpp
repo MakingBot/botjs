@@ -23,9 +23,6 @@ bool SpyBlock::connect(BotBlock* block, bool master)
     if(!block)        { /* TODO std::cerr << "-- BotBlock::connectBlock => null ptr"                    << std::endl;*/ return false; }
     if(block == this) { /* TODO std::cerr << "-- BotBlock::connectBlock => unable to connect to itself" << std::endl;*/ return false; }
 
-    std::cout << "coco" << std::endl;
-
-    beglog() << "Try to connect"  ; //<< endlog();
 
     // This block ask for a connection
     if(master)
@@ -33,6 +30,7 @@ bool SpyBlock::connect(BotBlock* block, bool master)
         // Ask for connection back
         if(! block->connect(this, false))
         {
+            beglog() << "Connection with " << block->getBlockName() << " failed : connection return refused" << endlog();
             return false;
         }
 

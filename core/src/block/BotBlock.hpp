@@ -331,7 +331,7 @@ protected:
     LogBuffer&  beglog() { return _log; }
 
     //! 
-    //QTextStream& endlog(LogBuffer&) { QTextStream stream; stream << endl; return stream; }
+    LogEnder endlog() { return LogEnder(); }
 
     //! Block log buffer
     LogBuffer _log;
