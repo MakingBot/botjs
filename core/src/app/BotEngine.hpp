@@ -31,15 +31,18 @@ public:
         return ptr;
     }
 
-    //!
     //! Block lib directory getter
-    //!
     const QString& getBlockLibDirectory() { return _blockLibDirectory; }
 
-    //!
     //! Block lib directory getter
-    //!
     void setBlockLibDirectory(const QString& block_dir) { _blockLibDirectory = block_dir; }
+
+    //! Block lib directory getter
+    const QString& getBlockLogDirectory() { return _blockLogDirectory; }
+
+    //! Block lib directory getter
+    void setBlockLogDirectory(const QString& block_dir) { _blockLogDirectory = block_dir; }
+
 
     //!
     //! Create a new block from a shared library
@@ -97,6 +100,9 @@ public slots:
 protected:
     //! Block lib directory
     QString _blockLibDirectory;
+
+    //! Block log directory
+    QString _blockLogDirectory;
 
     //! JavaScript engine
     QSharedPointer<QJSEngine> _jsEngine;

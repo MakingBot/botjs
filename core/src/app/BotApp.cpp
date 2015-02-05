@@ -79,10 +79,12 @@ void BotApp::intializeModuleDirectory()
     QString app_dir = QCoreApplication::applicationDirPath();
 
     // Build the module directory path
-    QString block_dir = app_dir + QDir::separator() + QString("../block");
+    QString block_lib = app_dir + QDir::separator() + QString("../block");
+    QString block_log = app_dir + QDir::separator() + QString("../log");
 
     // Set the module directory
-    _jsEngine->setBlockLibDirectory(block_dir);
+    _jsEngine->setBlockLibDirectory(block_lib);
+    _jsEngine->setBlockLogDirectory(block_log);
 }
 
 /* ============================================================================

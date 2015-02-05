@@ -23,6 +23,10 @@ bool SpyBlock::connect(BotBlock* block, bool master)
     if(!block)        { /* TODO std::cerr << "-- BotBlock::connectBlock => null ptr"                    << std::endl;*/ return false; }
     if(block == this) { /* TODO std::cerr << "-- BotBlock::connectBlock => unable to connect to itself" << std::endl;*/ return false; }
 
+    std::cout << "coco" << std::endl;
+
+    beglog() << "Try to connect"  ; //<< endlog();
+
     // This block ask for a connection
     if(master)
     {

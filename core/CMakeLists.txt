@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
 SET(PROJECT_HEADER_FILES
     src/block/BotBlock.hpp
     src/block/IProperty.hpp
+    src/block/LogBuffer.hpp
     
     src/app/BotApp.hpp
     src/app/BotEngine.hpp

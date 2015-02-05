@@ -7,6 +7,7 @@
 
 #include <BotEngine.hpp>
 #include <IProperty.hpp>
+#include <LogBuffer.hpp>
 
 //!
 //! The BotBlock is the main component of the BotJs modular architecture. 
@@ -24,8 +25,11 @@ class BotBlock : public QObject
     Q_PROPERTY(QString      blockTypename           READ getBlockTypeName                                   )
     Q_PROPERTY(BlockRole    blockRole               READ getBlockRole                                       )
 
-    Q_PROPERTY(int          blockNbSons             READ getBlockNumberOfSons                                    )
-    Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                                    )
+    Q_PROPERTY(int          blockNbSons             READ getBlockNumberOfSons                               )
+    Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                        )
+
+    Q_PROPERTY(bool         logEnable               READ isBlockLogEnable       WRITE setBlockLogEnable     )
+    Q_PROPERTY(bool         logTalking              READ isBlockLogTalking      WRITE setBlockLogTalking    )
 
 public:
 
@@ -100,7 +104,13 @@ public:
     //!
     virtual void blockInit(QSharedPointer<BotEngine> js_engine)
     {
+        // Track js engine pointer
         _jsEngine = js_engine;
+
+        // Initialize log engine
+        _log.init( _jsEngine->getBlockLogDirectory() + QDir::separator() + _bname + QString(".log") );
+
+        // Register type BotBlock*
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
     }
 
@@ -124,6 +134,20 @@ public:
 
     //! Javascript Engine getter
     QSharedPointer<BotEngine> getBlockEngine() { return _jsEngine; }
+
+    // === === === LOG BUFFER === === ===
+
+    //!  Enable setter
+    void setBlockLogEnable(bool en)  { _log.setStateEnable(en); }
+    
+    //! Talking setter
+    void setBlockLogTalking(bool en) { _log.setStateTalk(en); } 
+
+    //! Return true if this log buffer is enable and log into its file
+    bool isBlockLogEnable()  { return _log.isEnable(); } 
+
+    //! Return true if this log buffer is talking and log into the std cout
+    bool isBlockLogTalking() { return _log.isTalking(); }
 
     // === === === I-PROPERTIES === === ===
 
@@ -300,6 +324,17 @@ protected:
     
     //! Pointer on the javascript engine
     QSharedPointer<BotEngine> _jsEngine;
+
+    // === === === LOG BUFFER === === ===
+    
+    //!
+    LogBuffer&  beglog() { return _log; }
+
+    //! 
+    //QTextStream& endlog(LogBuffer&) { QTextStream stream; stream << endl; return stream; }
+
+    //! Block log buffer
+    LogBuffer _log;
 
     // === === === I-PROPERTIES === === ===
 
