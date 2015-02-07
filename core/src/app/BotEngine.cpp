@@ -62,21 +62,14 @@ QSharedPointer<BotBlock> BotEngine::createBlock(const QString& btypename, const 
  * */
 QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibrary> lib, const QString& btypename, const QString& varname)
 {
-    std::cerr << 1 << std::endl;
-  
     // Resolve CreateBlock function
     QSharedPointer<BotBlock> block;
-
-    std::cerr << 2 << std::endl;
 
     CreateBlock create_function = (CreateBlock) lib->resolve("CreateBlock");
     if (create_function)
     {
-  std::cerr << 3 << std::endl;
-
         // Request block creation
         block = create_function(varname);
-
     }
     else
     {

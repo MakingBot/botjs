@@ -136,6 +136,12 @@ public:
 
     // === === === LOG BUFFER === === ===
 
+    //! To start a log
+    LogBuffer& beglog() { return _log; }
+
+    //! To stop the log
+    LogEnder endlog() { return LogEnder(); }
+
     //!  Enable setter
     void setBlockLogEnable(bool en)  { _log.setStateEnable(en); }
     
@@ -257,7 +263,7 @@ public slots:
     virtual bool connect(BotBlock* block, bool master=true)
     {
         // Basic checks
-        if(!block)        { std::cerr << "-- BotBlock::connectBlock => null ptr"                    << std::endl; return false; }
+        if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
         if(block == this) { std::cerr << "-- BotBlock::connectBlock => unable to connect to itself" << std::endl; return false; }
         
         // This block ask for a connection
@@ -265,12 +271,17 @@ public slots:
         {
             if(!block->connect(this, false))
             {
+                // Log and return
+                beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
                 return false;
             }
         }
         // Other block ask for a connection
         // Default behaviour : accept
         _connections << block->getBlockWeakFromThis();
+
+        // Log and return
+        beglog() << "Connection to #" << block->getBlockFathersChain() << "# accepted" << endlog();
         return true;
     }
 
@@ -326,12 +337,6 @@ protected:
 
     // === === === LOG BUFFER === === ===
     
-    //!
-    LogBuffer&  beglog() { return _log; }
-
-    //! 
-    LogEnder endlog() { return LogEnder(); }
-
     //! Block log buffer
     LogBuffer _log;
 

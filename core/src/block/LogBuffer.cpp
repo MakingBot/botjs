@@ -27,7 +27,8 @@
 LogBuffer::LogBuffer(QObject* parent)
     : QObject(parent), _newLog(true), _state(StateCreated), _coutstream(stdout)
 {
-    BotBlock* bparent = qobject_cast<BotBlock*>(parent);
-    _blockchain = bparent->getBlockFathersChain();
+    // TODO SegFault because parent is not totaly created when it is accessed here...
+    //BotBlock* bparent = qobject_cast<BotBlock*>(parent);
+    //_blockchain = bparent->getBlockFathersChain();
 }
 

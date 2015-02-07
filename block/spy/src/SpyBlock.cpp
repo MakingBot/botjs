@@ -11,13 +11,7 @@ EXPORT_BLOCK(SpyBlock)
 SpyBlock::SpyBlock(const QString& name, QObject *parent)
     : BotBlock(name, parent)
 {
-
-    std::cerr << 4 << std::endl;
-
     appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
-
-    std::cerr << 5 << std::endl;
-
 }
 
 /* ============================================================================
@@ -26,8 +20,8 @@ SpyBlock::SpyBlock(const QString& name, QObject *parent)
 bool SpyBlock::connect(BotBlock* block, bool master)
 {
     // Basic checks
-    if(!block)        { /* TODO std::cerr << "-- BotBlock::connectBlock => null ptr"                    << std::endl;*/ return false; }
-    if(block == this) { /* TODO std::cerr << "-- BotBlock::connectBlock => unable to connect to itself" << std::endl;*/ return false; }
+    if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
+    if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
 
 
     // This block ask for a connection
@@ -37,7 +31,7 @@ bool SpyBlock::connect(BotBlock* block, bool master)
         if(! block->connect(this, false))
         {
             // Log and return
-            beglog() << "Connection with " << block->getBlockFathersChain() << " failed : connection return refused" << endlog();
+            beglog() << "Connection to " << block->getBlockFathersChain() << " failure: connection return refused" << endlog();
             return false;
         }
 
@@ -57,7 +51,7 @@ bool SpyBlock::connect(BotBlock* block, bool master)
         emit spiedBlockChanged();
 
         // Log and return
-        beglog() << "Connection with #" << block->getBlockFathersChain() << "# success!" << endlog();
+        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
         return true;
     }
     // Other block ask for a connection
@@ -70,6 +64,9 @@ bool SpyBlock::connect(BotBlock* block, bool master)
             // Use main connect function
             return BotBlock::connect(block, master);            
         }
+
+        // Log and return
+        beglog() << "Connection from #" << block->getBlockFathersChain() << "# refused: it is not a spy block" << endlog();
         return false;
     }
 }
