@@ -39,7 +39,7 @@ class JointBlock : public BotBlock
     
     Q_PROPERTY(JointType type     READ type     WRITE changeType    MEMBER _type    )
     Q_PROPERTY(QVector3D axe      READ axe                          MEMBER _axe     )
-    Q_PROPERTY(QVector3D position READ pos                          MEMBER _pos     )
+    Q_PROPERTY(QVector4D position READ pos                          MEMBER _pos     )
 
 public:
     //! Type of available joint
@@ -159,11 +159,16 @@ public:
     const QVector3D& axe() const { return _axe; }
 
     //! Pos getter
-    const QVector3D& pos() const { return _pos; }
+    const QVector4D& pos() const { return _pos; }
 
     //! Result transform matrix getter
     const QMatrix4x4& transform() const { return _tranform; }
 
+public slots:
+
+    //! Update transform properties
+    void updateTransform();
+    
 protected:
     //! Current value
     qreal _value;
@@ -181,7 +186,7 @@ protected:
     QVector3D _axe;
 
     //! Joint pos (0,0,0) by default
-    QVector3D _pos;
+    QVector4D _pos;
 
     //! Result transform matrix
     QMatrix4x4 _tranform;

@@ -21,6 +21,7 @@
 #include <BotBlock.hpp>
 
 #include <QMatrix4x4>
+#include <QVariantList>
 
 class JointBlock;
 
@@ -31,7 +32,7 @@ class JointBlock;
 class LinkBlock : public BotBlock
 {
     Q_OBJECT
-    Q_PROPERTY(QVector3D  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
+   // Q_PROPERTY(QVector3D  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
     Q_PROPERTY(QVector3D  translation READ translation WRITE setTranslation  MEMBER _translation)
 
 public:
@@ -54,12 +55,20 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("link"); }
 
+    //! Link rotation setter
+    // Q_INVOKABLE void seteRotation(QVariantList rot)
+    // {
+    //     if(rot.size() >= 3)
+    //     {
+    //         _rotation = QVector3D(rot.at(0).toReal(), rot.at(1).toReal(), rot.at(2).toReal());
+    //     }
+    // }
 
     //! Link rotation getter
-    const QVector3D& rotation() { return _rotation; }
+    const QList<qreal>& rotation() { return _rotation; }
    
     //! Link rotation setter
-    void setRotation(const QVector3D& rot) { _rotation = rot; updateTransform(); }
+    Q_INVOKABLE void setRotation(const QList<qreal>& rot) { _rotation = rot; /*updateTransform();*/ }
    
     //! Link translation getter
     const QVector3D& translation() { return _translation; }
@@ -73,14 +82,20 @@ public:
     //! Transform matrix setter
     void setTransform(const QMatrix4x4& matrix) { _transform = matrix; }
 
+    //! Joint base weak pointer getter
+    QWeakPointer<JointBlock> weakBase() { return _baseJoint; }
+ 
+    //! Joint base
+    JointBlock* base() { return _baseJoint.data(); }
+
+    //! Joint output getter
+    QWeakPointer<JointBlock> weakOutput() { return _outputJoint; }
+
 public slots:
 
     //! To update the transform matrix with the translation and rotation matrix
     //! after a parameter change
-    void updateTransform()
-    {
-
-    }
+    void updateTransform();
 
 protected:
 
@@ -91,7 +106,8 @@ protected:
     //! _rotation = { 0, 90, 45 } means rotate 0°  around x axis
     //!                                 rotate 90° around y axis
     //!                                 rotate 45° around z axis
-    QVector3D _rotation;
+    // QVector3D _rotation;
+    QList<qreal> _rotation;
     
     //! Position of the outputJoint in the baseJoint basis
     QVector3D _translation;
@@ -100,10 +116,10 @@ protected:
     //! It is computed from translation and rotation
     QMatrix4x4 _transform;
     
-    //! Link base
+    //! Joint base
     QWeakPointer<JointBlock> _baseJoint;
     
-    //! Link output
+    //! Joint output
     QWeakPointer<JointBlock> _outputJoint;
 
 };

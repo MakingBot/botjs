@@ -17,8 +17,32 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <JointBlock.hpp>
+#include <LinkBlock.hpp>
 
 /* ============================================================================
  *
  * */
 EXPORT_BLOCK(JointBlock)
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updateTransform()
+{
+    // To update a joint it must have a base link which has a base joint
+    if(_baseLink)
+    {
+        QSharedPointer<LinkBlock> baseLink   = _baseLink.toStrongRef();
+        QWeakPointer<JointBlock>  wbaseJoint = baseLink->weakBase();
+        if( wbaseJoint )
+        {
+            QSharedPointer<JointBlock> baseJoint = wbaseJoint.toStrongRef();
+
+            _pos = baseLink->transform() * baseJoint->pos();
+        }
+    }
+    else
+    {
+        _pos = QVector4D(0,0,0,1);
+    }
+}
