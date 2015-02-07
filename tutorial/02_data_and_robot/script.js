@@ -16,7 +16,6 @@ var link     = body.create  ("link"  , "link"    );
 
 var param = new Array(1,1,1)
 link.rotation = param;
-//link.setRotation([1,1,1] );
 
 var jointEnd = body.create  ("joint" , "jointEnd");
 

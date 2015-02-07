@@ -2,6 +2,7 @@
 #define VIEWERMATRIX4X4_HPP
 
 #include <QVector>
+#include <QMatrix4x4>
 #include <QDoubleSpinBox>
 
 //!
@@ -20,7 +21,7 @@ public:
     //!
     //! To set the widget read only or writable
     //!
-    setReadOnly(bool readOnly);
+    void setReadOnly(bool readOnly);
 
     //!
     //! Data model getter
@@ -52,7 +53,7 @@ protected:
     QMatrix4x4 _dataMatrix;
 
     //! The matrix of editor
-    QVector<QDoubleSpinBox> _editMatrix;
+    QVector<QSharedPointer<QDoubleSpinBox> > _editMatrix;
 };
 
 #endif // VIEWERMATRIX4X4_HPP

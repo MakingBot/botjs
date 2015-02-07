@@ -15,6 +15,7 @@ SET(PROJECT_HEADER_FILES
     src/DoubleLabel.hpp
     src/ViewerVector3D.hpp
     src/ViewerRealList.hpp
+    src/ViewerQMatrix4x4.hpp
     )
 
 # Sources
@@ -27,6 +28,7 @@ SET(PROJECT_SOURCE_FILES
 
     src/ViewerVector3D.cpp
     src/ViewerRealList.cpp
+    src/ViewerQMatrix4x4.cpp
     )
 
 # Call common configs

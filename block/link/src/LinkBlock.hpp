@@ -33,17 +33,19 @@ class LinkBlock : public BotBlock
 {
     Q_OBJECT
     Q_PROPERTY(QList<qreal>  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
-    //Q_PROPERTY(QVector3D  translation READ translation WRITE setTranslation  MEMBER _translation)
+    Q_PROPERTY(QList<qreal>  translation READ translation WRITE setTranslation  MEMBER _translation)
+    Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
 
 public:
     //!
     //! Default constructor
     //!
     explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
-        : BotBlock(name, parent)
+        : BotBlock(name, parent), _rotation({0,0,0}), _translation({0,0,0})
     {
-        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true));
-        appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true));
+        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true ));
+        appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true ));
+        appendBlockIProperty("transform"  , IProperty(IProperty::IPTypeMatrix44, false));
     }
 
     //! FROM BotBlock
@@ -55,15 +57,6 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("link"); }
 
-    //! Link rotation setter
-    // Q_INVOKABLE void seteRotation(QVariantList rot)
-    // {
-    //     if(rot.size() >= 3)
-    //     {
-    //         _rotation = QVector3D(rot.at(0).toReal(), rot.at(1).toReal(), rot.at(2).toReal());
-    //     }
-    // }
-
     //! Link rotation getter
     const QList<qreal>& rotation() { return _rotation; }
    
@@ -71,10 +64,10 @@ public:
     void setRotation(const QList<qreal>& rot) { _rotation = rot; /*updateTransform();*/ }
    
     //! Link translation getter
-    const QVector3D& translation() { return _translation; }
+    const QList<qreal>& translation() { return _translation; }
 
     //! Link translation setter
-    void setTranslation(const QVector3D& tra) { _translation = tra; }
+    void setTranslation(const QList<qreal>& tra) { _translation = tra; }
 
     //! Transform matrix getter
     const QMatrix4x4& transform() const { return _transform; }
@@ -106,22 +99,20 @@ protected:
     //! _rotation = { 0, 90, 45 } means rotate 0°  around x axis
     //!                                 rotate 90° around y axis
     //!                                 rotate 45° around z axis
-    // QVector3D _rotation;
     QList<qreal> _rotation;
     
     //! Position of the outputJoint in the baseJoint basis
-    QVector3D _translation;
+    QList<qreal> _translation;
     
     //! Transform matrix
     //! It is computed from translation and rotation
     QMatrix4x4 _transform;
-    
+
     //! Joint base
     QWeakPointer<JointBlock> _baseJoint;
-    
+
     //! Joint output
     QWeakPointer<JointBlock> _outputJoint;
-
 };
 
 #endif // LINKBLOCK_HPP

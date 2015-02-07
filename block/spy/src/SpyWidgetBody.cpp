@@ -16,6 +16,7 @@
 #include <QDoubleSpinBox>
 #include <ViewerVector3D.hpp>
 #include <ViewerRealList.hpp>
+#include <ViewerQMatrix4x4.hpp>
 
 /* ============================================================================
  *
@@ -131,6 +132,7 @@ void SpyWidgetBody::updateStructure()
                 break;
 
             case IProperty::IPTypeMatrix44:
+                widget = new ViewerQMatrix4x4();
                 break;        
 
             default:
@@ -191,10 +193,7 @@ void SpyWidgetBody::updateValues()
                     break;
 
                 case IProperty::IPTypeRealList:
-                    
-
                     ((ViewerRealList*)widget.value())->setList( qvariant_cast<QList<qreal> >( spied->property(widget.key().toStdString().c_str()) ) );
-
                     break;
 
                 case IProperty::IPTypeVector3D:

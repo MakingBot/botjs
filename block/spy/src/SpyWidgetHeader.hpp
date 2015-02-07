@@ -2,7 +2,7 @@
 #define SPYWIDGETHEADER_HPP
 
 #include <BotBlock.hpp>
-#include <widget/DoubleLabel.hpp>
+#include <DoubleLabel.hpp>
 
 class SpyBlock;
 

@@ -1,11 +1,11 @@
 #include <ViewerQMatrix4x4.hpp>
+#include <QGridLayout>
 
 /* ============================================================================
  *
  * */
-ViewerQMatrix4x4::ViewerQMatrix4x4(QWidget* parent)
+ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
     : QWidget(parent)
-    , _editMatrix( QVector<QDoubleSpinBox>(4*4) )
 {
     // Create the layout
     QGridLayout* lay = new QGridLayout(this);
@@ -16,12 +16,15 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(QWidget* parent)
         {
             // Get constant
             const int index = r*4 + c;
-            QDoubleSpinBox* widget = &(_editMatrix[index]);
+
+            QSharedPointer<QDoubleSpinBox> box( new QDoubleSpinBox() );
+            _editMatrix.append( box );
             
             // Add to layout, define properties and connect
-            lay->addWidget( widget, r, c );
-            widget->setAlignment(Qt::AlignCenter);
-            connect(widget, SIGNAL(valueChanged(double)), this, onValueChange(double) );
+            lay->addWidget( box.data(), r, c );
+            box->setAlignment(Qt::AlignCenter);
+            connect(box.data(), SIGNAL(valueChanged(double)), this, SLOT(onValueChange(double)) );
+            
         }
     }
 }
@@ -31,18 +34,19 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(QWidget* parent)
  * */
 void ViewerQMatrix4x4::updateValues()
 {
+    /*
     // Go through widgets
     for(int r=0 ; r<4 ; r++)
     {
         for(int c=0 ; c<4 ; c++)
         {
             const int index = r*4 + c;
-            QDoubleSpinBox* widget = &(_editMatrix[index]);
             
             // Set the value in the widget
-            widget->setValue( _dataMatrix(r,c) );
+            _editMatrix[index]->setValue( _dataMatrix(r,c) );
         }
     }
+    */
 }
 
 /* ============================================================================
@@ -53,8 +57,17 @@ void ViewerQMatrix4x4::onValueChange(double d)
     QDoubleSpinBox* sender = (QDoubleSpinBox*) QObject::sender();
     if(sender)
     {
+        int index = 0;
+        for(int i = 0 ; i< 4*4 ; i++)
+        {
+            if( _editMatrix.at(i).data() == sender )
+            {
+                index = i;
+                break;
+            }
+        }
+
         // Compute constant values
-        const int index = _editMatrix->indexOf(sender);
         const int r = index / 4;
         const int c = index % 4;
         

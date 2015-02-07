@@ -37,12 +37,13 @@ void ViewerRealList::updateStructure()
     for(int i=0 ; i<_model.size() ; i++)
     {
         QSharedPointer<QDoubleSpinBox> box( new QDoubleSpinBox() );
+        
+        box->setRange(-0xFFFFFFFF , 0xFFFFFFFF);
 
         ((QHBoxLayout*)layout())->addWidget( box.data() );
 
         _boxs << box;
     }
-
 }
 
 /* ============================================================================
@@ -50,5 +51,8 @@ void ViewerRealList::updateStructure()
  * */
 void ViewerRealList::updateValues()
 {
-
+    for(int i=0 ; i<_model.size() ; i++)
+    {
+        _boxs.at(i)->setValue ( _model.at(i) );
+    }
 }
