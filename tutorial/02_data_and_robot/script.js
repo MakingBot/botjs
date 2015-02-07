@@ -7,8 +7,10 @@ core.create("spy", "agent007");
 
 // Create robot
 core.create("robot", "proteo");
-
 core.create("kinasm", "body");
+core.create("joint",  "joint1");
+core.create("link",   "link1");
+
 
 // Display spies
 agent007.show();
