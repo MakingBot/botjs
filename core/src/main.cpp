@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         #endif
 
         // Default script shell
-        app.js()->eval("");
+        app.js()->eval("core.create('shell', 'shell'); shell.start();");
     }
     else
     {
