@@ -18,6 +18,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <BotApp.hpp>
+#include <BotBlock.hpp>
 
 //!
 //! BotJs main enter point
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
         #endif
 
         // Default script shell
-        app.js()->eval("core.create('shell', 'shell'); shell.start();");
+        BotBlock::JsEngine.eval("core.create('shell', 'shell'); shell.start();");
     }
     else
     {
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
         #endif
 
         // Start user script
-        app.js()->evalScriptFile(js_file_path);
+        BotBlock::JsEngine.evalScriptFile(js_file_path);
     }
 
 

@@ -14,11 +14,3 @@ Viewer3DBlock::Viewer3DBlock(const QString& name, QObject *parent)
     appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
 }
 
-/* ============================================================================
- *
- * */
-void Viewer3DBlock::blockInit(QSharedPointer<BotEngine> js_engine)
-{
-    BotBlock::blockInit(js_engine);
-}
-

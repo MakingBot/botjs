@@ -9,14 +9,13 @@ INCLUDE_DIRECTORIES(
 
 # Headers
 SET(PROJECT_HEADER_FILES
-    src/block/BotBlock.hpp
-    src/block/IProperty.hpp
-    src/block/LogBuffer.hpp
-    src/block/LogBuffer.cpp
-    
     src/app/BotApp.hpp
     src/app/BotEngine.hpp
     src/app/CoreBlock.hpp
+    
+    src/block/BotBlock.hpp
+    src/block/IProperty.hpp
+    src/block/LogBuffer.hpp
     )
 
 # Sources
@@ -25,6 +24,9 @@ SET(PROJECT_SOURCE_FILES
     src/app/BotApp.cpp
     src/app/BotEngine.cpp
     src/app/CoreBlock.cpp
+
+    src/block/BotBlock.cpp
+    src/block/LogBuffer.cpp
     )
 
 ADD_DEFINITIONS( -DBOTJS_CORE_DEBUG_PRINT )

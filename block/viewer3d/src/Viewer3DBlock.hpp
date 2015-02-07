@@ -22,9 +22,6 @@ public:
     explicit Viewer3DBlock(const QString& name = QString("viewer3d"), QObject *parent = 0);
 
     //! FROM BotBlock
-    virtual void blockInit(QSharedPointer<BotEngine> js_engine);
-
-    //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
     
     //! FROM BotBlock

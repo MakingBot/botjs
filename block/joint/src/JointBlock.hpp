@@ -44,13 +44,7 @@ public:
         appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
         appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
     }
-
-    //! FROM BotBlock
-    virtual void blockInit(QSharedPointer<BotEngine> js_engine)
-    {
-        BotBlock::blockInit(js_engine);
-    }
-
+    
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
 

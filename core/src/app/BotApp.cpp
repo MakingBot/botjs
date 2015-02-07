@@ -8,6 +8,9 @@
 #include <iostream>
 
 #include <BotApp.hpp>
+#include <BotBlock.hpp>
+#include <BotEngine.hpp>
+
 #include <QCommandLineParser>
 
 /* ============================================================================
@@ -15,7 +18,6 @@
  * */
 BotApp::BotApp(int & argc, char** argv)
     : QApplication(argc, argv)
-    , _jsEngine(BotEngine::Create(this))
 {
     // Set application attributes
     setApplicationAttributes();
@@ -83,8 +85,13 @@ void BotApp::intializeModuleDirectory()
     QString block_log = app_dir + QDir::separator() + QString("../log");
 
     // Set the module directory
-    _jsEngine->setBlockLibDirectory(block_lib);
-    _jsEngine->setBlockLogDirectory(block_log);
+    BotBlock::JsEngine.setBlockLibDirectory(block_lib);
+    BotBlock::JsEngine.setBlockLogDirectory(block_log);
+
+    #ifdef BOTJS_CORE_DEBUG_PRINT
+    std::cout << "++ Initialize path to log  : " << block_log.toStdString() << std::endl;
+    std::cout << "++ Initialize path to block: " << block_lib.toStdString() << std::endl;
+    #endif
 }
 
 /* ============================================================================
@@ -92,7 +99,11 @@ void BotApp::intializeModuleDirectory()
  * */
 void BotApp::intializeJsEnvironment()
 {
-    _jsEngine->createBigBlock();
+    #ifdef BOTJS_CORE_DEBUG_PRINT
+    std::cout << "++ Create Core Block" << std::endl;
+    #endif
+
+    BotBlock::JsEngine.createCoreBlock();
 }
 
 /* ============================================================================

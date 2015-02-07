@@ -17,7 +17,7 @@ public:
     explicit CoreBlock(const QString& name = QString("core"), QObject* parent = 0);
     
     //! FROM BotBlock
-    virtual void blockInit(QSharedPointer<BotEngine> js_engine);
+    virtual void blockInit();
 
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }

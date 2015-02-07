@@ -104,11 +104,3 @@ bool SpyBlock::disconnectAll()
     // Alert the view
     emit spiedBlockChanged();
 }
-
-/* ============================================================================
- *
- * */
-void SpyBlock::blockInit(QSharedPointer<BotEngine> js_engine)
-{
-    BotBlock::blockInit(js_engine);
-}

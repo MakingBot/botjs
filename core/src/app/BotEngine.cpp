@@ -65,6 +65,7 @@ QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibr
     // Resolve CreateBlock function
     QSharedPointer<BotBlock> block;
 
+    // Resolve the block create function
     CreateBlock create_function = (CreateBlock) lib->resolve("CreateBlock");
     if (create_function)
     {
@@ -80,6 +81,7 @@ QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibr
         throw std::runtime_error(error.toStdString());
     }
 
+    // Check pointer
     if(!block)
     {
         std::cerr << "-- ??? Block created but pointer null ???" << std::endl;
@@ -87,7 +89,7 @@ QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibr
     }
 
     // Initialize and return the block
-    block->blockInit(_wThis.toStrongRef());
+    block->blockInit();
     return block;
 }
 
@@ -128,19 +130,19 @@ void BotEngine::evalScriptFile(const QString &script_path)
 /* ============================================================================
  *
  * */
-void BotEngine::createBigBlock()
+void BotEngine::createCoreBlock()
 {
     // Create core block
-    _bigBlock = BotBlock::CreateBlock<CoreBlock>("core");
-
+    _coreBlock = BotBlock::CreateBlock<CoreBlock>("core");
+   
     // Init block
-    _bigBlock->blockInit(_wThis.toStrongRef());
-
+    _coreBlock->blockInit();
+    
     // Create a qt js object
-    QJSValue js_val = _jsEngine->newQObject(_bigBlock.data());
-
+    QJSValue js_val = _jsEngine->newQObject(_coreBlock.data());
+    
     // Link it to the js engine
-    go().setProperty(_bigBlock->getBlockName(), js_val);
+    go().setProperty(_coreBlock->getBlockName(), js_val);
 }
 
 /* ============================================================================
@@ -163,7 +165,7 @@ QStringList BotEngine::getAllFatherChains()
 
     // Create stack and store the core block to start
     QStack<QSharedPointer<BotBlock> > blocks;
-    blocks.push(_bigBlock); 
+    blocks.push(_coreBlock); 
 
     // Block after block    
     while(!blocks.isEmpty())
@@ -179,12 +181,7 @@ QStringList BotEngine::getAllFatherChains()
         {
             blocks.push(son);
         }
-
-
     }
-
-
-
     // Return
     return chains;
 }

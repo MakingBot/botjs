@@ -20,16 +20,9 @@ class BotEngine : public QObject
 
 public:
     //!
-    //! Main way to construct the engine
+    //! Default constructor
     //!
-    static QSharedPointer<BotEngine> Create(QObject *parent = 0)
-    {
-        QSharedPointer<BotEngine> ptr(new BotEngine(parent));
-        
-        ptr->_wThis = ptr.toWeakRef();
-        
-        return ptr;
-    }
+    explicit BotEngine(QObject *parent = 0);
 
     //! Block lib directory getter
     const QString& getBlockLibDirectory() { return _blockLibDirectory; }
@@ -76,26 +69,18 @@ public:
     //!
     QSharedPointer<QJSEngine> engine() { return _jsEngine; }
 
-    //!
     //! To create the big block
-    //!
-    void createBigBlock();
+    void createCoreBlock();
 
     //! Core block getter
-    QSharedPointer<BotBlock> getCoreBlock() { return _bigBlock; }
+    QSharedPointer<BotBlock> getCoreBlock() { return _coreBlock; }
 
-    //!
     //! Return the name of the available blocks
-    //!
     QStringList availableBlockNames();
 
     //! Return the list of all father chain
     //! It represents every blocks of the system
     QStringList getAllFatherChains();
-
-signals:
-
-public slots:
 
 protected:
     //! Block lib directory
@@ -107,20 +92,11 @@ protected:
     //! JavaScript engine
     QSharedPointer<QJSEngine> _jsEngine;
 
-    //! Smart pointer on this
-    QWeakPointer<BotEngine> _wThis;
-
     //! Pointer on the global parent block
-    QSharedPointer<BotBlock> _bigBlock;
+    QSharedPointer<BotBlock> _coreBlock;
     
     //! Track block library already loaded
     QMap<QString, QSharedPointer<QLibrary>> _blockLib;
-
-    //!
-    //! Default constructor
-    //! \param parent
-    //!
-    explicit BotEngine(QObject *parent = 0);
 };
 
 #endif // BOTENGINE_HPP

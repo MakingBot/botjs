@@ -34,6 +34,9 @@ SpyWidgetFooter::SpyWidgetFooter(QWeakPointer<SpyBlock> spy_block, QWidget *pare
     lay->addWidget(&_cbSpiedBlock);
     lay->addWidget(&_buttonCreate);
     lay->addWidget(&_buttonKill);
+
+    // First update
+    onSpiedBlockChange();
 }
 
 /* ============================================================================
@@ -72,7 +75,7 @@ void SpyWidgetFooter::updateStructure()
     disconnect( &_cbSpiedBlock, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onCBSpiedChange(const QString&)) );
 
     // Get chains
-    QStringList chains = getSharedSpyBlock()->getBlockEngine()->getAllFatherChains();
+    QStringList chains = BotBlock::JsEngine.getAllFatherChains();
 
     // Clear combobox
     _cbSpiedBlock.clear();

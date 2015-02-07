@@ -1,5 +1,23 @@
 #ifndef BOTBLOCK_HPP
 #define BOTBLOCK_HPP
+//!
+//! \file BotBlock.hpp
+//!
+// Copyright 2015 MakingBot
+// This file is part of BotJs.
+//
+// BotJs is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BotJs is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QVariant>
 #include <QMetaType>
@@ -36,6 +54,9 @@ public:
 
     //! Define block different roles
     enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi } ;
+
+    //! JavaScript engine used by the application
+    static BotEngine JsEngine;
 
     //!
     //! Function that create and configure a safe block pointer
@@ -101,13 +122,10 @@ public:
     //!
     //! Initialize block, each block has it own init process
     //!
-    virtual void blockInit(QSharedPointer<BotEngine> js_engine)
+    virtual void blockInit()
     {
-        // Track js engine pointer
-        _jsEngine = js_engine;
-
         // Initialize log engine
-        _log.init( _jsEngine->getBlockLogDirectory() + QDir::separator() + _bname + QString(".log") );
+        _log.init( BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log") );
 
         // Register type BotBlock*
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
@@ -130,9 +148,6 @@ public:
     
     //! Shared pointer on this object
     QSharedPointer<BotBlock> getBlockSharedFromThis() { return _wThis.toStrongRef(); }
-
-    //! Javascript Engine getter
-    QSharedPointer<BotEngine> getBlockEngine() { return _jsEngine; }
 
     // === === === LOG BUFFER === === ===
 
@@ -220,7 +235,7 @@ public:
         chainstr.removeFirst();
         
         // Pointer on core
-        BotBlock* ptr = _jsEngine->getCoreBlock().data();
+        BotBlock* ptr = BotBlock::JsEngine.getCoreBlock().data();
         
         // Find the end pointer
         foreach(QString str, chainstr)
@@ -307,7 +322,7 @@ public slots:
         }
         
         // Create block from the JsEngine
-        QSharedPointer<BotBlock> block = _jsEngine->createBlock(btypename, varname);
+        QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
         
         // Set this as the block parent
         // block->setBlockParent(this);
@@ -316,7 +331,7 @@ public slots:
         // this->appendChild(block);
 
         // Make the block accessible from js
-        this->setProperty(varname.toStdString().c_str(), _jsEngine->engine()->newQObject(block.data()).toVariant());
+        // this->setProperty(varname.toStdString().c_str(), _jsEngine->engine()->newQObject(block.data()).toVariant());
     }
 
 signals:
@@ -340,9 +355,6 @@ protected:
 
     //! Smart pointer on this block
     QWeakPointer<BotBlock> _wThis;
-    
-    //! Pointer on the javascript engine
-    QSharedPointer<BotEngine> _jsEngine;
 
     // === === === LOG BUFFER === === ===
     
