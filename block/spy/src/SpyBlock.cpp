@@ -3,7 +3,7 @@
 /* ============================================================================
  *
  * */
-EXPORT_BLOCK(SpyBlock);
+EXPORT_BLOCK(SpyBlock)
 
 /* ============================================================================
  *
@@ -11,7 +11,13 @@ EXPORT_BLOCK(SpyBlock);
 SpyBlock::SpyBlock(const QString& name, QObject *parent)
     : BotBlock(name, parent)
 {
+
+    std::cerr << 4 << std::endl;
+
     appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
+
+    std::cerr << 5 << std::endl;
+
 }
 
 /* ============================================================================
@@ -30,7 +36,8 @@ bool SpyBlock::connect(BotBlock* block, bool master)
         // Ask for connection back
         if(! block->connect(this, false))
         {
-            beglog() << "Connection with " << block->getBlockName() << " failed : connection return refused" << endlog();
+            // Log and return
+            beglog() << "Connection with " << block->getBlockFathersChain() << " failed : connection return refused" << endlog();
             return false;
         }
 
@@ -48,6 +55,9 @@ bool SpyBlock::connect(BotBlock* block, bool master)
 
         // Alert the view
         emit spiedBlockChanged();
+
+        // Log and return
+        beglog() << "Connection with #" << block->getBlockFathersChain() << "# success!" << endlog();
         return true;
     }
     // Other block ask for a connection

@@ -12,6 +12,7 @@ SET(PROJECT_HEADER_FILES
     src/block/BotBlock.hpp
     src/block/IProperty.hpp
     src/block/LogBuffer.hpp
+    src/block/LogBuffer.cpp
     
     src/app/BotApp.hpp
     src/app/BotEngine.hpp
@@ -25,6 +26,8 @@ SET(PROJECT_SOURCE_FILES
     src/app/BotEngine.cpp
     src/app/CoreBlock.cpp
     )
+
+ADD_DEFINITIONS( -DBOTJS_CORE_DEBUG_PRINT )
 
 # Call common configs
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../cmake/module/")

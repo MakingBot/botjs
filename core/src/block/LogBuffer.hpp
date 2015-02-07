@@ -1,19 +1,35 @@
 #ifndef LOGBUFFER_HPP
 #define LOGBUFFER_HPP
+//!
+//! \file LogBuffer.hpp
+//!
+// Copyright 2015 MakingBot
+// This file is part of BotJs.
+//
+// BotJs is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BotJs is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDir>
 #include <QMutex>
 #include <QMutexLocker>
 
 #include <QFile>
+#include <iostream>
 #include <QTextStream>
 #include <QSharedPointer>
 
-class LogEnder
-{
-public:
-    LogEnder() {}
-};
+//! End tag for log
+class LogEnder { public: LogEnder() {} };
 
 //!
 //! Buffer to store log messages
@@ -31,10 +47,9 @@ public:
     //!
     //! Default constructor
     //!
-    explicit LogBuffer(QObject* parent=0)
-        : QObject(parent), _state(StateCreated), _coutstream(stdout)
-    { }
+    explicit LogBuffer(QObject* parent=0);
     
+    //! Destructor
     ~LogBuffer()
     {
         _logfile.close();
@@ -56,8 +71,8 @@ public:
         _filestream = QSharedPointer<QTextStream>( new QTextStream(&_logfile) );
         
         // Set state flags
-        if(enable)  { _state |= StateEnabled; }
-        if(verbose) { _state |= StateTalking; }
+        if(verbose) { talk(); }
+        else if(enable)  { this->enable(); }
         _state |= StateInitialized;
     }
 
@@ -70,12 +85,12 @@ public:
     //!  Enable setter
     void setStateEnable(bool en) 
     {
-        if(en) { enable();  }
-        else   { disable(); }
+        if(en) { this->enable();  }
+        else   { disable();       }
     }
     
     //! Start file and shell logging
-    void talk()    { _state |= (StateEnabled | StateTalking); }
+    void talk() { enable(); _state |= StateTalking; }
 
     //! Stop shell logging
     void stopTalking() { _state &= ~StateTalking; }
@@ -83,7 +98,7 @@ public:
     //! Talking setter
     void setStateTalk(bool talk) 
     {
-        if(talk) { this->talk();        }
+        if(talk){ this->talk();  }
         else    { stopTalking(); }
     }
 
@@ -93,28 +108,28 @@ public:
     //! Return true if this log buffer is talking and log into the std cout
     bool isTalking() { if( _state >= (StateInitialized+StateEnabled+StateTalking) ) { return true; } else { return false; } }
 
+    //!
     //! General log function
+    //!
     template<typename T> void streamlog( T val )
     {
         if( _state >= (StateInitialized+StateEnabled) )
         {
-            std::cout << "1" << std::endl;
-
             (*_filestream.data()) << val;
             if( _state >= (StateInitialized+StateEnabled+StateTalking) )
             {
-
-            std::cout << "2" << std::endl;
-
+                if(_newLog) {  }
                 _coutstream << val;
             }
-        }     
+        }
+        if(_newLog) { _newLog = false; }
     }
 
+    //!
+    //! Stop the current log and flush it
+    //!
     void endLog()
     {
-
-        std::cout << "3" << std::endl;
 
         if( _state >= (StateInitialized+StateEnabled) )
         {
@@ -126,31 +141,7 @@ public:
         }     
     }
 
-    //LogEnder endLog() { }
-    // {
-    //     return QTextStream(endl);
-
-    //  //         std::cout << "3" << std::endl;
-
-    //  //    if( _state >= (StateInitialized+StateEnabled) )
-    //  //    {
-
-    //  // std::cout << "4" << std::endl;
-    //  //        (*_filestream.data()) 
-    //  //        if( _state >= (StateInitialized+StateEnabled+StateTalking) )
-    //  //        {
-    //  // std::cout << "5" << std::endl;
-
-    //  //            _coutstream << endl;
-    //  //        }
-    //  //    }     
-    //  //    return *this;
-    // }
-
     // --- Stream Operators ---
-
-    //LogBuffer& operator<< ( LogBuffer& b ) { return *this; }
-    
 
     LogBuffer& operator<< ( LogEnder le ) { endLog(); return *this; }
     
@@ -161,6 +152,11 @@ public:
     LogBuffer& operator<< ( char c ) { streamlog<char>(c); return *this; }
 
 protected:
+    // Parent block chain
+    QString _blockchain;
+
+    //! True if no log is bieing written
+    bool _newLog;
 
     //! Represents the state of the log buffer
     quint8 _state;

@@ -2,7 +2,6 @@
 #define BOTBLOCK_HPP
 
 #include <QVariant>
-#include <iostream>
 #include <QMetaType>
 
 #include <BotEngine.hpp>
@@ -96,7 +95,7 @@ public:
     //! Default constructor
     //!
     explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
-        : QObject(parent), _bname(name)
+        : QObject(parent), _bname(name), _log(this)
     { }
 
     //!

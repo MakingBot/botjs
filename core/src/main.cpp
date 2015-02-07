@@ -26,14 +26,14 @@
 //!
 int main(int argc, char *argv[])
 {
-    // Log
+    #ifdef BOTJS_CORE_DEBUG_PRINT
     std::cout << std::endl;
     std::cout << "===== BOTJS =====" << std::endl;
     std::cout << "++ Initial configuration start" << std::endl;
-
     // Start timer
     QTime timer;
     timer.start();
+    #endif
 
     // Create the application
     BotApp app(argc, argv);
@@ -44,18 +44,29 @@ int main(int argc, char *argv[])
     // If no js script provided start console
     if(js_file_path.isEmpty())
     {
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Use user script" << std::endl;
+        #endif
+
+        // Default script shell
         app.js()->eval("");
     }
     else
     {
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Use user script" << std::endl;
+        #endif
+
+        // Start user script
         app.js()->evalScriptFile(js_file_path);
     }
 
+
+    #ifdef BOTJS_CORE_DEBUG_PRINT
     // Stop timer
     int elapsed = timer.elapsed();
-
-    // Log
     std::cout << "++ Configuration done in " << elapsed << " ms" << std::endl << std::endl;
+    #endif
 
     // Start the event loop
     return app.exec();

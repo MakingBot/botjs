@@ -25,8 +25,9 @@ void CoreBlock::create(const QString& btypename, const QString& varname)
     // Check if the name already exist 
     if(_jsEngine->go().property(varname).toVariant().isValid())
     {
-        QString error = varname + " already exists among variable names";
-        throw std::runtime_error(error.toStdString());
+        // Log
+        beglog() << "Create block #" << btypename << "# failure: this name is already used" << endlog();
+        return;
     }
 
     // Create block from the JsEngine
@@ -40,6 +41,9 @@ void CoreBlock::create(const QString& btypename, const QString& varname)
 
     // Make the block accessible from js
     _jsEngine->go().setProperty(varname.toStdString().c_str(), _jsEngine->engine()->newQObject(block.data()));
+
+    // Log
+    beglog() << "Create block #" << block->getBlockName() << "#" << endlog();
 }
 
 
