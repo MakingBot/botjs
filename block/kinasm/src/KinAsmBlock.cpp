@@ -1,5 +1,5 @@
 //!
-//! \file RobotBlock.cpp
+//! \file KinAsmBlock.cpp
 //!
 // This file is part of BotJs.
 //
@@ -16,9 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <RobotBlock.hpp>
+#include <KinAsmBlock.hpp>
 
 /* ============================================================================
  *
  * */
-EXPORT_BLOCK(RobotBlock)
+EXPORT_BLOCK(KinAsmBlock)

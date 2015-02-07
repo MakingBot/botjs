@@ -1,5 +1,7 @@
+#ifndef KINASMBLOCK_HPP
+#define KINASMBLOCK_HPP
 //!
-//! \file RobotBlock.cpp
+//! \file KinAsmBlock.hpp
 //!
 // This file is part of BotJs.
 //
@@ -16,9 +18,35 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <RobotBlock.hpp>
+#include <BotBlock.hpp>
 
-/* ============================================================================
- *
- * */
-EXPORT_BLOCK(RobotBlock)
+//!
+//! A body assembly
+//!
+class KinAsmBlock : public BotBlock
+{
+    Q_OBJECT
+
+public:
+    //!
+    //! Default constructor
+    //!
+    explicit KinAsmBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
+        : BotBlock(name, parent)
+    { }
+
+    //! FROM BotBlock
+    virtual float getBlockVersion() const { return 1.0; }
+
+    //! FROM BotBlock
+    virtual BlockRole getBlockRole() const { return BlockData; }
+
+    //! FROM BotBlock
+    virtual QString getBlockTypeName() const { return QString("kinasm"); }
+
+protected:
+
+};
+
+#endif // KINASMBLOCK_HPP
+

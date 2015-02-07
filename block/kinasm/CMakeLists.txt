@@ -1,17 +1,17 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(robot)
+PROJECT(kinasm)
 
 # ====================================
 # =============== BUILD ==============
 
 # Headers
 SET(PROJECT_HEADER_FILES
-    src/RobotBlock.hpp
+    src/KinAsmBlock.hpp
     )
 
 # Sources
 SET(PROJECT_SOURCE_FILES
-    src/RobotBlock.cpp
+    src/KinAsmBlock.cpp
     )
 
 # Call common configs
