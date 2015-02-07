@@ -14,6 +14,7 @@ SET(PROJECT_HEADER_FILES
 
     src/DoubleLabel.hpp
     src/ViewerVector3D.hpp
+    src/ViewerRealList.hpp
     )
 
 # Sources
@@ -25,6 +26,7 @@ SET(PROJECT_SOURCE_FILES
     src/SpyWidgetFooter.cpp
 
     src/ViewerVector3D.cpp
+    src/ViewerRealList.cpp
     )
 
 # Call common configs

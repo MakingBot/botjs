@@ -15,6 +15,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <ViewerVector3D.hpp>
+#include <ViewerRealList.hpp>
 
 /* ============================================================================
  *
@@ -113,6 +114,10 @@ void SpyWidgetBody::updateStructure()
             case IProperty::IPTypeBrotherBlock:
                 break;
             
+            case IProperty::IPTypeRealList:
+                widget = new ViewerRealList();
+                break;
+
             case IProperty::IPTypeVector3D:
                 widget = new ViewerVector3D();
                 if(property.value().isWritable())
@@ -141,24 +146,6 @@ void SpyWidgetBody::updateStructure()
 
     updateValues();
 }
-
-
-/*
-void SpyWidgetBody::updateValueEnum(QSharedPointer<BotBlock> spied, BotBlock::InteractivePropertyMap& properties, QMapIterator<QString, QWidget*>& widget)
-{
-    QString str = InteractiveObject::valueToEnumName( properties[widget.key()].enumTextList, spied->property(widget.key().toStdString().c_str()).toInt() ) ;
-
-    std::cout << str.toStdString() << std::endl;
-
-    int index = ((QComboBox*)widget.value())->findText( str );
-
-    std::cout << index << std::endl;
-
-    if(index != -1) {
-        ((QComboBox*)widget.value())->setCurrentIndex( index );
-    }
-}
-*/
 
 /* ============================================================================
  *
@@ -203,6 +190,12 @@ void SpyWidgetBody::updateValues()
                     }
                     break;
 
+                case IProperty::IPTypeRealList:
+                    
+
+                    ((ViewerRealList*)widget.value())->setList( qvariant_cast<QList<qreal> >( spied->property(widget.key().toStdString().c_str()) ) );
+
+                    break;
 
                 case IProperty::IPTypeVector3D:
                     

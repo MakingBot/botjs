@@ -32,8 +32,8 @@ class JointBlock;
 class LinkBlock : public BotBlock
 {
     Q_OBJECT
-   // Q_PROPERTY(QVector3D  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
-    Q_PROPERTY(QVector3D  translation READ translation WRITE setTranslation  MEMBER _translation)
+    Q_PROPERTY(QList<qreal>  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
+    //Q_PROPERTY(QVector3D  translation READ translation WRITE setTranslation  MEMBER _translation)
 
 public:
     //!
@@ -42,8 +42,8 @@ public:
     explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
         : BotBlock(name, parent)
     {
-        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeVector3D, true));
-        appendBlockIProperty("translation", IProperty(IProperty::IPTypeVector3D, true));
+        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true));
+        appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true));
     }
 
     //! FROM BotBlock
@@ -68,7 +68,7 @@ public:
     const QList<qreal>& rotation() { return _rotation; }
    
     //! Link rotation setter
-    Q_INVOKABLE void setRotation(const QList<qreal>& rot) { _rotation = rot; /*updateTransform();*/ }
+    void setRotation(const QList<qreal>& rot) { _rotation = rot; /*updateTransform();*/ }
    
     //! Link translation getter
     const QVector3D& translation() { return _translation; }

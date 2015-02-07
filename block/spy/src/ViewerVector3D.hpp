@@ -9,6 +9,7 @@
 //!
 class ViewerVector3D : public QWidget
 {
+    Q_OBJECT
 
 public:
     //!

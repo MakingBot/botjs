@@ -37,7 +37,7 @@ public:
     enum IPropertyType{ IPTypeBool      , IPTypeInt     , IPTypeReal        ,
                         IPTypeString    , IPTypeEnum    ,
                         IPTypeBlock     , IPTypeSonBlock, IPTypeBrotherBlock,
-                        IPTypeVector3D  , IPTypeMatrix44
+                        IPTypeRealList  , IPTypeVector3D, IPTypeMatrix44
     };
 
     //!

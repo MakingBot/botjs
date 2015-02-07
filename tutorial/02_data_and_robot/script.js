@@ -13,7 +13,10 @@ var body     = proteo.create("kinasm", "body"    );
 var jointBeg = body.create  ("joint" , "jointBeg");
 
 var link     = body.create  ("link"  , "link"    );
-link.setRotation([1,1,1] );
+
+var param = new Array(1,1,1)
+link.rotation = param;
+//link.setRotation([1,1,1] );
 
 var jointEnd = body.create  ("joint" , "jointEnd");
 
