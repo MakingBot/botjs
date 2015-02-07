@@ -101,12 +101,12 @@ public:
     {
         switch(role)
         {
-            case BlockCore: return QString("Core");    break;
-            case BlockData: return QString("Data");    break;
-            case BlockSpy : return QString("Spy");     break;
-            case BlockCom : return QString("Com");     break;
-            case BlockUi  : return QString("Ui");      break;
-            default       : return QString("Unknown"); break;
+            case BlockCore: return QString("core");    break;
+            case BlockData: return QString("data");    break;
+            case BlockSpy : return QString("spy");     break;
+            case BlockCom : return QString("com");     break;
+            case BlockUi  : return QString("ui");      break;
+            default       : return QString("unknown"); break;
         }
     }
 
@@ -259,10 +259,8 @@ public:
         return 0;
     }
 
-    //!
-    //! Append a son to the list
-    //!
-    virtual void appendSon(QSharedPointer<BotBlock> son) { if( _sons.indexOf(son) == -1 ) { _sons << son; } }
+    //! Append a son to this block
+    virtual void appendBlockSon(QSharedPointer<BotBlock> son) { if( _sons.indexOf(son) == -1 ) { _sons << son; } }
 
     //! Block sons number getter
     virtual int getBlockNumberOfSons() const { return _sons.size(); }
@@ -295,43 +293,80 @@ public slots:
         // Default behaviour : accept
         _connections << block->getBlockWeakFromThis();
 
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+
         // Log and return
         beglog() << "Connection to #" << block->getBlockFathersChain() << "# accepted" << endlog();
         return true;
     }
 
     //!
-    //! To delete all connections
+    //! Ask for deconnection
     //!
-    virtual bool disconnectAll()
+    virtual void disconnect(BotBlock* block, bool master=true)
     {
-        return true;
+        // Basic checks
+        if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
+        if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
+        
+        // This block ask for a disconnection
+        if(master)
+        {
+            block->disconnect(this, false);
+        }
+
+        // Delete pointer from connection
+        _connections.removeAll(block->getBlockWeakFromThis());
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+
+        // Log
+        beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
     }
 
+    //!
+    //! To delete all connections
+    //!
+    virtual void disconnectAll()
+    {
+        foreach(QWeakPointer<BotBlock> co, _connections)
+        {
+            QSharedPointer<BotBlock> coshared = co.toStrongRef();
+            if(coshared)
+            {
+                this->disconnect(coshared.data());
+            }
+        }
+    }
 
     //!
     //! Create a block as a child of this one
     //!
-    virtual void create(const QString& btypename, const QString& varname)
+    virtual BotBlock* create(const QString& btypename, const QString& varname)
     {
         // Check if the name already exist 
-        if(this->property(varname.toStdString().c_str()).isValid())
+        if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
         {
-            QString error = "Name already given";
-            throw std::runtime_error(error.toStdString());
+            beglog() << "Create block #" << btypename << "# failure: this name is already used" << endlog();
+            return 0;
         }
-        
+
         // Create block from the JsEngine
         QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
-        
-        // Set this as the block parent
-        // block->setBlockParent(this);
-        
-        // Add block to this childs
-        // this->appendChild(block);
 
-        // Make the block accessible from js
-        // this->setProperty(varname.toStdString().c_str(), _jsEngine->engine()->newQObject(block.data()).toVariant());
+        // Set this as the block parent
+        block->setBlockFather(this);
+        
+        // Add block to this son
+        this->appendBlockSon(block);
+
+        // Log
+        beglog() << "Create block #" << block->getBlockName() << "#" << endlog();
+     
+        // return
+        return block.data();
     }
 
 signals:

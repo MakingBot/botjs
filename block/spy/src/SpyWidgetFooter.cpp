@@ -7,9 +7,10 @@
  *
  * */
 SpyWidgetFooter::SpyWidgetFooter(QWeakPointer<SpyBlock> spy_block, QWidget *parent)
-    : QWidget(parent), _spyblock(spy_block)
+    : QWidget(parent)
     , _buttonKill  (QIcon(":/icon/skull"), "")
     , _buttonCreate(QIcon(":/icon/plus" ), "")
+    , _spyblock(spy_block)
 {
     const QSize button_size(32,32);
 
@@ -116,8 +117,7 @@ void SpyWidgetFooter::onCBSpiedChange( const QString & chain )
     if( chain.compare("DO NOT SPY") == 0 )
     {
         // Disconnect if it were connected
-        spy->disconnectAll();
-
+        spy->disconnect(getSharedSpyBlock()->getSharedSpiedBlock().data());
         return;
     }
 

@@ -23,19 +23,11 @@ public:
     //!
     explicit ShellThread(QMutex& mutex, QTextStream& ccout, QObject *parent = 0);
 
-    //!
-    //! Javascript engine setter
-    //!
-    void setJsEngine(QSharedPointer<BotEngine> js_engine) { _jsEngine = js_engine; }
-
 signals:
 
 private slots:
 
 protected:
-    //! Pointer on the js engine
-    QSharedPointer<BotEngine> _jsEngine;
-
     //! The module mutex
     QMutex& _mutex;
 

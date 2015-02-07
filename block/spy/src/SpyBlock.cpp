@@ -54,10 +54,10 @@ bool SpyBlock::connect(BotBlock* block, bool master)
             return false;
         }
 
-        // TODO Disconnect old
+        // Disconnect old
         if(_spiedBlock)
         {
-
+            this->disconnect(_spiedBlock.data());
         }
 
         // Check widget creation
@@ -93,13 +93,39 @@ bool SpyBlock::connect(BotBlock* block, bool master)
 /* ============================================================================
  *
  * */
-bool SpyBlock::disconnectAll()
+void SpyBlock::disconnect(BotBlock* block, bool master)
 {
-    // Clear connection
-    _spiedBlock.clear();
+    // Basic checks
+    if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
+    if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
+    
+    if( _spiedBlock.data() == block )
+    {
+        if(master)
+        {
+            block->disconnect(this, false); 
+        }
+        _spiedBlock.clear();
+    }
+    else 
+    {
+        BotBlock::disconnect(block, master);
+    }
 
     // Log
-    beglog() << "Remove all connection" << endlog();
+    beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
+}
+
+/* ============================================================================
+ *
+ * */
+void SpyBlock::disconnectAll()
+{
+    // Disconnect from spied
+    this->disconnect(_spiedBlock.data());
+
+    // Log
+    beglog() << "All connections has been removed" << endlog();
 
     // Alert the view
     emit spiedBlockChanged();

@@ -41,7 +41,6 @@ public:
         : BotBlock(name, parent)
     { }
 
-
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
 

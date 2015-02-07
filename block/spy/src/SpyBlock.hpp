@@ -112,7 +112,10 @@ public slots:
     virtual bool connect(BotBlock* block, bool master=true);
 
     //! FROM BotBlock
-    virtual bool disconnectAll();
+    void disconnect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnectAll();
 
     //! Widget visibility setter
     virtual void show()

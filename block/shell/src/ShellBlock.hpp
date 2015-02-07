@@ -24,9 +24,6 @@ public:
     ~ShellBlock();
 
     //! FROM BotBlock
-    void blockInit(QSharedPointer<BotEngine> js_engine);
-    
-    //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
 
     //! FROM BotBlock

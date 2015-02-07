@@ -56,7 +56,7 @@ void ShellThread::run()
             // // Debug
             // qDebug() << "++ Try to execute command" << cmd_line;
 
-            displayCommandResult(_jsEngine->eval(cmd_line));
+            displayCommandResult(BotBlock::JsEngine.eval(cmd_line));
         }
     }
 
@@ -203,7 +203,7 @@ void objectNameMatch(const QJSValue& context, const QString& symbol, QList<QPair
 void ShellThread::autocompletion(QString& command_line, int* cursor)
 {
     // Initialize context
-    QJSValue context = _jsEngine->go();
+    QJSValue context = BotBlock::JsEngine.go();
 
     // Initialize cmd line analysis
     QList<JsProperty> result;

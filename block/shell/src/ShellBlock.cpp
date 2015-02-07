@@ -44,15 +44,6 @@ ShellBlock::~ShellBlock()
 /* ============================================================================
  *
  * */
-void ShellBlock::blockInit(QSharedPointer<BotEngine> js_engine)
-{
-    // Define the js engine for the console
-    _thread.setJsEngine(js_engine);
-}
-
-/* ============================================================================
- *
- * */
 QObject* ShellBlock::start()
 {
     // Start the thread

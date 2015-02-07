@@ -30,7 +30,7 @@ public:
 
 public slots:
     //! FROM BotBlock
-    virtual void create(const QString& btypename, const QString& varname);
+    virtual BotBlock* create(const QString& btypename, const QString& varname);
 };
 
 #endif // COREBLOCK_HPP

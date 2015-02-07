@@ -19,7 +19,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <BotBlock.hpp>
-// #include <KinAsmBlock.hpp>
+#include <KinAsmBlock.hpp>
 
 //!
 //! Central data in robotic dev :-)
@@ -30,8 +30,8 @@
 class RobotBlock : public BotBlock
 {
     Q_OBJECT
-    Q_PROPERTY(QString      name READ name WRITE setName MEMBER _name)
-    // Q_PROPERTY(KinAsmBlock* base READ base WRITE setBase             )
+    Q_PROPERTY(QString    name READ name WRITE setName MEMBER _name)
+    Q_PROPERTY(BotBlock*  base READ base WRITE setBase             )
 
 public:
     //!
@@ -41,15 +41,14 @@ public:
         : BotBlock(name, parent), _name(name)
     {
         appendBlockIProperty("name", IProperty(IProperty::IPTypeString, true));
-        // appendBlockIProperty("base", IProperty(IProperty::IPTypeSonBlock, {"kinasm"}));
+        appendBlockIProperty("base", IProperty(IProperty::IPTypeSonBlock, {"kinasm"}));
     }
 
     //! FROM BotBlock
     virtual void blockInit()
     {
         BotBlock::blockInit();
-        // if( ! QMetaType::isRegistered(QMetaType::type("KinAsmBlock*")) ) { qRegisterMetaType<KinAsmBlock*>("KinAsmBlock*"); }
-        if( ! QMetaType::isRegistered(QMetaType::type("RobotBlock*") ) ) { qRegisterMetaType<RobotBlock*> ("RobotBlock*") ; }
+        if( ! QMetaType::isRegistered(QMetaType::type("RobotBlock*" )) ) { qRegisterMetaType<RobotBlock*> ("RobotBlock*" ); }
     }
 
     //! FROM BotBlock
@@ -65,14 +64,19 @@ public:
     const QString& name() const { return _name; }
 
     //! Robot name setter
-    void setName(const QString& name) { _name = name; emit blockiPropertyValuesChanged(); }
+    void setName(const QString& name)
+    {
+        _name = name;
+        beglog() << "Change name for:" << name << endlog();
+        emit blockiPropertyValuesChanged();
+    }
 
     //! Base pointer getter
-    // KinAsmBlock* base() { return _base.data(); }
+    BotBlock* base() { return _base.data(); }
 
     //! Base pointer setter
-    // void setBase(KinAsmBlock* base)
-    // {
+    void setBase(BotBlock* base)
+    {
     //     // Basic checks
         
     //     // Check the block is a body
@@ -83,7 +87,7 @@ public:
         
     //     // set it as the base
     //     // _base = block->weakFromThis();
-    // }
+    }
 
     //! Base shared pointer getter
     // QSharedPointer<KinAsmBlock> sharedBase() { return _base; }
@@ -102,6 +106,7 @@ public slots:
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master = true)
     {
+        return BotBlock::connect(block, master);
         return true;
     }
 
@@ -109,11 +114,11 @@ protected:
     //! Robot name
     QString _name;
 
-    // //! Robot base, a fixed assembly
-    // QSharedPointer<KinAsmBlock> _base;
+    //! Robot base, a fixed assembly
+    QSharedPointer<BotBlock> _base;
 
-    // //! Parts of the robot
-    // QList<QSharedPointer<KinAsmBlock> > _bodies;
+    //! Parts of the robot
+    QList<QSharedPointer<BotBlock> > _bodies;
 };
 
 #endif // ROBOTBLOCK_HPP

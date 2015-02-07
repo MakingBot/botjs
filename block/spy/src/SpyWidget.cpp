@@ -65,22 +65,11 @@ void SpyWidget::onSpiedBlockChange()
         _body  ->setSpiedBlock(spied->getBlockWeakFromThis());
         
         // Connect events
-        // connect( spied.data(), SIGNAL(propertyValuesChanged   ()), _body, SLOT(updateValues   ()) );
-        // connect( spied.data(), SIGNAL(propertyStructureChanged()), _body, SLOT(updateStructure()) );
-
-        // TODO connect structure change
+        connect( spied.data(), SIGNAL(blockfPropertyValuesChanged  ()), &_header, SLOT(updateValues()) );
+        
+        
+    }
     
-        // Update it once
-        //updateBasicInformation();
-        //
-    }
-    else
-    {
-        // _header->setSpiedBlock(QWeakPointer<BotBlock>(0));
-        // _body  ->setSpiedBlock(QWeakPointer<BotBlock>(0));
-        // _footer.setSpiedBlock (QWeakPointer<BotBlock>(0));
-
-    }
 }
 
 /* ============================================================================
