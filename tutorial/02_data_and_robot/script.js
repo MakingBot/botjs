@@ -7,11 +7,15 @@ core.create("spy", "agent008");
 // agent007.logTalking = true
 
 // Create robot
-core.create("robot" , "proteo");
-var body = proteo.create("kinasm", "body"  );
-body.create("joint" , "jointBeg");
-body.create("link"  , "link" );
-body.create("joint" , "jointEnd");
+core.create("robot", "proteo");
+var body     = proteo.create("kinasm", "body"    );
+var jointBeg = body.create  ("joint" , "jointBeg");
+var link     = body.create  ("link"  , "link"    );
+var jointEnd = body.create  ("joint" , "jointEnd");
+
+
+jointBeg.connect(link);
+link.connect(jointEnd);
 
 
 // Display spies

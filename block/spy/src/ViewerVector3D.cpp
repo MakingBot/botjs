@@ -10,7 +10,7 @@ ViewerVector3D::ViewerVector3D(QWidget* parent)
     , _editZ(new QDoubleSpinBox())
 {
     // Limit boxes
-    const int limit = 128;
+    const int limit = 64;
     _editX->setMaximumWidth(limit);
     _editY->setMaximumWidth(limit);
     _editZ->setMaximumWidth(limit);

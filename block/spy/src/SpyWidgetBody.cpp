@@ -14,6 +14,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <ViewerVector3D.hpp>
 
 /* ============================================================================
  *
@@ -113,6 +114,15 @@ void SpyWidgetBody::updateStructure()
                 break;
             
             case IProperty::IPTypeVector3D:
+                widget = new ViewerVector3D();
+                if(property.value().isWritable())
+                {
+                    
+                }
+                else
+                {
+ 
+                }
                 break;
 
             case IProperty::IPTypeMatrix44:
@@ -192,6 +202,14 @@ void SpyWidgetBody::updateValues()
                         }
                     }
                     break;
+
+
+                case IProperty::IPTypeVector3D:
+                    
+                    ((ViewerVector3D*)widget.value())->setVector( *((QVector3D*)spied->property(widget.key().toStdString().c_str()).data()) );
+
+                    break;
+
 
 
                 default:

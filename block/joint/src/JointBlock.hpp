@@ -37,9 +37,10 @@ class JointBlock : public BotBlock
     Q_PROPERTY(qreal min        READ minValue   WRITE setMinValue   MEMBER _minValue)
     Q_PROPERTY(qreal max        READ maxValue   WRITE setMaxValue   MEMBER _maxValue)
     
-    Q_PROPERTY(JointType type   READ type       WRITE changeType    MEMBER _type    )
-    Q_PROPERTY(QVector3D axe    READ axe                            MEMBER _axe     )
-    
+    Q_PROPERTY(JointType type     READ type     WRITE changeType    MEMBER _type    )
+    Q_PROPERTY(QVector3D axe      READ axe                          MEMBER _axe     )
+    Q_PROPERTY(QVector3D position READ pos                          MEMBER _pos     )
+
 public:
     //! Type of available joint
     enum JointType { JointFixe, JointRevolute, JointPrismatic } ;
@@ -60,6 +61,9 @@ public:
         appendBlockIProperty("value", IProperty(IProperty::IPTypeReal, true));
         appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
         appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
+
+        appendBlockIProperty("axe"     , IProperty(IProperty::IPTypeVector3D, false));
+        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector3D, false));
     }
     
     //! FROM BotBlock
@@ -154,6 +158,9 @@ public:
     //! Axe getter
     const QVector3D& axe() const { return _axe; }
 
+    //! Pos getter
+    const QVector3D& pos() const { return _pos; }
+
     //! Result transform matrix getter
     const QMatrix4x4& transform() const { return _tranform; }
 
@@ -170,8 +177,11 @@ protected:
     //! Joint type
     JointType _type;
 
-    //! Updated joint axe (0,1,0) by default
+    //! Joint axe (0,0,1) by default
     QVector3D _axe;
+
+    //! Joint pos (0,0,0) by default
+    QVector3D _pos;
 
     //! Result transform matrix
     QMatrix4x4 _tranform;

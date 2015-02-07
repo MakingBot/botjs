@@ -4,8 +4,6 @@ PROJECT(spy)
 # ====================================
 # =============== BUILD ==============
 
-INCLUDE_DIRECTORIES(widget)
-
 # Headers
 SET(PROJECT_HEADER_FILES
     src/SpyBlock.hpp
@@ -14,8 +12,8 @@ SET(PROJECT_HEADER_FILES
     src/SpyWidgetHeader.hpp
     src/SpyWidgetFooter.hpp
 
-    src/widget/LogTag.hpp
-    src/widget/DoubleLabel.hpp
+    src/DoubleLabel.hpp
+    src/ViewerVector3D.hpp
     )
 
 # Sources
@@ -25,6 +23,8 @@ SET(PROJECT_SOURCE_FILES
     src/SpyWidgetBody.cpp
     src/SpyWidgetHeader.cpp
     src/SpyWidgetFooter.cpp
+
+    src/ViewerVector3D.cpp
     )
 
 # Call common configs
