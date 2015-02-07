@@ -47,8 +47,8 @@ public:
     //!
     QSharedPointer<SpyBlock> getSharedSpyBlock()
     {
-        if(_spyblock) { return _spyblock.toStrongRef();     }
-        else          { return QSharedPointer<SpyBlock>(0); }
+        if(_spyblock) { return _spyblock.toStrongRef(); }
+        else          { throw std::runtime_error("This widget need a parent spy block"); }
     }
 
 public slots:

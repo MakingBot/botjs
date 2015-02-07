@@ -16,7 +16,7 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     : QWidget(parent)
     , _spyblock         (spy_block)
     , _header           (spy_block)
-    , _body             (new SpyWidgetBody()  )
+    , _body             (spy_block)
     , _footer           (spy_block)
 {
     // Basic verification
@@ -33,7 +33,7 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     ((QGridLayout*)layout())->setContentsMargins(0,0,0,0);
     
     ((QGridLayout*)layout())->addWidget(&_header, 0, 0, Qt::AlignTop);
-    ((QGridLayout*)layout())->addWidget(_body   , 1, 0);
+    ((QGridLayout*)layout())->addWidget(&_body  , 1, 0);
     ((QGridLayout*)layout())->addWidget(&_footer, 2, 0, Qt::AlignBottom);
     
     // Connect update signals
@@ -54,22 +54,16 @@ QSharedPointer<BotBlock> SpyWidget::getSharedSpiedBlock()
 void SpyWidget::onSpiedBlockChange()
 {
     _header.onSpiedBlockChange();
+    _body  .onSpiedBlockChange();
     _footer.onSpiedBlockChange();
-
 
     // Build the new one
     QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
     if(spied)
-    {
-        
-        _body  ->setSpiedBlock(spied->getBlockWeakFromThis());
-        
+    {        
         // Connect events
-        connect( spied.data(), SIGNAL(blockfPropertyValuesChanged  ()), &_header, SLOT(updateValues()) );
-        
-        
+        connect( spied.data(), SIGNAL(blockfPropertyValuesChanged  ()), &_header, SLOT(updateValues()) );   
     }
-    
 }
 
 /* ============================================================================

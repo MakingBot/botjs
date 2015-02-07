@@ -22,7 +22,7 @@
 
 #include <QMatrix4x4>
 
-//class JointBlock;
+class JointBlock;
 
 //!
 //! Fixe transformation between 2 joints
@@ -31,15 +31,19 @@
 class LinkBlock : public BotBlock
 {
     Q_OBJECT
-    // Q_PROPERTY(QMatrix4x4 transform READ transform WRITE setTransform MEMBER _transform)
-    
+    Q_PROPERTY(QVector3D  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
+    Q_PROPERTY(QVector3D  translation READ translation WRITE setTranslation  MEMBER _translation)
+
 public:
     //!
     //! Default constructor
     //!
-    explicit LinkBlock(const QString& name = QString("link"), QObject *parent = 0)
+    explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
         : BotBlock(name, parent)
-    { }
+    {
+        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeVector3D, true));
+        appendBlockIProperty("translation", IProperty(IProperty::IPTypeVector3D, true));
+    }
 
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
@@ -51,33 +55,56 @@ public:
     virtual QString getBlockTypeName() const { return QString("link"); }
 
 
+    //! Link rotation getter
+    const QVector3D& rotation() { return _rotation; }
+   
+    //! Link rotation setter
+    void setRotation(const QVector3D& rot) { _rotation = rot; updateTransform(); }
+   
+    //! Link translation getter
+    const QVector3D& translation() { return _translation; }
 
-    //!
-    // //! Transform matrix getter
-    // //!
-    // const QMatrix4x4& transform() const { return _transform; }
+    //! Link translation setter
+    void setTranslation(const QVector3D& tra) { _translation = tra; }
+
+    //! Transform matrix getter
+    const QMatrix4x4& transform() const { return _transform; }
     
-    // //!
-    // //! Transform matrix setter
-    // //!
-    // void setTransform(const QMatrix4x4& matrix) { _transform = matrix; }
-    
+    //! Transform matrix setter
+    void setTransform(const QMatrix4x4& matrix) { _transform = matrix; }
+
 public slots:
 
-protected:
-    // rotation
-    
-    // translation
-    
+    //! To update the transform matrix with the translation and rotation matrix
+    //! after a parameter change
+    void updateTransform()
+    {
 
-    // // Transform matrix
-    // QMatrix4x4 _transform;
+    }
+
+protected:
+
+    //! Link rotation
+    //! By default, Joints are axed on the Z vector.
+    //! Link can provide a rotation to modify the axe of the outputJoint.
+    //!
+    //! _rotation = { 0, 90, 45 } means rotate 0°  around x axis
+    //!                                 rotate 90° around y axis
+    //!                                 rotate 45° around z axis
+    QVector3D _rotation;
     
-    // //! Link end
-    // QWeakPointer<JointBlock> _endJoint;
+    //! Position of the outputJoint in the baseJoint basis
+    QVector3D _translation;
     
-    // //! Link base
-    // QWeakPointer<JointBlock> _baseJoint;
+    //! Transform matrix
+    //! It is computed from translation and rotation
+    QMatrix4x4 _transform;
+    
+    //! Link base
+    QWeakPointer<JointBlock> _baseJoint;
+    
+    //! Link output
+    QWeakPointer<JointBlock> _outputJoint;
 
 };
 

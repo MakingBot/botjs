@@ -248,7 +248,18 @@ public:
 
     //! Block sons getter
     virtual const QList<QSharedPointer<BotBlock> >& getBlockSons() const { return _sons; }
-    
+
+    //! Provide the fathers chains of each sons of this block
+    QStringList getBlockSonsChains()
+    {
+        QStringList chains;
+        foreach(QSharedPointer<BotBlock> son, _sons)        
+        {
+            chains << son->getBlockFathersChain();
+        }
+        return chains;
+    }
+
     //! Block son getter by name
     virtual BotBlock* getBlockSon(const QString& name)
     {

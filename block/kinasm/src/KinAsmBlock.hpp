@@ -28,12 +28,21 @@ class KinAsmBlock : public BotBlock
     Q_OBJECT
 
 public:
+    //! Define block different roles
+    enum AsmStruct { AsmTree, AsmChain } ;
+
     //!
     //! Default constructor
     //!
     explicit KinAsmBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
         : BotBlock(name, parent)
-    { }
+    {
+        // TYPE 
+        QMap<QString, int> struct_enum;
+        struct_enum["Tree" ] = AsmTree ;
+        struct_enum["Chain"] = AsmChain;
+        appendBlockIProperty("structure" , IProperty(IProperty::IPTypeEnum, true, struct_enum));
+    }
 
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
@@ -44,7 +53,23 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("kinasm"); }
 
+    //! Assembly structure getter 
+    AsmStruct structure() const { return _structure; }
+
+    //! Assembly structure setter
+    void setStructure(AsmStruct stru)
+    {
+        // Set
+        _structure = stru;
+
+        // Alert BotJs
+        emit blockiPropertyValuesChanged();
+    }
+
 protected:
+
+    //! Assembly structure
+    AsmStruct _structure;
 
 };
 

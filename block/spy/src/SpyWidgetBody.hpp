@@ -19,26 +19,25 @@ public:
     //!
     //! Default constructor
     //!
-    SpyWidgetBody(QWidget* parent=0);
+    SpyWidgetBody(QWeakPointer<SpyBlock> spy_block, QWidget* parent=0);
 
     //! FROM QWidget
     void paintEvent(QPaintEvent *event);
-    
+
     //!
-    //! To define the new spied block
+    //! Pointer on the parent spy block
     //!
-    void setSpiedBlock(QWeakPointer<BotBlock> block) { _block = block; updateStructure(); }
-    
-    //!
-    //! To get a shared pointer the spied block (0 if no spied block)
-    //!
-    QSharedPointer<BotBlock> getSharedSpiedBlock()
+    QSharedPointer<SpyBlock> getSharedSpyBlock()
     {
-        if(_block) { return _block.toStrongRef();        }
-        else       { return QSharedPointer<BotBlock>(0); }
+        if(_spyblock) { return _spyblock.toStrongRef(); }
+        else          { throw std::runtime_error("This widget need a parent spy block"); }
     }
     
 public slots:
+
+    //! When the spied change
+    void onSpiedBlockChange();
+
     //! Update property structure
     void updateStructure();
 
@@ -55,12 +54,11 @@ public slots:
     void onComboBoxEnum( const QString & text );
 
 protected:
-    //! The spied block
-    QWeakPointer<BotBlock> _block;
-    
     //! Map that contains widget of each property
     QMap<QString, QWidget*> _widgetMap;
 
+    //! Parent block
+    QWeakPointer<SpyBlock>   _spyblock;
 
     //! Delete all current widgets
     void destroyStructure();

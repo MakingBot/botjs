@@ -63,7 +63,7 @@ protected:
     SpyWidgetHeader _header;
 
     //! Information body
-    SpyWidgetBody*    _body;
+    SpyWidgetBody     _body;
 
     //! Information footer
     SpyWidgetFooter _footer;

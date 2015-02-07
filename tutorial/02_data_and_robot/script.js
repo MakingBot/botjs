@@ -8,9 +8,10 @@ core.create("spy", "agent008");
 
 // Create robot
 core.create("robot" , "proteo");
-proteo.create("kinasm", "body"  );
-core.create("joint" , "joint1");
-core.create("link"  , "link1" );
+var body = proteo.create("kinasm", "body"  );
+body.create("joint" , "jointBeg");
+body.create("link"  , "link" );
+body.create("joint" , "jointEnd");
 
 
 // Display spies

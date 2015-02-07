@@ -18,8 +18,8 @@
 /* ============================================================================
  *
  * */
-SpyWidgetBody::SpyWidgetBody(QWidget* parent)
-    : QWidget(parent)
+SpyWidgetBody::SpyWidgetBody(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
+    : QWidget(parent), _spyblock(spy_block)
 {
     new QFormLayout(this);
     ((QFormLayout*)layout())->setSpacing(8);
@@ -41,13 +41,22 @@ void SpyWidgetBody::paintEvent(QPaintEvent *event)
 /* ============================================================================
  *
  * */
+void SpyWidgetBody::onSpiedBlockChange()
+{
+    updateStructure();
+    updateValues();
+}
+
+/* ============================================================================
+ *
+ * */
 void SpyWidgetBody::updateStructure()
 {
     // Clean structure
     destroyStructure();
 
     // Check the spied block pointer
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(!spied) { return; }
     
     // Get properties
@@ -91,6 +100,24 @@ void SpyWidgetBody::updateStructure()
                 connect( (QComboBox*)widget, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onComboBoxEnum(const QString&)) );
                 break;
 
+            case IProperty::IPTypeBlock:
+                break;
+
+            case IProperty::IPTypeSonBlock:
+                widget = new QComboBox();
+                ((QComboBox*)widget)->addItem ( "NONE" );
+                ((QComboBox*)widget)->addItems( spied->getBlockSonsChains() );
+                break;
+
+            case IProperty::IPTypeBrotherBlock:
+                break;
+            
+            case IProperty::IPTypeVector3D:
+                break;
+
+            case IProperty::IPTypeMatrix44:
+                break;        
+
             default:
                 // TODO Log erreur
                 break;
@@ -128,7 +155,7 @@ void SpyWidgetBody::updateValueEnum(QSharedPointer<BotBlock> spied, BotBlock::In
  * */
 void SpyWidgetBody::updateValues()
 {
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(spied)
     {
         // Get properties
@@ -221,7 +248,7 @@ void SpyWidgetBody::onLineTextEdited(const QString& text)
 void SpyWidgetBody::onComboBoxBool(const QString& text)
 {
     // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(!spied) { return; }
     
     // Get sender
@@ -249,21 +276,12 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
         bool new_value;
         bool old_value = spied->property(widget.key().toStdString().c_str()).toBool();
 
-        switch(property.type())
+        if( text.compare("TRUE")  == 0 ) { new_value = true;  }
+        else                             { new_value = false; }
+        if( old_value != new_value )
         {
-            // BOOL
-            case IProperty::IPTypeBool:
-                if( text.compare("TRUE")  == 0 ) { new_value = true;  }
-                else                             { new_value = false; }
-                if( old_value != new_value )
-                {
-                    spied->setProperty(widget.key().toStdString().c_str(), new_value);
-                }
-                break;
-
-            default:
-                break;
-        }
+            spied->setProperty(widget.key().toStdString().c_str(), new_value);
+        }    
     }
 }
 
