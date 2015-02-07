@@ -27,6 +27,19 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
             
         }
     }
+
+    setReadOnly(readOnly);
+}
+
+/* ============================================================================
+ *
+ * */
+void ViewerQMatrix4x4::setReadOnly(bool readOnly)
+{
+    for(int i = 0 ; i< 4*4 ; i++)
+    {
+        _editMatrix.at(i)->setReadOnly(readOnly);
+    }
 }
 
 /* ============================================================================
@@ -34,7 +47,6 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
  * */
 void ViewerQMatrix4x4::updateValues()
 {
-    /*
     // Go through widgets
     for(int r=0 ; r<4 ; r++)
     {
@@ -46,7 +58,6 @@ void ViewerQMatrix4x4::updateValues()
             _editMatrix[index]->setValue( _dataMatrix(r,c) );
         }
     }
-    */
 }
 
 /* ============================================================================

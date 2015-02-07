@@ -40,7 +40,7 @@ public:
     explicit RobotBlock(const QString& name = QString("robot"), QObject *parent = 0)
         : BotBlock(name, parent), _name(name)
     {
-        appendBlockIProperty("name", IProperty(IProperty::IPTypeString, true));
+        appendBlockIProperty("name", IProperty(IProperty::IPTypeString  , true));
         appendBlockIProperty("base", IProperty(IProperty::IPTypeSonBlock, {"kinasm"}));
     }
 

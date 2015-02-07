@@ -38,7 +38,7 @@ public slots:
     //! Update widget values with the data
     //!
     void updateValues();
-    
+
     //!
     //! When the user change a value
     //!

@@ -10,6 +10,7 @@
 #include <QMapIterator>
 #include <QStyleOption>
 
+#include <QLabel>
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QComboBox>
@@ -96,6 +97,18 @@ void SpyWidgetBody::updateStructure()
             case IProperty::IPTypeReal:
                 widget = new QDoubleSpinBox();
                 break;
+
+            case IProperty::IPTypeString:
+                if(property.value().isWritable())
+                {
+                    widget = new QLineEdit();
+                    connect( widget, SIGNAL(textEdited(const QString&)), this, SLOT(onLineTextEdited(const QString&)) );
+                }
+                else
+                {
+                    widget = new QLabel(); 
+                }
+                break;
                 
             case IProperty::IPTypeEnum:
                 widget = new QComboBox();
@@ -132,7 +145,13 @@ void SpyWidgetBody::updateStructure()
                 break;
 
             case IProperty::IPTypeMatrix44:
-                widget = new ViewerQMatrix4x4();
+                if(property.value().isWritable())
+                {
+                    
+                }
+                else
+                { widget = new ViewerQMatrix4x4(true); }
+                
                 break;        
 
             default:
@@ -192,6 +211,17 @@ void SpyWidgetBody::updateValues()
                     }
                     break;
 
+                case IProperty::IPTypeString:
+                    if(property.isWritable())
+                    {
+                        ((QLineEdit*)widget.value())->setText( spied->property(widget.key().toStdString().c_str()).toString() );
+                    }
+                    else
+                    {
+                        ((QLabel*)widget.value())->setText   ( spied->property(widget.key().toStdString().c_str()).toString() );
+                    }
+                    break;
+
                 case IProperty::IPTypeRealList:
                     ((ViewerRealList*)widget.value())->setList( qvariant_cast<QList<qreal> >( spied->property(widget.key().toStdString().c_str()) ) );
                     break;
@@ -201,8 +231,6 @@ void SpyWidgetBody::updateValues()
                     ((ViewerVector3D*)widget.value())->setVector( *((QVector3D*)spied->property(widget.key().toStdString().c_str()).data()) );
 
                     break;
-
-
 
                 default:
                     break;
@@ -216,40 +244,40 @@ void SpyWidgetBody::updateValues()
  * */
 void SpyWidgetBody::onLineTextEdited(const QString& text)
 {
-    /*
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
-    if(spied)
+    // Get spied
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
+    if(!spied) { return; }
+    
+    // Get sender
+    QObject* sender = QObject::sender();
+    if(!sender) { return; }
+
+    // Get properties
+    const QMap<QString, IProperty>& properties = spied->iProperties();
+
+    // Go through widgets
+    QMapIterator<QString, QWidget*> widget(_widgetMap);
+    while (widget.hasNext())
     {
-        QObject* sender = QObject::sender();
-        if(sender)
+        // Get widget and property associated
+        widget.next();
+
+        // Check if the sender is this property widget
+        if( widget.value() != sender )
         {
-            // Go through properties
-            QMapIterator<QString, PropertyInformation> property(_propertyMap);
-            while (property.hasNext())
-            {
-                property.next();
+            continue;
+        }
+        
+        // Get property and values
+        IProperty property = properties[widget.key()];
+        QString new_value = ((QLineEdit*)widget.value())->text();
+        QString old_value = spied->property(widget.key().toStdString().c_str()).toString();
 
-                // Check if the sender is this perperty widget
-                if( property.value().widget != sender )
-                {
-                    continue;
-                }
-                
-                // 
-                switch(property.value().type)
-                {
-                    case QVariant::String:
-                        spied->setProperty(property.key().toStdString().c_str(), ((QLineEdit*)(property.value().widget))->text());
-                        break;
-
-                    default:
-                        throw std::runtime_error("SpyWidget::onLineTextEdited -> type unmanaged for this widget");
-                        break;
-                }
-            }
+        if(new_value.compare(old_value) != 0)
+        {
+            spied->setProperty(widget.key().toStdString().c_str(), new_value);
         }
     }
-    */
 }
 
 /* ============================================================================
