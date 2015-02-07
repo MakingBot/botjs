@@ -5,11 +5,11 @@
 
 // Create spies
 core.create("spy", "agent007");
-// // core.create("spy", "agent008");
+core.create("spy", "agent008");
 // // core.create("spy", "agent009");
 
-agent007.logEnable = true
 agent007.logTalking = true
+agent008.logTalking = true
 
 // Connect spies to robot
 agent007.connect(core);

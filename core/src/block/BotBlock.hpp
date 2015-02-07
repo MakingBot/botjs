@@ -264,7 +264,7 @@ public slots:
     {
         // Basic checks
         if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
-        if(block == this) { std::cerr << "-- BotBlock::connectBlock => unable to connect to itself" << std::endl; return false; }
+        if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
         
         // This block ask for a connection
         if(master)
@@ -284,6 +284,15 @@ public slots:
         beglog() << "Connection to #" << block->getBlockFathersChain() << "# accepted" << endlog();
         return true;
     }
+
+    //!
+    //! To delete all connections
+    //!
+    virtual bool disconnectAll()
+    {
+        return true;
+    }
+
 
     //!
     //! Create a block as a child of this one

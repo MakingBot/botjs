@@ -19,26 +19,25 @@ public:
     //!
     //! Default constructor
     //!
-    explicit SpyWidgetHeader(QWidget *parent = 0);
+    explicit SpyWidgetHeader(QWeakPointer<SpyBlock> spy_block, QWidget *parent = 0);
 
     //! FROM QWidget
     void paintEvent(QPaintEvent *event);
 
     //!
-    //! To update block information
+    //! Pointer on the parent spy block
     //!
-    void setSpiedBlock(QWeakPointer<BotBlock> block) { _block = block; updateValues(); }
-
-    //!
-    //! To get a shared pointer the spied block (0 if no spied block)
-    //!
-    QSharedPointer<BotBlock> getSharedSpiedBlock()
+    QSharedPointer<SpyBlock> getSharedSpyBlock()
     {
-        if(_block) { return _block.toStrongRef();        }
-        else       { return QSharedPointer<BotBlock>(0); }
+        if(_spyblock) { return _spyblock.toStrongRef();     }
+        else          { return QSharedPointer<SpyBlock>(0); }
     }
 
 public slots:
+
+    //! When the spied change
+    void onSpiedBlockChange();
+
     //! Update property values
     void updateValues();
 
@@ -75,36 +74,9 @@ protected:
 
 
 
-    //! The spied block
-    QWeakPointer<BotBlock> _block;
+    //! Parent block
+    QWeakPointer<SpyBlock> _spyblock;
 
-    //!
-    //! Set properties of the label name
-    //!
-    void setLabelNameProperties()
-    {
-        QSharedPointer<BotBlock> block = getSharedSpiedBlock();
-        if(block)
-        {
-            _labelName.setText(block->getBlockName());
-            _labelName.setStyleSheet(
-            "background-color:" + BotBlock::BlockRoleToColor(block->getBlockRole()) + " ;"\
-            "color: #FFFFFF;"\
-            "font: 34px Roboto;"\
-            "padding: 10px;"\
-            );
-        }
-        else
-        {
-            _labelName.setText("No block spied");
-            _labelName.setStyleSheet(
-            "background-color:" + BotBlock::BlockRoleToColor((BotBlock::BlockRole)0xFFFF) + " ;"\
-            "color: #FFFFFF;"\
-            "font: 34px Roboto;"\
-            "padding: 10px;"\
-            );
-        }
-    }
 
 };
 

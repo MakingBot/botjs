@@ -1,5 +1,23 @@
 #ifndef SPYBLOCK_HPP
 #define SPYBLOCK_HPP
+//!
+//! \file SpyBlock.hpp
+//!
+// Copyright 2015 MakingBot
+// This file is part of BotJs.
+//
+// BotJs is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BotJs is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SpyWidget.hpp>
 
@@ -39,7 +57,6 @@ public:
         else            { return 0; }
     }
 
-
     //!
     //! Create the widget if it is not
     //!
@@ -63,11 +80,14 @@ public:
         if(visible) { show(); }
         else        { hide(); }
     }
-   
-    QWeakPointer<BotBlock> getSpiedBlock() { return _spiedBlock; }
 
     //!
-    //! Pointer on the spied block
+    //! Weak pointer on the spied block
+    //!
+    QWeakPointer<BotBlock> getWeakSpiedBlock() { return _spiedBlock; }
+
+    //!
+    //! Shared pointer on the spied block
     //!
     QSharedPointer<BotBlock> getSharedSpiedBlock()
     {
@@ -81,11 +101,11 @@ public:
     const QString getSpiedBlockName()
     {
         QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
-        if(spied) { return spied->getBlockName(); }
-        return QString();
+        if(spied) { return spied->getBlockName(); } return QString();
     }
 
 signals:
+
     //! Emitted when the spied block has changed
     void spiedBlockChanged();
 
@@ -94,15 +114,25 @@ public slots:
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master=true);
 
+    //! FROM BotBlock
+    virtual bool disconnectAll();
+
     //! Widget visibility setter
     virtual void show()
     { 
         createWidgetIfRequired();
-        _widget->show(); _visible = true; emit blockiPropertyValuesChanged();
+        _widget->show();
+        _visible = true;
+        emit blockiPropertyValuesChanged();
     }
 
     //! Widget visibility setter
-    virtual void hide() { _widget->hide(); _visible = false; emit blockiPropertyValuesChanged(); }
+    virtual void hide()
+    {
+        _widget->hide();
+        _visible = false;
+        emit blockiPropertyValuesChanged();
+    }
 
 protected:
     //! Widget visibility
@@ -111,8 +141,8 @@ protected:
     //! Pointer on the spied block
     QWeakPointer<BotBlock> _spiedBlock;
 
-    //! Widget
-    QSharedPointer<SpyWidget> _widget;
+    //! Widget for the view
+    QSharedPointer<SpyWidget>  _widget;
 };
 
 #endif // SPYBLOCK_HPP

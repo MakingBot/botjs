@@ -24,14 +24,14 @@ public:
     //!
     explicit SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget *parent = 0);
 
-
     //!
     //! Pointer on the parent spy block
     //!
     QSharedPointer<SpyBlock> getSharedSpyBlock()
     {
         if(_spyblock) { return _spyblock.toStrongRef();     }
-        else          { return QSharedPointer<SpyBlock>(); }
+        else          { throw std::runtime_error("This widget need a parent spy block"); }
+        //return QSharedPointer<SpyBlock>();
     }
     
     //!
@@ -60,10 +60,10 @@ protected:
     QWeakPointer<SpyBlock> _spyblock;
 
     //! Information header
-    SpyWidgetHeader* _header;
+    SpyWidgetHeader _header;
 
     //! Information body
-    SpyWidgetBody*   _body;
+    SpyWidgetBody*    _body;
 
     //! Information footer
     SpyWidgetFooter _footer;

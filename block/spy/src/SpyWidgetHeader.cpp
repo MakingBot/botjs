@@ -8,7 +8,7 @@
 /* ============================================================================
  *
  * */
-SpyWidgetHeader::SpyWidgetHeader(QWidget *parent)
+SpyWidgetHeader::SpyWidgetHeader(QWeakPointer<SpyBlock> spy_block, QWidget *parent)
     : QWidget(parent)
     , _labelTypName ( "type" )
     , _labelVersion ( "version")
@@ -16,6 +16,7 @@ SpyWidgetHeader::SpyWidgetHeader(QWidget *parent)
     , _labelFather  ( "father" )
     , _labelSonsNub ( "sons" )
     , _labelConnNub ( "connections" )
+    , _spyblock     ( spy_block )
 {
     // Widget geometrie
     const int height_name = 96;
@@ -31,7 +32,6 @@ SpyWidgetHeader::SpyWidgetHeader(QWidget *parent)
     "}");
 
     // Label name properties
-    setLabelNameProperties();
     _labelName.setMinimumHeight(height_name);
     _labelName.setMaximumHeight(height_name);
     _labelName.setAlignment(Qt::AlignBottom);
@@ -68,15 +68,27 @@ void SpyWidgetHeader::paintEvent(QPaintEvent *event)
 /* ============================================================================
  *
  * */
+void SpyWidgetHeader::onSpiedBlockChange()
+{
+    updateValues();
+}
+
+/* ============================================================================
+ *
+ * */
 void SpyWidgetHeader::updateValues()
 {
-    // Lanel name has its own function
-    setLabelNameProperties();
-
-    if(_block)
+    QSharedPointer<BotBlock> block = getSharedSpyBlock()->getSharedSpiedBlock();
+    if(block)
     {
-        QSharedPointer<BotBlock> block = _block.toStrongRef();
-        
+        _labelName.setText(block->getBlockName());
+        _labelName.setStyleSheet(
+        "background-color:" + BotBlock::BlockRoleToColor(block->getBlockRole()) + " ;"\
+        "color: #FFFFFF;"\
+        "font: 34px Roboto;"\
+        "padding: 10px;"\
+        );
+
         _labelTypName.setValue(block->getBlockTypeName());
         _labelVersion.setValue(QString::number(block->getBlockVersion()));
         _labelRolName.setValue(BotBlock::BlockRoleToString(block->getBlockRole()));
@@ -95,6 +107,14 @@ void SpyWidgetHeader::updateValues()
     }
     else
     {
+        _labelName.setText("No block spied");
+        _labelName.setStyleSheet(
+        "background-color:" + BotBlock::BlockRoleToColor((BotBlock::BlockRole)0xFFFF) + " ;"\
+        "color: #FFFFFF;"\
+        "font: 34px Roboto;"\
+        "padding: 10px;"\
+        );
+
         _labelTypName.setValue("");
         _labelVersion.setValue("");
         _labelRolName.setValue("");

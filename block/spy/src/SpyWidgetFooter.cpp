@@ -36,6 +36,14 @@ SpyWidgetFooter::SpyWidgetFooter(QWeakPointer<SpyBlock> spy_block, QWidget *pare
     lay->addWidget(&_buttonKill);
 }
 
+/* ============================================================================
+ *
+ * */
+void SpyWidgetFooter::onSpiedBlockChange()
+{
+    updateStructure();
+    updateValues();
+}
 
 
 /* ============================================================================
@@ -43,7 +51,8 @@ SpyWidgetFooter::SpyWidgetFooter(QWeakPointer<SpyBlock> spy_block, QWidget *pare
  * */
 void SpyWidgetFooter::updateValues()
 {
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    // Check the spied block
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(!spied) { return; }
 
     // Get block father chain
@@ -59,11 +68,11 @@ void SpyWidgetFooter::updateValues()
  * */
 void SpyWidgetFooter::updateStructure()
 {
-    QSharedPointer<SpyBlock> spy = getSharedSpyBlock();
-    if(!spy) { return; }
+    // Disconnect
+    disconnect( &_cbSpiedBlock, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onCBSpiedChange(const QString&)) );
 
     // Get chains
-    QStringList chains = spy->getBlockEngine()->getAllFatherChains();
+    QStringList chains = getSharedSpyBlock()->getBlockEngine()->getAllFatherChains();
 
     // Clear combobox
     _cbSpiedBlock.clear();
@@ -73,7 +82,7 @@ void SpyWidgetFooter::updateStructure()
     _cbSpiedBlock.addItems( chains );
 
     // Connect combobox
-    connect( &_cbSpiedBlock, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onCBSpiedChange(const QString&)) );
+    connect   ( &_cbSpiedBlock, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onCBSpiedChange(const QString&)) );
 }
 
 /* ============================================================================
@@ -99,21 +108,30 @@ void SpyWidgetFooter::onCBSpiedChange( const QString & chain )
 {
     // Get spy
     QSharedPointer<SpyBlock> spy = getSharedSpyBlock();
-    if(!spy) { return; }
+
+    // If use want to stop spying 
+    if( chain.compare("DO NOT SPY") == 0 )
+    {
+        // Disconnect if it were connected
+        spy->disconnectAll();
+
+        return;
+    }
 
     // Special check if a block is already spied
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(spied)
     {
         if( spied->getBlockFathersChain().compare(chain) == 0 )
         {
-            return; // Cannot spy if its is already spied
+            // Cannot spy if its is already spied
+            spy->beglog() << "Try to spy the block that is already spied" << spy->endlog();
+            return;
         }
     }
 
     // Get the block from its father chain
     BotBlock* block = spy->getBlockFromFathersChain( chain );
-
 
     // Try to connect to block
     if( !spy->connect(block) )
@@ -121,6 +139,4 @@ void SpyWidgetFooter::onCBSpiedChange( const QString & chain )
         // restore if fail
         _cbSpiedBlock.setCurrentIndex(_currentValidSelection);
     }
-
-    std::cerr << block->getBlockName().toStdString() << std::endl;
 }
