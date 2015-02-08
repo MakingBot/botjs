@@ -103,6 +103,16 @@ void BotApp::intializeModuleDirectory()
     QString block_lib = app_dir + QDir::separator() + QString("../block");
     QString block_log = app_dir + QDir::separator() + QString("../log");
 
+    // Create the log directory if it is not created
+    if( ! QDir(block_log).exists() )
+    {
+        QDir(app_dir).mkpath( "../log" );
+    
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Log directory did not exist, it has been created! " << std::endl;
+        #endif
+    }
+
     // Set the module directory
     BotBlock::JsEngine.setBlockLibDirectory(block_lib);
     BotBlock::JsEngine.setBlockLogDirectory(block_log);
