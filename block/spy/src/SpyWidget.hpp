@@ -59,20 +59,9 @@ public:
     QSharedPointer<BotBlock> getSharedSpiedBlock();
     
 public slots:
+    //!
     //! When the spied change
     void onSpiedBlockChange();
-
-    //! Update property structure
-    void updateStructure();
-
-    //! Update displayed values
-    void updateValues();
-
-    //! For line edit property widget
-    void onLineTextEdited(const QString& text);
-
-    //! For combobow that manage boolean switch
-    void onComboBoxBool( int index );
 
 protected:
     //! Parent block

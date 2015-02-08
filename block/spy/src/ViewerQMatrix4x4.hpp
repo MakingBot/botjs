@@ -45,10 +45,12 @@ public slots:
     void onValueChange(double d);
 
 signals:
+    //!
     //! Emitted when the matrix is modified by the user
     void valueChanged(const QMatrix4x4& matrix);
 
 protected:
+    //!
     //! Data model
     QMatrix4x4 _dataMatrix;
 

@@ -53,6 +53,9 @@ public slots:
     //! For combobox that manage enum
     void onComboBoxEnum( const QString & text );
 
+    //! For real list modification
+    void onListModified(QList<qreal>& list);
+
 protected:
     //! Map that contains widget of each property
     QMap<QString, QWidget*> _widgetMap;

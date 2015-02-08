@@ -22,6 +22,7 @@
 
 #include <QMatrix4x4>
 #include <QVariantList>
+#include <QRealList.hpp>
 
 class JointBlock;
 
@@ -61,19 +62,52 @@ public:
     const QList<qreal>& rotation() { return _rotation; }
    
     //! Link rotation setter
-    void setRotation(const QList<qreal>& rot) { _rotation = rot; /*updateTransform();*/ }
+    void setRotation(const QList<qreal>& rotation)
+    {
+        // Set the new rotation
+        _rotation = rotation;
+
+        // Log
+        beglog() << "Change rotation parameter: " << _rotation << endlog();
+        
+        // Update transformation
+        updateTransform();
+
+        // Alert BotJs
+        emit blockiPropertyValuesChanged();
+    }
    
     //! Link translation getter
     const QList<qreal>& translation() { return _translation; }
 
     //! Link translation setter
-    void setTranslation(const QList<qreal>& tra) { _translation = tra; }
+    void setTranslation(const QList<qreal>& translation)
+    {
+        // Set the new translation
+        _translation = translation;
+
+        // Log
+        beglog() << "Change translation parameter: " << _translation << endlog();
+        
+        // Update transformation
+        updateTransform();
+
+        // Alert BotJs
+        emit blockiPropertyValuesChanged();
+    }
 
     //! Transform matrix getter
     const QMatrix4x4& transform() const { return _transform; }
     
     //! Transform matrix setter
-    void setTransform(const QMatrix4x4& matrix) { _transform = matrix; }
+    void setTransform(const QMatrix4x4& matrix)
+    {
+        // Set the new transform
+        _transform = matrix;
+
+        // Alert BotJs
+        emit blockiPropertyValuesChanged();
+    }
 
     //! Joint base weak pointer getter
     QWeakPointer<JointBlock> weakBase() { return _baseJoint; }
@@ -99,20 +133,21 @@ protected:
     //! _rotation = { 0, 90, 45 } means rotate 0°  around x axis
     //!                                 rotate 90° around y axis
     //!                                 rotate 45° around z axis
-    QList<qreal> _rotation;
+    QRealList _rotation;
     
     //! Position of the outputJoint in the baseJoint basis
-    QList<qreal> _translation;
+    QRealList _translation;
     
     //! Transform matrix
     //! It is computed from translation and rotation
-    QMatrix4x4 _transform;
+    QMatrix4x4  _transform;
 
     //! Joint base
     QWeakPointer<JointBlock> _baseJoint;
 
     //! Joint output
     QWeakPointer<JointBlock> _outputJoint;
+
 };
 
 #endif // LINKBLOCK_HPP

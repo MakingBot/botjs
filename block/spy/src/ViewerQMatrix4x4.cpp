@@ -1,4 +1,6 @@
 #include <ViewerQMatrix4x4.hpp>
+
+#include <iostream>
 #include <QGridLayout>
 
 /* ============================================================================
@@ -9,13 +11,12 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
 {
     // Create the layout
     QGridLayout* lay = new QGridLayout(this);
-  
+
+    // Foreach box of the matrix  
     for(int r=0 ; r<4 ; r++)
     {
         for(int c=0 ; c<4 ; c++)
         {
-            // Get constant
-            const int index = r*4 + c;
 
             QSharedPointer<QDoubleSpinBox> box( new QDoubleSpinBox() );
             _editMatrix.append( box );
@@ -28,6 +29,7 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
         }
     }
 
+    // Set read only parameter
     setReadOnly(readOnly);
 }
 
@@ -36,7 +38,7 @@ ViewerQMatrix4x4::ViewerQMatrix4x4(bool readOnly, QWidget* parent)
  * */
 void ViewerQMatrix4x4::setReadOnly(bool readOnly)
 {
-    for(int i = 0 ; i< 4*4 ; i++)
+    for(int i=0 ; i<4*4 ; i++)
     {
         _editMatrix.at(i)->setReadOnly(readOnly);
     }
@@ -52,10 +54,11 @@ void ViewerQMatrix4x4::updateValues()
     {
         for(int c=0 ; c<4 ; c++)
         {
+            // Compute index
             const int index = r*4 + c;
-            
+
             // Set the value in the widget
-            _editMatrix[index]->setValue( _dataMatrix(r,c) );
+            _editMatrix[index]->setValue( _dataMatrix(r,c) ); 
         }
     }
 }

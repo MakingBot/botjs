@@ -143,13 +143,44 @@ public:
 
     // --- Stream Operators ---
 
-    LogBuffer& operator<< ( LogEnder le ) { endLog(); return *this; }
+    LogBuffer& operator<< ( LogEnder            p ) { endLog();                             return *this; }
     
-    LogBuffer& operator<< ( QChar c     ) { streamlog<QChar>(c); return *this; }
-    LogBuffer& operator<< ( signed short i ) { streamlog<signed short>(i); return *this; }
-    LogBuffer& operator<< ( float f ) { streamlog<float>(f); return *this; }
-    LogBuffer& operator<< ( const QString & string ) { streamlog<const QString &>(string); return *this; }
-    LogBuffer& operator<< ( char c ) { streamlog<char>(c); return *this; }
+    LogBuffer& operator<< ( QChar               p ) { streamlog<QChar               >(p);   return *this; }
+    LogBuffer& operator<< ( signed short        p ) { streamlog<signed short        >(p);   return *this; }
+    LogBuffer& operator<< ( float               p ) { streamlog<float               >(p);   return *this; }
+    LogBuffer& operator<< ( const QString&      p ) { streamlog<const QString&      >(p);   return *this; }
+    LogBuffer& operator<< ( char                p ) { streamlog<char                >(p);   return *this; }
+    LogBuffer& operator<< ( unsigned short      p ) { streamlog<unsigned short      >(p);   return *this; }
+    LogBuffer& operator<< ( signed int          p ) { streamlog<signed int          >(p);   return *this; }
+    LogBuffer& operator<< ( unsigned int        p ) { streamlog<unsigned int        >(p);   return *this; }
+    LogBuffer& operator<< ( signed long         p ) { streamlog<signed long         >(p);   return *this; }
+    LogBuffer& operator<< ( unsigned long       p ) { streamlog<unsigned long       >(p);   return *this; }
+    LogBuffer& operator<< ( qlonglong           p ) { streamlog<qlonglong           >(p);   return *this; }
+    LogBuffer& operator<< ( qulonglong          p ) { streamlog<qulonglong          >(p);   return *this; }
+    LogBuffer& operator<< ( double              p ) { streamlog<double              >(p);   return *this; }
+    LogBuffer& operator<< ( const QByteArray&   p ) { streamlog<const QByteArray&   >(p);   return *this; }
+    LogBuffer& operator<< ( const char*         p ) { streamlog<const char*         >(p);   return *this; }
+    LogBuffer& operator<< ( const void*         p ) { streamlog<const void*         >(p);   return *this; }
+
+    LogBuffer& operator<< ( const QList<qreal>& p )
+    {
+        bool first = true;
+
+        QString strlist;
+        QTextStream s(&strlist);
+
+        s << '[';
+        foreach(qreal r, p)
+        {
+            if(first) { s << r; first=false; }
+            else      { s << ", " << r;      }
+        }
+        s << ']';
+
+        streamlog<const QString&>(strlist);
+        return *this;
+    }
+
 
 protected:
     // Parent block chain

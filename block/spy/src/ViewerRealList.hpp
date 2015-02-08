@@ -57,7 +57,7 @@ public:
 signals:
 
     //! When a element of the list is modified
-    void listModified();
+    void listModified(QList<qreal>& list);
 
 public slots:
 
@@ -66,6 +66,9 @@ public slots:
 
     //! To update the widget values
     void updateValues();
+
+    //! When the value has changed
+    void onValueChange(double);
 
 protected:
     //! The data model

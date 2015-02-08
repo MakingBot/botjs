@@ -224,13 +224,17 @@ void SpyWidgetBody::updateValues()
 
                 case IProperty::IPTypeRealList:
                     ((ViewerRealList*)widget.value())->setList( qvariant_cast<QList<qreal> >( spied->property(widget.key().toStdString().c_str()) ) );
+                    connect( (ViewerRealList*)widget.value(), SIGNAL(listModified(QList<qreal>&)), this, SLOT(onListModified(QList<qreal>&)) );
                     break;
 
                 case IProperty::IPTypeVector3D:
-                    
                     ((ViewerVector3D*)widget.value())->setVector( *((QVector3D*)spied->property(widget.key().toStdString().c_str()).data()) );
-
                     break;
+
+                case IProperty::IPTypeMatrix44:
+                    ((ViewerQMatrix4x4*)widget.value())->setMatrix( qvariant_cast<QMatrix4x4 >( spied->property(widget.key().toStdString().c_str()) ) );
+                    break;        
+
 
                 default:
                     break;
@@ -328,50 +332,47 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
  * */
 void SpyWidgetBody::onComboBoxEnum(const QString& text)
 {
-    /*
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
-    if(spied)
+
+}
+
+/* ============================================================================
+ *
+ * */
+void SpyWidgetBody::onListModified(QList<qreal>& new_value)
+{
+    // Get spied
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
+    if(!spied) { return; }
+    
+    // Get sender
+    QObject* sender = QObject::sender();
+    if(!sender) { return; }
+
+    // Get properties
+    const QMap<QString, IProperty>& properties = spied->iProperties();
+
+    // Go through widgets
+    QMapIterator<QString, QWidget*> widget(_widgetMap);
+    while (widget.hasNext())
     {
-        // Get properties
-        BotBlock::InteractivePropertyMap properties = spied->iProperties();
-        
-        QObject* sender = QObject::sender();
-        if(sender)
+        // Get widget and property associated
+        widget.next();
+
+        // Check if the sender is this property widget
+        if( widget.value() != sender )
         {
-            // Go through widgets
-            QMapIterator<QString, QWidget*> widget(_widgetMap);
-            while (widget.hasNext())
-            {
-                widget.next();
-
-                // Check if the sender is this widget
-                if( widget.value() != sender )
-                {
-                    continue;
-                }
-
-                // Find the value of the enum
-                int value = 0;
-                for( int i=0 ; i<properties[widget.key()].enumTextList.size() ; i++ )
-                {
-                    if( text.compare( properties[widget.key()].enumTextList.at(i).name ) == 0 )
-                    {
-                        value = properties[widget.key()].enumTextList.at(i).value;
-                    }
-                }
-
-                // Prevent infinite loop
-                if( value !=  spied->property(widget.key().toStdString().c_str()).toInt() )
-                {
-                    // Set the new value of the enum
-                    spied->setProperty(widget.key().toStdString().c_str(), value);     
-                }
-
-
-            }
+            continue;
         }
+
+        // Get property and values
+        IProperty property = properties[widget.key()];
+        const QList<qreal>& old_value = qvariant_cast<QList<qreal> >(spied->property(widget.key().toStdString().c_str()));
+
+        if( new_value != old_value )
+        {
+            spied->setProperty( widget.key().toStdString().c_str(), QVariant(QVariant::Matrix4x4, &new_value) );
+        }    
     }
-    */
 }
 
 /* ============================================================================

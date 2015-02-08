@@ -28,7 +28,17 @@ EXPORT_BLOCK(LinkBlock)
  * */
 void LinkBlock::updateTransform()
 {
+    // Start with the identity matrix
+    QMatrix4x4 new_transform;
 
+    // Translate
+    new_transform.translate(_translation.toVector3D());
 
+    new_transform.rotate( _rotation[0], QVector3D(1, 0, 0) );
+    new_transform.rotate( _rotation[1], QVector3D(0, 1, 0) );
+    new_transform.rotate( _rotation[2], QVector3D(0, 0, 1) );
+
+    // Set the new transformation
+    _transform = new_transform;
 }
 
