@@ -25,6 +25,8 @@
 
 #include <QFile>
 #include <iostream>
+#include <QVector3D>
+#include <QVector4D>
 #include <QTextStream>
 #include <QSharedPointer>
 
@@ -165,6 +167,24 @@ public:
     LogBuffer& operator<< ( const QByteArray&   p ) { streamlog<const QByteArray&   >(p);   return *this; }
     LogBuffer& operator<< ( const char*         p ) { streamlog<const char*         >(p);   return *this; }
     LogBuffer& operator<< ( const void*         p ) { streamlog<const void*         >(p);   return *this; }
+
+    LogBuffer& operator<< ( const QVector3D& p )
+    {
+        QString strlist;
+        QTextStream s(&strlist);
+        s << '[' << p.x() << ", " << p.y() << ", " << p.z() << ']';
+        streamlog<const QString&>(strlist);
+        return *this;
+    }
+    
+    LogBuffer& operator<< ( const QVector4D& p )
+    {
+        QString strlist;
+        QTextStream s(&strlist);
+        s << '[' << p.x() << ", " << p.y() << ", " << p.z() << ", " << p.w() << ']';
+        streamlog<const QString&>(strlist);
+        return *this;
+    }
 
     LogBuffer& operator<< ( const QList<qreal>& p )
     {

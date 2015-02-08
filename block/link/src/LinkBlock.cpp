@@ -48,20 +48,32 @@ QString LinkBlock::endName()
 /* ============================================================================
  *
  * */
-void LinkBlock::updateTransform()
+void LinkBlock::updateKinematic()
 {
     // Start with the identity matrix
     QMatrix4x4 new_transform;
 
     // Translate
     new_transform.translate(_translation.toVector3D());
-
     new_transform.rotate( _rotation[0], QVector3D(1, 0, 0) );
     new_transform.rotate( _rotation[1], QVector3D(0, 1, 0) );
     new_transform.rotate( _rotation[2], QVector3D(0, 0, 1) );
 
     // Set the new transformation
     _transform = new_transform;
+
+    // Alert chain elements
+    emit spreadKinematic();
+
+    // Alert BotJs
+    emit blockiPropertyValuesChanged();
+
+    if( _outputJoint )
+    {
+        QSharedPointer<JointBlock> shared_endjoint = _outputJoint.toStrongRef();
+
+        shared_endjoint->updateKinematic();
+    }
 }
 
 /* ============================================================================
@@ -85,37 +97,40 @@ bool LinkBlock::connect(BotBlock* block, bool master)
     if(master)
     {
         // Ask for connection
-        if(!block->connect(this, false))
+        if( ! block->connect(this, false) )
         {
-            // Log and return
+            // If the other block rejected the connection and log it
             beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
             return false;
         }
 
-        // Assume that if the link ask, then the joint is the output
-        
         // If output already exist
         if(_outputJoint)
         {
             this->disconnect(_outputJoint.data());
         }
 
-        // Create the shared pointer
-        QSharedPointer<JointBlock> sh_out = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
-        
-        // Set the new output joint
-        _outputJoint = sh_out.toWeakRef();
+        // Recover the shared pointer of the connection block
+        QSharedPointer<JointBlock> shared_end = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
+
+        // Connect signals
+        QObject::connect( this, SIGNAL(spreadKinematic()), shared_end.data(), SLOT(updateKinematic()) );
+
+        // Set the new end joint
+        _outputJoint = shared_end.toWeakRef();
+
+        // Alert chain elements
+        emit spreadKinematic();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
 
         // Log and return
-        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
+        beglog() << "Connection to the joint #" << block->getBlockFathersChain() << "#" << endlog();
         return true;
     }
     else
     {
-        
         // If output already exist
         if(_baseJoint)
         {
@@ -131,9 +146,27 @@ bool LinkBlock::connect(BotBlock* block, bool master)
         // Alert BotJs
         emit blockfPropertyValuesChanged();
         // Log and return
-        beglog() << "Connection from #" << block->getBlockFathersChain() << "# accepted" << endlog();
+        beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
         return true;
 
     }
     
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::disconnect(BotBlock* block, bool master)
+{
+    // TODO
+    BotBlock::disconnect(block, master);
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::disconnectAll()
+{
+    // TODO
+    BotBlock::disconnectAll();
 }

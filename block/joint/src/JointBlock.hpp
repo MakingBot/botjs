@@ -39,7 +39,7 @@ class JointBlock : public BotBlock
     Q_PROPERTY(qreal max        READ maxValue   WRITE setMaxValue   MEMBER _maxValue)
     
     Q_PROPERTY(JointType type     READ type     WRITE changeType    MEMBER _type    )
-    Q_PROPERTY(QVector3D axe      READ axe                          MEMBER _axe     )
+    Q_PROPERTY(QVector4D axe      READ axe                          MEMBER _axe     )
     Q_PROPERTY(QVector4D position READ pos                          MEMBER _pos     )
 
 public:
@@ -65,9 +65,12 @@ public:
         // MAX
         appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
         // AXE
-        appendBlockIProperty("axe"     , IProperty(IProperty::IPTypeVector3D, false));
+        appendBlockIProperty("axe"     , IProperty(IProperty::IPTypeVector4D, false));
         // POSITION
-        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector3D, false));
+        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
+        
+        // 
+        updateKinematic();
     }
     
     //! FROM BotBlock
@@ -160,7 +163,7 @@ public:
     }
 
     //! Axe getter
-    const QVector3D& axe() const { return _axe; }
+    const QVector4D& axe() const { return _axe; }
 
     //! Pos getter
     const QVector4D& pos() const { return _pos; }
@@ -168,11 +171,25 @@ public:
     //! Result transform matrix getter
     const QMatrix4x4& transform() const { return _tranform; }
 
+signals:
+
+    //! Emitted when transform is modified
+    void spreadKinematic();
+
 public slots:
 
     //! Update transform properties
-    void updateTransform();
+    void updateKinematic();
     
+    //! FROM BotBlock
+    virtual bool connect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnectAll();
+
 protected:
     //! Current value
     qreal _value;
@@ -186,10 +203,10 @@ protected:
     //! Joint type
     JointType _type;
 
-    //! Joint axe (0,0,1) by default
-    QVector3D _axe;
+    //! Joint axe (0,0,1,0) by default
+    QVector4D _axe;
 
-    //! Joint pos (0,0,0) by default
+    //! Joint pos (0,0,0,1) by default
     QVector4D _pos;
 
     //! Result transform matrix

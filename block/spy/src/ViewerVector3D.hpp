@@ -21,8 +21,21 @@ public:
     const QVector3D& vector() const { return _vector; }
     
     //! The data model setter
-    void setVector(const QVector3D& vec) { _vector = vec; }
+    void setVector(const QVector3D& vec) { _vector = vec; updateValues(); }
     
+signals:
+
+    //! When a element of the list is modified
+    void vectorModified(QVector3D& vector);
+
+public slots:
+
+    //! To update the widget values
+    void updateValues();
+
+    //! When the value has changed
+    void onValueChange(double);
+
 protected:
     //! The data model
     QVector3D _vector;

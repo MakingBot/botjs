@@ -65,6 +65,15 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("link"); }
 
+    //! FROM BotBlock
+    virtual int getBlockNumberOfConnections() const
+    {
+        int nb = BotBlock::getBlockNumberOfConnections();
+        if( _baseJoint   ) { nb++; }
+        if( _outputJoint ) { nb++; }
+        return nb;
+    }
+
     //! Link rotation getter
     const QList<qreal>& rotation() { return _rotation; }
    
@@ -78,10 +87,7 @@ public:
         beglog() << "Change rotation parameter: " << _rotation << endlog();
         
         // Update transformation
-        updateTransform();
-
-        // Alert BotJs
-        emit blockiPropertyValuesChanged();
+        updateKinematic();
     }
    
     //! Link translation getter
@@ -97,10 +103,7 @@ public:
         beglog() << "Change translation parameter: " << _translation << endlog();
         
         // Update transformation
-        updateTransform();
-
-        // Alert BotJs
-        emit blockiPropertyValuesChanged();
+        updateKinematic();
     }
 
     //! Transform matrix getter
@@ -112,9 +115,16 @@ public:
         // Set the new transform
         _transform = matrix;
 
+        // Alert chain elements
+        emit spreadKinematic();
+
         // Alert BotJs
         emit blockiPropertyValuesChanged();
     }
+
+
+    //! Check if the link has a base
+    bool hasBase() { if(_baseJoint) { return true; } else { return false; } }
 
     //! Joint base
     JointBlock* base() { return _baseJoint.data(); }
@@ -128,6 +138,7 @@ public:
     //! Getter for the base name
     QString baseName();
 
+
     //! Joint output getter
     QWeakPointer<JointBlock> weakOutput() { return _outputJoint; }
 
@@ -137,14 +148,25 @@ public:
     //! Getter for the base name
     QString endName();
 
+signals:
+
+    //! Emitted when transform is modified
+    void spreadKinematic();
+
 public slots:
 
     //! To update the transform matrix with the translation and rotation matrix
     //! after a parameter change
-    void updateTransform();
+    void updateKinematic();
 
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnectAll();
 
 protected:
 
