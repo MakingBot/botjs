@@ -17,6 +17,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <LinkBlock.hpp>
+#include <JointBlock.hpp>
 
 /* ============================================================================
  *
@@ -42,3 +43,79 @@ void LinkBlock::updateTransform()
     _transform = new_transform;
 }
 
+/* ============================================================================
+ *
+ * */
+bool LinkBlock::connect(BotBlock* block, bool master)
+{
+    // Basic checks
+    if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
+    if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
+
+    // Check if the block is a joint block
+    JointBlock* joint = dynamic_cast<JointBlock*>(block);
+/*
+    if(!joint)
+    {
+        return BotBlock::connect(block, master);
+    }
+
+    // Else it is a joint block
+    // if the link ask for the connection
+
+
+    if(master)
+    {
+        // Ask for connection
+        if(!block->connect(this, false))
+        {
+            // Log and return
+            beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
+            return false;
+        }
+
+        // Assume that if the link ask, then the joint is the output
+        
+        // If output already exist
+        if(_outputJoint)
+        {
+            this->disconnect(_outputJoint.data());
+        }
+
+        // Create the shared pointer
+        QSharedPointer<JointBlock> sh_out = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
+        
+        // Set the new output joint
+        _outputJoint = sh_out.toWeakRef();
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+
+        // Log and return
+        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
+        return true;
+    }
+    else
+    {
+        /*
+        // If output already exist
+        if(_baseJoint)
+        {
+            this->disconnect(_baseJoint.data());
+        }
+
+        // Create the shared pointer
+        QSharedPointer<JointBlock> sh_out = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
+        
+        // Set the new output joint
+        _baseJoint = sh_out.toWeakRef();
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+        // Log and return
+        beglog() << "Connection from #" << block->getBlockFathersChain() << "# accepted" << endlog();
+        return true;
+
+    }
+    */
+}

@@ -31,6 +31,7 @@ class LinkBlock;
 class JointBlock : public BotBlock
 {
     Q_OBJECT
+
     Q_ENUMS(JointType)
     
     Q_PROPERTY(qreal value      READ value      WRITE setValue      MEMBER _value   )
@@ -59,10 +60,13 @@ public:
         appendBlockIProperty("type" , IProperty(IProperty::IPTypeEnum, true, type_enum));
         // VALUE
         appendBlockIProperty("value", IProperty(IProperty::IPTypeReal, true));
+        // MIN
         appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
+        // MAX
         appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
-
+        // AXE
         appendBlockIProperty("axe"     , IProperty(IProperty::IPTypeVector3D, false));
+        // POSITION
         appendBlockIProperty("position", IProperty(IProperty::IPTypeVector3D, false));
     }
     

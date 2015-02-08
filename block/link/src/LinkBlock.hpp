@@ -33,6 +33,7 @@ class JointBlock;
 class LinkBlock : public BotBlock
 {
     Q_OBJECT
+
     Q_PROPERTY(QList<qreal>  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
     Q_PROPERTY(QList<qreal>  translation READ translation WRITE setTranslation  MEMBER _translation)
     Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
@@ -123,6 +124,9 @@ public slots:
     //! To update the transform matrix with the translation and rotation matrix
     //! after a parameter change
     void updateTransform();
+
+    //! FROM BotBlock
+    virtual bool connect(BotBlock* block, bool master=true);
 
 protected:
 
