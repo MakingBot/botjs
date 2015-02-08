@@ -132,7 +132,7 @@ public:
     QWeakPointer<JointBlock> weakOutput() { return _outputJoint; }
 
     //! Joint base weak pointer getter
-    QSharedPointer<JointBlock> sharedOutput() { return _baseJoint.toStrongRef(); }
+    QSharedPointer<JointBlock> sharedOutput() { return _outputJoint.toStrongRef(); }
 
     //! Getter for the base name
     QString endName();

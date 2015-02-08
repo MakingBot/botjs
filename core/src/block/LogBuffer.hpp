@@ -47,16 +47,8 @@ public:
     //!
     //! Default constructor
     //!
-    explicit LogBuffer(QObject* parent=0);
-    
-    //! Destructor
-    ~LogBuffer()
-    {
-        _logfile.close();
-    }
-
-    //! Initialize the log buffer
-    void init(const QString& logfilepath, bool enable = false, bool verbose = false)
+    explicit LogBuffer(const QString& logfilepath, bool enable = false, bool verbose = false, QObject* parent = 0)
+        : QObject(parent), _newLog(true), _state(StateCreated), _coutstream(stdout)
     {
         // Set the file path
         _logfile.setFileName(logfilepath);
@@ -64,17 +56,26 @@ public:
         // Open log file
         if( ! _logfile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) )
         {
-            std::cerr << "Unable to open (" << logfilepath.toStdString() << ")" << std::endl;
+            _coutstream << "Unable to open (" << logfilepath << ")" << endl;
         }
 
         // Open stream on this file
         _filestream = QSharedPointer<QTextStream>( new QTextStream(&_logfile) );
         
         // Set state flags
-        if(verbose) { talk(); }
+        if     (verbose) { talk();         }
         else if(enable)  { this->enable(); }
-        _state |= StateInitialized;
+        _state |= StateInitialized;    
     }
+    
+    //! Destructor
+    ~LogBuffer()
+    {
+        _logfile.close();
+    }
+
+    //! Id setter
+    void setId(const QString& id) { _id = id; }
 
     //! Stop logging
     void disable() { _state &= ~StateEnabled; }
@@ -118,7 +119,10 @@ public:
             (*_filestream.data()) << val;
             if( _state >= (StateInitialized+StateEnabled+StateTalking) )
             {
-                if(_newLog) {  }
+                if(_newLog)
+                {
+                    _coutstream << "[" << _id << "] ";    
+                }
                 _coutstream << val;
             }
         }
@@ -130,7 +134,6 @@ public:
     //!
     void endLog()
     {
-
         if( _state >= (StateInitialized+StateEnabled) )
         {
             (*_filestream.data()) << endl;
@@ -138,7 +141,8 @@ public:
             {
                 _coutstream << endl;
             }
-        }     
+        }
+        if(!_newLog) { _newLog = true; }     
     }
 
     // --- Stream Operators ---
@@ -183,10 +187,11 @@ public:
 
 
 protected:
-    // Parent block chain
-    QString _blockchain;
 
-    //! True if no log is bieing written
+    // LogBuffer identifier
+    QString _id;
+
+    //! True if no log is being written
     bool _newLog;
 
     //! Represents the state of the log buffer

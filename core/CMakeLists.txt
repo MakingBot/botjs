@@ -28,7 +28,6 @@ SET(PROJECT_SOURCE_FILES
     src/app/CoreBlock.cpp
 
     src/block/BotBlock.cpp
-    src/block/LogBuffer.cpp
     )
 
 # ADD_DEFINITIONS( -DBOTJS_CORE_DEBUG_PRINT )

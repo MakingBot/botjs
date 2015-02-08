@@ -116,7 +116,9 @@ public:
     //! Default constructor
     //!
     explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
-        : QObject(parent), _bname(name), _log(this)
+        : QObject(parent)
+        , _bname(name)
+        , _log(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
     { }
 
     //!
@@ -124,8 +126,8 @@ public:
     //!
     virtual void blockInit()
     {
-        // Initialize log engine
-        _log.init( BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log") );
+        // Set log buffer id
+        _log.setId(getBlockFathersChain());
 
         // Register type BotBlock*
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
@@ -308,7 +310,7 @@ public slots:
         emit blockfPropertyValuesChanged();
 
         // Log and return
-        beglog() << "Connection to #" << block->getBlockFathersChain() << "# accepted" << endlog();
+        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
         return true;
     }
 
