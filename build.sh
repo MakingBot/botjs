@@ -10,7 +10,7 @@ BOTJS_DIR=$(pwd)
 CPU_NUMBER=4
 
 # Release or Debug
-BUILD_TYPE="Release"
+BUILD_TYPE="Debug"
 
 #
 # Build function
@@ -49,6 +49,7 @@ function build_cmake_project {
     fi
 
     # make
+    # VERBOSE=1
     make -j$CPU_NUMBER
     if [ $? -ne 0 ]; then
         echo "* Make fail"

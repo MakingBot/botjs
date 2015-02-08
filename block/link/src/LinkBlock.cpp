@@ -24,6 +24,27 @@
  * */
 EXPORT_BLOCK(LinkBlock)
 
+
+/* ============================================================================
+ *
+ * */
+QString LinkBlock::baseName()
+{
+    QSharedPointer<JointBlock> base = sharedBase();
+    if( base ) { return base->getBlockName();}
+    else       { return QString("Undefined");}
+}
+
+/* ============================================================================
+ *
+ * */
+QString LinkBlock::endName()
+{
+    QSharedPointer<JointBlock> end = sharedOutput();
+    if( end )  { return end->getBlockName(); }
+    else       { return QString("Undefined");}
+}
+
 /* ============================================================================
  *
  * */
@@ -53,17 +74,14 @@ bool LinkBlock::connect(BotBlock* block, bool master)
     if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
 
     // Check if the block is a joint block
-    JointBlock* joint = dynamic_cast<JointBlock*>(block);
-/*
+    JointBlock* joint = qobject_cast<JointBlock*>(block);
     if(!joint)
     {
         return BotBlock::connect(block, master);
     }
-
+    
     // Else it is a joint block
     // if the link ask for the connection
-
-
     if(master)
     {
         // Ask for connection
@@ -97,7 +115,7 @@ bool LinkBlock::connect(BotBlock* block, bool master)
     }
     else
     {
-        /*
+        
         // If output already exist
         if(_baseJoint)
         {
@@ -117,5 +135,5 @@ bool LinkBlock::connect(BotBlock* block, bool master)
         return true;
 
     }
-    */
+    
 }

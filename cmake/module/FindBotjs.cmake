@@ -30,5 +30,3 @@ FIND_PATH(
     )
 MESSAGE("-- BotJs found includes: ${BOTJS_INCLUDE_DIR}")
 
-
-

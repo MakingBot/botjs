@@ -11,16 +11,16 @@ core.create("robot", "proteo");
 var body     = proteo.create("kinasm", "body"    );
 
 var jointBeg = body.create  ("joint" , "jointBeg");
+jointBeg.logTalking = true;
 
 var link     = body.create  ("link"  , "link"    );
 link.logTalking = true;
 
-link.translation = [1,2,3];
-link.rotation    = [0,90,0];
 
 var jointEnd = body.create  ("joint" , "jointEnd");
+jointEnd.logTalking = true;
 
-core.create  ("link"  , "machin"    );
+
 
 jointBeg.connect(link);
 link.connect(jointEnd);

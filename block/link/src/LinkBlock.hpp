@@ -38,6 +38,9 @@ class LinkBlock : public BotBlock
     Q_PROPERTY(QList<qreal>  translation READ translation WRITE setTranslation  MEMBER _translation)
     Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
 
+    Q_PROPERTY(QString       nameBase    READ baseName                                             )
+    Q_PROPERTY(QString       nameEnd     READ endName                                              )
+
 public:
     //!
     //! Default constructor
@@ -48,6 +51,9 @@ public:
         appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true ));
         appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true ));
         appendBlockIProperty("transform"  , IProperty(IProperty::IPTypeMatrix44, false));
+
+        appendBlockIProperty("nameBase"   , IProperty(IProperty::IPTypeString, false));
+        appendBlockIProperty("nameEnd"    , IProperty(IProperty::IPTypeString, false));
     }
 
     //! FROM BotBlock
@@ -110,14 +116,26 @@ public:
         emit blockiPropertyValuesChanged();
     }
 
-    //! Joint base weak pointer getter
-    QWeakPointer<JointBlock> weakBase() { return _baseJoint; }
- 
     //! Joint base
     JointBlock* base() { return _baseJoint.data(); }
 
+    //! Joint base weak pointer getter
+    QWeakPointer<JointBlock> weakBase() { return _baseJoint; }
+ 
+    //! Joint base weak pointer getter
+    QSharedPointer<JointBlock> sharedBase() { return _baseJoint.toStrongRef(); }
+
+    //! Getter for the base name
+    QString baseName();
+
     //! Joint output getter
     QWeakPointer<JointBlock> weakOutput() { return _outputJoint; }
+
+    //! Joint base weak pointer getter
+    QSharedPointer<JointBlock> sharedOutput() { return _baseJoint.toStrongRef(); }
+
+    //! Getter for the base name
+    QString endName();
 
 public slots:
 
