@@ -13,7 +13,7 @@ SET(PROJECT_HEADER_FILES
     src/SpyWidgetFooter.hpp
 
     src/DoubleLabel.hpp
-    src/ViewerVector3D.hpp
+    src/ViewerQVectornD.hpp
     src/ViewerRealList.hpp
     src/ViewerQMatrix4x4.hpp
     )
@@ -26,7 +26,7 @@ SET(PROJECT_SOURCE_FILES
     src/SpyWidgetHeader.cpp
     src/SpyWidgetFooter.cpp
 
-    src/ViewerVector3D.cpp
+    src/ViewerQVectornD.cpp
     src/ViewerRealList.cpp
     src/ViewerQMatrix4x4.cpp
     )
