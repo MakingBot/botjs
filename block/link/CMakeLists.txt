@@ -14,6 +14,8 @@ SET(PROJECT_SOURCE_FILES
     src/LinkBlock.cpp
     )
 
+SET(PROJECT_BLOCKS_TO_LINK "")
+
 # Call common configs
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../cmake/module/")
 INCLUDE(../../cmake/common_config.cmake)
@@ -22,3 +24,11 @@ INCLUDE(../../cmake/block_common_config.cmake)
 TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME}
     /home/rodriguez/opt/botjs/block/libjoint.so
     )
+
+
+# BOTJS_GENERATE_BLOCK(
+#     link
+#     PROJECT_HEADER_FILES
+#     PROJECT_SOURCE_FILES
+#     PROJECT_BLOCKS_TO_LINK
+#     )

@@ -30,3 +30,46 @@ FIND_PATH(
     )
 MESSAGE("-- BotJs found includes: ${BOTJS_INCLUDE_DIR}")
 
+
+
+
+
+# #
+# # Function to generate a block
+# #
+# FUNCTION(BOTJS_GENERATE_BLOCK
+#     B_NAME
+#     B_HEADER_FILES
+#     B_SOURCE_FILES
+#     B_LINK
+#     )
+
+#     # Define project name
+#     PROJECT(${${B_NAME}}) 
+
+#     # Tell CMake to create the library
+#     ADD_LIBRARY(${CMAKE_PROJECT_NAME}
+#         SHARED
+#         ${${B_HEADER_FILES}}
+#         ${${B_SOURCE_FILES}}
+#         )
+
+#     # Link Qt Modules
+#     QT5_USE_MODULES(${CMAKE_PROJECT_NAME}
+#         Qml
+#         Gui
+#         Core
+#         Widgets
+#         )
+
+#     # # Install config
+#     # TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME}
+#     #     ${CMAKE_INSTALL_PREFIX}/block/liblink.so
+#     #     )
+
+#     # Install config
+#     INSTALL(TARGETS ${CMAKE_PROJECT_NAME}   DESTINATION block)
+#     INSTALL(FILES   ${PROJECT_HEADER_FILES} DESTINATION include)
+
+# ENDFUNCTION(BOTJS_GENERATE_BLOCK)
+

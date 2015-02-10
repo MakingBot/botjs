@@ -58,14 +58,7 @@ public:
         type_enum["Revolute" ] = JointRevolute ;
         type_enum["Prismatic"] = JointPrismatic;
         appendBlockIProperty("type" , IProperty(IProperty::IPTypeEnum, true, type_enum));
-        // VALUE
-        appendBlockIProperty("value", IProperty(IProperty::IPTypeReal, true));
-        // MIN
-        appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
-        // MAX
-        appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
-        // AXE
-        appendBlockIProperty("axe"     , IProperty(IProperty::IPTypeVector4D, false));
+
         // POSITION
         appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
         
@@ -115,6 +108,16 @@ public:
     //! Min Max value setter
     void setMinMaxValue(qreal min, qreal max) { _minValue = min; _maxValue = max; }
 
+    //!
+    void setTypeByName(const QString& type_name)
+    {
+        // Get properties
+        const QMap<QString, IProperty>& properties = iProperties();
+
+        // Find the goo value
+        changeType( (JointType)properties["type"].enumValue(type_name) );
+    }
+
     //! Joint type getter
     JointType type() { return _type; }
     
@@ -128,12 +131,25 @@ public:
                 break;
 
             case JointRevolute:
-                // Value
-                //removeInteractiveProperty("value");
+                // VALUE
+                removeBlockIProperty("value");
+                // MIN
+                removeBlockIProperty("min"  );
+                // MAX
+                removeBlockIProperty("max"  );
+                // AXE
+                removeBlockIProperty("axe"  );
                 break;
 
             case JointPrismatic:
-
+                // VALUE
+                removeBlockIProperty("value");
+                // MIN
+                removeBlockIProperty("min"  );
+                // MAX
+                removeBlockIProperty("max"  );
+                // AXE
+                removeBlockIProperty("axe"  );
                 break;
 
             default: break;
@@ -147,19 +163,32 @@ public:
                 break;
 
             case JointRevolute:
-                // Value
-                //appendInteractiveProperty("value", { true, IPTypeReal, {} });
+                // VALUE
+                appendBlockIProperty("value", IProperty(IProperty::IPTypeReal, true));
+                // MIN
+                appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
+                // MAX
+                appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
+                // AXE
+                appendBlockIProperty("axe"  , IProperty(IProperty::IPTypeVector4D, false));
                 break;
 
             case JointPrismatic:
-
+                // VALUE
+                appendBlockIProperty("value", IProperty(IProperty::IPTypeReal, true));
+                // MIN
+                appendBlockIProperty("min"  , IProperty(IProperty::IPTypeReal, true));
+                // MAX
+                appendBlockIProperty("max"  , IProperty(IProperty::IPTypeReal, true));
+                // AXE
+                appendBlockIProperty("axe"  , IProperty(IProperty::IPTypeVector4D, false));
                 break;
 
             default: break;
         }
 
         // Alert
-        //emit propertyStructureChanged();
+        emit blockiPropertyStructureChanged();
     }
 
     //! Axe getter

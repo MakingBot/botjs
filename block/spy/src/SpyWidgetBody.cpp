@@ -234,6 +234,10 @@ void SpyWidgetBody::updateValues()
                     }
                     break;
 
+                case IProperty::IPTypeEnum: 
+                    ((QComboBox*)widget.value())->setCurrentIndex( ((QComboBox*)widget.value())->findText( property.enumName( spied->property(widget.key().toStdString().c_str()).toInt() ) ) );  
+                    break;
+
                 case IProperty::IPTypeRealList:
                     ((ViewerRealList*)widget.value())->setList( qvariant_cast<QList<qreal> >( spied->property(widget.key().toStdString().c_str()) ) );
                     connect( (ViewerRealList*)widget.value(), SIGNAL(listModified(QList<qreal>&)), this, SLOT(onListModified(QList<qreal>&)) );
@@ -250,7 +254,6 @@ void SpyWidgetBody::updateValues()
                 case IProperty::IPTypeMatrix44:
                     ((ViewerQMatrix4x4*)widget.value())->setMatrix( qvariant_cast<QMatrix4x4 >( spied->property(widget.key().toStdString().c_str()) ) );
                     break;        
-
 
                 default:
                     break;
@@ -346,9 +349,42 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
 /* ============================================================================
  *
  * */
-void SpyWidgetBody::onComboBoxEnum(const QString& text)
+void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
 {
+    // Get spied
+    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
+    if(!spied) { return; }
+    
+    // Get sender
+    QObject* sender = QObject::sender();
+    if(!sender) { return; }
 
+    // Get properties
+    const QMap<QString, IProperty>& properties = spied->iProperties();
+
+    // Go through widgets
+    QMapIterator<QString, QWidget*> widget(_widgetMap);
+    while (widget.hasNext())
+    {
+        // Get widget and property associated
+        widget.next();
+
+        // Check if the sender is this property widget
+        if( widget.value() != sender )
+        {
+            continue;
+        }
+
+        // Get property and values
+        IProperty property = properties[widget.key()];
+        int new_value = property.enumValue(enum_name);
+        int old_value = spied->property(widget.key().toStdString().c_str()).toInt();
+        
+        if( new_value != old_value )
+        {
+            spied->setProperty( widget.key().toStdString().c_str(), new_value );
+        }
+    }
 }
 
 /* ============================================================================

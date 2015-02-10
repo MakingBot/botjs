@@ -17,7 +17,7 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
     , _indiceBuffer (QGLBuffer::IndexBuffer )
     , _testparam(0,0)
 {
-    connect( getSharedparentBlock().data(), SIGNAL(propertyValuesChanged()), this, SLOT(onBlockPropertiesChanged()) );
+    //connect( getSharedparentBlock().data(), SIGNAL(propertyValuesChanged()), this, SLOT(onBlockPropertiesChanged()) );
     onBlockPropertiesChanged();
 }
 

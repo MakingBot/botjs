@@ -10,21 +10,26 @@ core.create("spy", "agent008");
 core.create("robot", "proteo");
 var body     = proteo.create("kinasm", "body"    );
 
-var jointBeg = body.create  ("joint" , "jointBeg");
-jointBeg.logTalking = true;
 
-var link     = body.create  ("link"  , "link"    );
-link.logTalking = true;
+var jointOrigine = body.create  ("joint" , "jointOrigine");
 
+var link     = body.create  ("link"  , "link1"    );
+
+var jointBeg = body.create  ("joint" , "jointMiddle");
+
+var link     = body.create  ("link"  , "link2"    );
 
 var jointEnd = body.create  ("joint" , "jointEnd");
-jointEnd.logTalking = true;
 
 
 
 jointBeg.connect(link);
 link.connect(jointEnd);
 
+
+
+core.create("viewer3d", "viewer3d");
+viewer3d.visible = true
 
 // Display spies
 agent007.show();
