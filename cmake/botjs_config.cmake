@@ -30,11 +30,18 @@ FIND_PATH(
     )
 MESSAGE("-- BotJs found includes: ${BOTJS_INCLUDE_DIR}")
 
-# Includes
-INCLUDE_DIRECTORIES(
-    src
-    ${BOTJS_INCLUDE_DIR}
-    )
+# Include DIRECTORY
+IF(${BOTJS_INCLUDE_DIR} STREQUAL "BOTJS_INCLUDE_DIR-NOTFOUND")
+
+    INCLUDE_DIRECTORIES( src )
+    
+ELSE(${BOTJS_INCLUDE_DIR} STREQUAL "BOTJS_INCLUDE_DIR-NOTFOUND" )
+    
+    INCLUDE_DIRECTORIES( src ${BOTJS_INCLUDE_DIR})
+
+ENDIF(${BOTJS_INCLUDE_DIR} STREQUAL "BOTJS_INCLUDE_DIR-NOTFOUND")
+
+
 
 # =============================================================================
 # Qt configuration
@@ -83,12 +90,12 @@ FUNCTION(BOTJS_GENERATE_BLOCK
     IF  ( ${BLOCK_NAME} )
         MESSAGE( SEND_ERROR "Block name must be just a string: BOTJS_GENERATE_BLOCK( block_name .... )" )
     ELSE( ${BLOCK_NAME} )
-        PROJECT(${BLOCK_NAME})
+        # PROJECT(${BLOCK_NAME})
         MESSAGE("==========> ${BLOCK_NAME} <==========")
     ENDIF()
 
     # Tell CMake to create the library
-    ADD_LIBRARY(${CMAKE_PROJECT_NAME}
+    ADD_LIBRARY(${BLOCK_NAME}
         SHARED
         ${${BLOCK_HEADER_FILES}}
         ${${BLOCK_SOURCE_FILES}}
@@ -96,16 +103,16 @@ FUNCTION(BOTJS_GENERATE_BLOCK
 
     # Link Qt Modules
     IF  ( ${BLOCK_QT_MODULES} )
-        QT5_USE_MODULES(${CMAKE_PROJECT_NAME} ${${BLOCK_QT_MODULES}} )
+        QT5_USE_MODULES(${BLOCK_NAME} ${${BLOCK_QT_MODULES}} )
     ELSE( ${BLOCK_QT_MODULES} )
         MESSAGE( SEND_ERROR "BLOCK_QT_MODULES must be a list: ${BLOCK_QT_MODULES}" )
-    ENDIF()
+    ENDIF(${BLOCK_QT_MODULES} )
 
     # Dependent block link
     IF  ( ${BLOCK_DEPENDENT_BLOCKS} )
 
         FOREACH(BLOCK ${${BLOCK_DEPENDENT_BLOCKS}})
-            TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${CMAKE_INSTALL_PREFIX}/block/lib${BLOCK}.so)
+            TARGET_LINK_LIBRARIES(${BLOCK_NAME} ${CMAKE_INSTALL_PREFIX}/block/lib${BLOCK}.so)
         ENDFOREACH(BLOCK)
     
     ELSE( ${BLOCK_DEPENDENT_BLOCKS} )
@@ -113,8 +120,8 @@ FUNCTION(BOTJS_GENERATE_BLOCK
     ENDIF()
 
     # Installation
-    INSTALL(TARGETS ${CMAKE_PROJECT_NAME}   DESTINATION block)
-    INSTALL(FILES   ${PROJECT_HEADER_FILES} DESTINATION include)
+    INSTALL(TARGETS ${BLOCK_NAME}            DESTINATION block)
+    INSTALL(FILES   ${${BLOCK_HEADER_FILES}} DESTINATION include)
 
 ENDFUNCTION(BOTJS_GENERATE_BLOCK)
 

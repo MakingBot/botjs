@@ -28,8 +28,7 @@ clean_project block/spy
 clean_project block/shell
 clean_project block/viewer3d
 
-clean_project block/joint
-clean_project block/link
+clean_project block/link_joint
 clean_project block/kinasm
 clean_project block/robot
 

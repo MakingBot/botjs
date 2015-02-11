@@ -146,6 +146,11 @@ void Viewer::paintGL()
     // Bind indice buffer
     _indiceBuffer.bind();
 
+
+
+
+
+
     // Draw triangles
     glDrawElements(GL_TRIANGLES, _testparam.size, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_testparam.index) );
 
@@ -250,6 +255,14 @@ void Viewer::resizeGL(int width, int height)
     // Initialize model view
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+        double test[16];
+    glGetDoublev( GL_MODELVIEW_MATRIX, test);
+
+    for(int i=0 ; i<16 ; i++)
+    {
+        std::cout << test[i] << ", " << std::endl;
+    }
 }
 
 /* ============================================================================

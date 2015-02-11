@@ -1,5 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
+project(botjs)
 INCLUDE(../cmake/botjs_config.cmake)
+
 
 # Includes
 INCLUDE_DIRECTORIES(

@@ -74,8 +74,7 @@ build_cmake_project block/spy
 build_cmake_project block/shell
 build_cmake_project block/viewer3d
 
-build_cmake_project block/link
-build_cmake_project block/joint
+build_cmake_project block/link_joint
 build_cmake_project block/kinasm
 build_cmake_project block/robot
 
