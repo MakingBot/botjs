@@ -120,6 +120,24 @@ void Viewer::paintGL()
     // Reset transformation matrix
     glLoadIdentity();
 
+
+//    glTranslated( 5, 2 ,3);
+
+    // double test[16];
+    // glGetDoublev( GL_MODELVIEW_MATRIX, test );
+    // for(int j=0 ; j<4 ; j++)
+    //     {
+    //     for(int i=0 ; i<4 ; i++)
+    //     {  
+            
+    //         std::cout << test[i*4+j] << " , ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl << std::endl;
+
+
+
     // Compute camera vectors
     _eye.setX( _at.x() + qCos(_yaw) * qCos(_pitch) );
     _eye.setY( _at.y() +              qSin(_pitch) );
@@ -133,6 +151,10 @@ void Viewer::paintGL()
     gluLookAt( _eye.x() , _eye.y() , _eye.z() ,
                 _at.x() ,  _at.y() ,  _at.z() ,
                 _up.x() ,  _up.y() ,  _up.z() );
+
+
+
+
 
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -201,6 +223,19 @@ void Viewer::initializeGL()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+    // Enable lighting
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+
+    int MatSpec [4] = {1,1,1,1};
+    glMaterialiv(GL_FRONT_AND_BACK,GL_SPECULAR,MatSpec);
+    glMateriali(GL_FRONT_AND_BACK,GL_SHININESS,100);
+
+
+    int LightPos[4] = {5,5,5,1};
+    glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
+
     _vertexBuffer.create();
     _vertexBuffer.bind();
     _vertexBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
@@ -256,13 +291,8 @@ void Viewer::resizeGL(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-        double test[16];
-    glGetDoublev( GL_MODELVIEW_MATRIX, test);
 
-    for(int i=0 ; i<16 ; i++)
-    {
-        std::cout << test[i] << ", " << std::endl;
-    }
+
 }
 
 /* ============================================================================
