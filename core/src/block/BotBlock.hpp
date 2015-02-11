@@ -79,6 +79,40 @@ public:
     }
 
     //!
+    //! Convert this specialized block pointer to a BotBlock pointer
+    //! Specialized means that BLOCK_TYPE is a derived class of BotBlock
+    //!
+    template<typename BLOCK_TYPE>
+    BotBlock* toBlockPointer()
+    {
+        return toBlockSharedPointer<BLOCK_TYPE>().data();
+    }
+
+    //! to a specialized block shared pointer
+    template<typename BLOCK_TYPE>
+    QSharedPointer<BotBlock> toBlockSharedPointer()
+    {
+        return qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( getBlockSharedFromThis() );
+    }
+
+    //!
+    //! Convert this BotBlock pointer to a specialized block pointer
+    //! Specialized means that BLOCK_TYPE is a derived class of BotBlock
+    //!
+    template<typename BLOCK_TYPE>
+    BLOCK_TYPE* toSpecializedPointer()
+    {
+        return toSpecializedSharedPointer<BLOCK_TYPE>().data();
+    }
+
+    //! to a specialized block shared pointer
+    template<typename BLOCK_TYPE>
+    QSharedPointer<BLOCK_TYPE> toSpecializedSharedPointer()
+    {
+        return qSharedPointerObjectCast<BLOCK_TYPE, BotBlock>( getBlockSharedFromThis() );
+    }
+
+    //!
     //! Each role is associated to a color
     //!
     static QString BlockRoleToColor(BlockRole role)

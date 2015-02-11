@@ -20,12 +20,22 @@
 
 #include <BotBlock.hpp>
 
+#include <QRealList.hpp>
+#include <JointBlock.hpp>
+
 //!
 //! A body assembly
 //!
 class KinAsmBlock : public BotBlock
 {
     Q_OBJECT
+
+    Q_PROPERTY(AsmStruct structure   READ structure        WRITE setStructure     MEMBER _structure   )
+
+    Q_PROPERTY(BotBlock* root        READ getBlockPtrRoot  WRITE setBlockPtrRoot                      )
+
+    Q_PROPERTY(QRealList jointConfig READ jointConfig      WRITE setJointConfig   MEMBER _jointConfig )
+
 
 public:
     //! Define block different roles
@@ -53,25 +63,65 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("kinasm"); }
 
+    // === MEMBER STRUCTURE ===
+
     //! Assembly structure getter 
     AsmStruct structure() const { return _structure; }
 
     //! Assembly structure setter
-    void setStructure(AsmStruct stru)
+    void setStructure(AsmStruct structure)
     {
         // Set
-        _structure = stru;
+        _structure = structure;
 
         // Alert BotJs
         emit blockiPropertyValuesChanged();
     }
+
+    // === MEMBER ROOT ===
+
+    //! Provide the BotBlock pointer of the root joint
+    BotBlock* getBlockPtrRoot() { return qobject_cast<BotBlock*>( _root.data() ); }
+
+    //! Set the BotBlock pointer of the root joint
+    void setBlockPtrRoot(BotBlock* block)
+    {
+        // Get and check
+        QSharedPointer<JointBlock> r = block->toSpecializedSharedPointer<JointBlock>();
+        if(! r) { return; }
+
+        // Set
+         _root  = r;
+
+        // Alert BotJs
+        emit blockiPropertyValuesChanged();
+    }
+
+    // === MEMBER JOINT CONFIG ===
+
+    //! Joint config getter
+    const QRealList& jointConfig() const { return _jointConfig; }
+
+    //! Joint config setter
+    void setJointConfig(const QRealList& li) { _jointConfig = li; }
+
 
 protected:
 
     //! Assembly structure
     AsmStruct _structure;
 
+    //! Assembly root, begin of the structure
+    QSharedPointer<JointBlock> _root;
+
+    //! Assembly connectors, ends of the structure
+    QList<QSharedPointer<JointBlock> > _connectors;
+
+
+    //! Joint Configuration
+    QRealList _jointConfig;
+
+
 };
 
 #endif // KINASMBLOCK_HPP
-

@@ -1,8 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(joint)
-
-# ====================================
-# =============== BUILD ==============
+INCLUDE(../../cmake/botjs_config.cmake)
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -14,11 +11,17 @@ SET(PROJECT_SOURCE_FILES
     src/JointBlock.cpp
     )
 
-# Call common configs
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../cmake/module/")
-INCLUDE(../../cmake/common_config.cmake)
-INCLUDE(../../cmake/block_common_config.cmake)
+# Qt Modules
+SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
 
-TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME}
-    /home/rodriguez/opt/botjs/block/liblink.so
+# Block link
+SET(PROJECT_DEPENDENT_BLOCKS link)
+
+# Generation
+BOTJS_GENERATE_BLOCK(
+    joint
+    PROJECT_HEADER_FILES
+    PROJECT_SOURCE_FILES
+    PROJECT_USED_QT_MODULE
+    PROJECT_DEPENDENT_BLOCKS
     )

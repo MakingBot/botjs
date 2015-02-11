@@ -1,11 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(viewer3d)
-
-# ====================================
-# =============== BUILD ==============
-
-# Includes
-INCLUDE_DIRECTORIES( /usr/include/GL )
+INCLUDE(../../cmake/botjs_config.cmake)
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -21,10 +15,23 @@ SET(PROJECT_SOURCE_FILES
     src/Viewer3DBlock.cpp
     )
 
-# Call common configs
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../cmake/module/")
-INCLUDE(../../cmake/common_config.cmake)
-INCLUDE(../../cmake/block_common_config.cmake)
+# Qt Modules
+SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+
+# Includes
+INCLUDE_DIRECTORIES( /usr/include/GL )
+
+# Block link
+# SET(PROJECT_DEPENDENT_BLOCKS )
+
+# Generation
+BOTJS_GENERATE_BLOCK(
+    link
+    PROJECT_HEADER_FILES
+    PROJECT_SOURCE_FILES
+    PROJECT_USED_QT_MODULE
+    PROJECT_DEPENDENT_BLOCKS
+    )
 
 # Link libraries
 QT5_USE_MODULES(${CMAKE_PROJECT_NAME}

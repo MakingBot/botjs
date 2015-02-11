@@ -1,55 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(shell)
-
-# ====================================
-# =============== PARAM ==============
-
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../cmake/module/")
-
-# ====================================
-# =============== BOTJS ==============
-
-FIND_PACKAGE(Botjs REQUIRED)
-
-# ====================================
-# =============== QT 5 ===============
-
-# Find includes in corresponding build directories
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-SET(CMAKE_AUTOMOC ON)
-
-# Find the Qt libraries
-FIND_PACKAGE(Qt5Widgets REQUIRED)
-
-# ====================================
-# =============== PARAM ==============
-
-# Compile flag for C++11
-LIST(APPEND CMAKE_CXX_FLAGS "-std=c++0x")
-
-# ==== Release ====
-IF(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
-    ADD_DEFINITIONS( -DQT_NO_DEBUG_OUTPUT -DQT_COMPILING_QSTRING_COMPAT_CPP )
-
-# ==== Debug ====
-ELSE(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-
-    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
-    ADD_DEFINITIONS( -DQT_COMPILING_QSTRING_COMPAT_CPP )
-
-ENDIF(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-
-# ====================================
-# =============== BUILD ==============
-
-# Includes
-INCLUDE_DIRECTORIES(
-    src
-    ${BOTJS_INCLUDE_DIR}
-    )
+INCLUDE(../../cmake/botjs_config.cmake)
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -63,19 +13,18 @@ SET(PROJECT_SOURCE_FILES
     src/ShellThread.cpp
     )
 
-# Tell CMake to create the library
-ADD_LIBRARY(${CMAKE_PROJECT_NAME}
-    SHARED
-    ${PROJECT_HEADER_FILES}
-    ${PROJECT_SOURCE_FILES}
+# Qt Modules
+SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+
+# Block link
+# SET(PROJECT_DEPENDENT_BLOCKS )
+
+# Generation
+BOTJS_GENERATE_BLOCK(
+    shell
+    PROJECT_HEADER_FILES
+    PROJECT_SOURCE_FILES
+    PROJECT_USED_QT_MODULE
+    PROJECT_DEPENDENT_BLOCKS
     )
 
-# Link libraries
-QT5_USE_MODULES(${CMAKE_PROJECT_NAME}
-    Qml
-    Gui
-    Core
-    Widgets
-    )
-
-INSTALL(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION block)

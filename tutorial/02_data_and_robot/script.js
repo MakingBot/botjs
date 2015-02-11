@@ -13,18 +13,19 @@ var body     = proteo.create("kinasm", "body"    );
 
 var jointOrigine = body.create  ("joint" , "jointOrigine");
 
-var link     = body.create  ("link"  , "link1"    );
+var link1     = body.create  ("link"  , "link1"    );
 
-var jointBeg = body.create  ("joint" , "jointMiddle");
+var jointMiddle = body.create  ("joint" , "jointMiddle");
 
-var link     = body.create  ("link"  , "link2"    );
+var link2     = body.create  ("link"  , "link2"    );
 
 var jointEnd = body.create  ("joint" , "jointEnd");
 
 
-
-jointBeg.connect(link);
-link.connect(jointEnd);
+jointOrigine.connect(link1);
+link1.connect(jointMiddle);
+jointMiddle.connect(link2);
+link2.connect(jointEnd);
 
 
 

@@ -1,8 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(spy)
-
-# ====================================
-# =============== BUILD ==============
+INCLUDE(../../cmake/botjs_config.cmake)
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -31,12 +28,17 @@ SET(PROJECT_SOURCE_FILES
     src/ViewerQMatrix4x4.cpp
     )
 
-# Call common configs
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../cmake/module/")
-INCLUDE(../../cmake/common_config.cmake)
-INCLUDE(../../cmake/block_common_config.cmake)
+# Qt Modules
+SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
 
+# Block link
+# SET(PROJECT_DEPENDENT_BLOCKS )
 
-
-# BOTJS_GENERATE_BLOCK( PROJECT_SOURCE_FILES )
-
+# Generation
+BOTJS_GENERATE_BLOCK(
+    spy
+    PROJECT_HEADER_FILES
+    PROJECT_SOURCE_FILES
+    PROJECT_USED_QT_MODULE
+    PROJECT_DEPENDENT_BLOCKS
+    )

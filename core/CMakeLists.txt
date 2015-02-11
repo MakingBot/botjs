@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
-PROJECT(botjs)
+INCLUDE(../cmake/botjs_config.cmake)
 
 # Includes
 INCLUDE_DIRECTORIES(
@@ -30,12 +30,26 @@ SET(PROJECT_SOURCE_FILES
     src/block/BotBlock.cpp
     )
 
+# 
 ADD_DEFINITIONS( -DBOTJS_CORE_DEBUG_PRINT )
 
-# Call common configs
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../cmake/module/")
-INCLUDE(../cmake/common_config.cmake)
-
+# Ressources
 QT5_ADD_RESOURCES(PROJECT_RCC_FILES rsc/ressources.qrc)
 
-INCLUDE(../cmake/app_common_config.cmake)
+# Tell CMake to create the executable
+ADD_EXECUTABLE(${CMAKE_PROJECT_NAME}
+    ${PROJECT_HEADER_FILES}
+    ${PROJECT_SOURCE_FILES}
+    ${PROJECT_RCC_FILES}
+    )
+
+# Link libraries
+QT5_USE_MODULES(${CMAKE_PROJECT_NAME}
+    Qml
+    Gui
+    Core
+    Widgets
+    )
+
+INSTALL(TARGETS ${CMAKE_PROJECT_NAME}   DESTINATION bin)
+INSTALL(FILES   ${PROJECT_HEADER_FILES} DESTINATION include)
