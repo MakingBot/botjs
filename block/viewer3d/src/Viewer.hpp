@@ -3,9 +3,10 @@
 
 #include <QtMath>
 #include <Glub.hpp>
-#include <QGLBuffer>
 #include <QGLWidget>
 #include <QCloseEvent>
+
+#include <RenderNode.hpp>
 
 class Viewer3DBlock;
 
@@ -34,6 +35,7 @@ public:
     }
 
 public:
+
     //! 
     void onBlockPropertiesChanged();
 

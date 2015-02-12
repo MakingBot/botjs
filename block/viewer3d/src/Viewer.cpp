@@ -264,9 +264,13 @@ void Viewer::initializeGL()
     //     2, 5, 2,
     //     _vertexArray, _indiceArray, _testparam);
 
-    // Glub::Sphere(
-    //     2, 32,
-    //     _vertexArray, _indiceArray, _testparam);
+
+    _testparam.index = 0;
+    _testparam.size  = 0;
+
+    Glub::Sphere(
+        1, 4,
+        _vertexArray, _indiceArray, _testparam);
 
 
     // Glub::Cylinder(
@@ -274,9 +278,9 @@ void Viewer::initializeGL()
     // _vertexArray, _indiceArray, _testparam);
     
 
-    Glub::Arrow(
-    1, 5, 32,
-    _vertexArray, _indiceArray, _testparam);
+    // Glub::Arrow(
+    // 1, 5, 32,
+    // _vertexArray, _indiceArray, _testparam);
     
 
 

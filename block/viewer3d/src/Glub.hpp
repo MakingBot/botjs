@@ -9,6 +9,8 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
+#include <VertexBufferObject.hpp>
+
 //! Buffer helper
 #define GLUB_BUFFER_OFFSET(i) ((void*)(i*sizeof(GLuint)))
 

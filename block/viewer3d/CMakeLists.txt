@@ -6,6 +6,12 @@ SET(PROJECT_HEADER_FILES
     src/Glub.hpp
     src/Viewer.hpp
     src/Viewer3DBlock.hpp
+    
+    src/RenderNode.hpp
+    src/RenderNodeLink.hpp
+    src/RenderNodeRobot.hpp
+    src/RenderNodeJoint.hpp
+    src/RenderNodeKinAsm.hpp
     )
 
 # Sources

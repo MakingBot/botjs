@@ -1,5 +1,7 @@
+#ifndef VERTEXBUFFEROBJECT_HPP
+#define VERTEXBUFFEROBJECT_HPP
 //!
-//! \file Viewer3DBlock.cpp
+//! \file VertexBufferObject.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -17,23 +19,36 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <Viewer3DBlock.hpp>
+#include <QGLBuffer>
+#include <QVector3D>
 
-/* ============================================================================
- *
- * */
-EXPORT_BLOCK(Viewer3DBlock)
-
-/* ============================================================================
- *
- * */
-Viewer3DBlock::Viewer3DBlock(const QString& name, QObject *parent)
-    : BotBlock(name, parent), _visible(false), _bgColor(240,240,240)
+//!
+//! Contain VBO configuration
+//!
+//! \author [XR]MakingBot ( http://makingbot.fr )
+//!
+class VertexBufferObject
 {
-    appendBlockIProperty("visible"            , IProperty(IProperty::IPTypeBool, true ));
 
-    appendBlockIProperty("vboUsedSize"        , IProperty(IProperty::IPTypeInt , false));
-    appendBlockIProperty("nbOfRenderedObject" , IProperty(IProperty::IPTypeInt , false));
-}
+public:
 
 
+
+protected:
+
+    //! Array to store all vertex that will be rendered
+    QVector<QVector3D>          _vertexArray;
+
+    //! Arrays to store vertex indices
+    QVector<GLuint>             _indiceArray;
+
+    //! Vertex buffer
+    QGLBuffer                   _vertexBuffer;
+
+    //! Indice buffer
+    QGLBuffer                   _indiceBuffer;
+
+};
+
+
+#endif // VERTEXBUFFEROBJECT_HPP

@@ -29,7 +29,7 @@ void Glub::Cuboid(
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
 {
     // Set buffer param
-    const GLuint index = param.index;
+    const GLuint vindex = vertexArray.size();
 
     // Compute const
     const qreal rx2 = rx / 2;
@@ -50,33 +50,33 @@ void Glub::Cuboid(
 
     // Append indices to compose faces
     // Front
-    indiceArray << QVector<GLuint>( { index + A, index + C, index + D} );
-    indiceArray << QVector<GLuint>( { index + A, index + B, index + C} );
+    indiceArray << QVector<GLuint>( { vindex + A, vindex + C, vindex + D} );
+    indiceArray << QVector<GLuint>( { vindex + A, vindex + B, vindex + C} );
     param.size += 2 * 3;
 
     // Back
-    indiceArray << QVector<GLuint>( { index + E, index + G, index + H} );
-    indiceArray << QVector<GLuint>( { index + E, index + F, index + G} );
+    indiceArray << QVector<GLuint>( { vindex + E, vindex + G, vindex + H} );
+    indiceArray << QVector<GLuint>( { vindex + E, vindex + F, vindex + G} );
     param.size += 2 * 3;
 
     // Top
-    indiceArray << QVector<GLuint>( { index + D, index + H, index + G} );
-    indiceArray << QVector<GLuint>( { index + D, index + C, index + H} );
+    indiceArray << QVector<GLuint>( { vindex + D, vindex + H, vindex + G} );
+    indiceArray << QVector<GLuint>( { vindex + D, vindex + C, vindex + H} );
     param.size += 2 * 3;
 
     // Bottom
-    indiceArray << QVector<GLuint>( { index + F, index + B, index + A} );
-    indiceArray << QVector<GLuint>( { index + F, index + E, index + B} );
+    indiceArray << QVector<GLuint>( { vindex + F, vindex + B, vindex + A} );
+    indiceArray << QVector<GLuint>( { vindex + F, vindex + E, vindex + B} );
     param.size += 2 * 3;
 
     // Left
-    indiceArray << QVector<GLuint>( { index + B, index + H, index + C} );
-    indiceArray << QVector<GLuint>( { index + B, index + E, index + H} );
+    indiceArray << QVector<GLuint>( { vindex + B, vindex + H, vindex + C} );
+    indiceArray << QVector<GLuint>( { vindex + B, vindex + E, vindex + H} );
     param.size += 2 * 3;
 
     // Right
-    indiceArray << QVector<GLuint>( { index + F, index + D, index + G} );
-    indiceArray << QVector<GLuint>( { index + F, index + A, index + D} );
+    indiceArray << QVector<GLuint>( { vindex + F, vindex + D, vindex + G} );
+    indiceArray << QVector<GLuint>( { vindex + F, vindex + A, vindex + D} );
     param.size += 2 * 3;
 }
 
@@ -90,50 +90,56 @@ void Glub::Sphere(
     // Set buffer param
     const GLuint index = param.index;
 
-
     // Compute const
-    const qreal step = (M_PI * 2) / slices;
+    const qreal stepxz = (M_PI * 2) /  slices    ; // Angle on 360 deg
+    const qreal stepxy = (M_PI    ) / (slices/2) ; // Angle on 180 deg
+
+    std::cout << stepxz << std::endl;
+    std::cout << stepxy << std::endl;
 
     // Compute slices
     for(GLuint i=0 ; i<slices ; i++)
     {
-        const qreal tetaxy = step * i;
-        for(GLuint j=0 ; j<slices ; j++)
+        const qreal tetaxz = stepxz * i;
+
+        for(GLuint j=0 ; j<slices/2 ; j++)
         {
-            const qreal tetaxz = step * i;
+            const qreal tetaxy = stepxy * i;
 
             // Compute coordonates
-            const qreal x = radius * qCos(tetaxz) * qSin(tetaxy);
-            const qreal y = radius * qSin(tetaxz);  
-            const qreal z = radius * qCos(tetaxz) * qCos(tetaxy);
+            const qreal x = radius * qCos(tetaxy) * qSin(tetaxz);
+            const qreal y = radius * qSin(tetaxy);  
+            const qreal z = radius * qCos(tetaxy) * qCos(tetaxz);
 
-            vertexArray << QVector3D(x, y, z);
+            QVector3D point(x, y, z);
+
+            vertexArray << point;
+
+            std::cout << point.x() << " - " << point.y() << " - " << point.z() << " - " << std::endl;
         }
     }
 
-
-    auto indexfunc = [slices](GLuint i, GLuint j) {
-            return ( i*slices + j );
-        };
+    // Index function
+    auto indexfunc = [slices](GLuint i, GLuint j) { return ( i * (slices/2) + j ); };
 
 
-        std::cout << indexfunc(1,0)  << std::endl;
+    indiceArray << QVector<GLuint>( { indexfunc(0, 0), indexfunc(0, 0), indexfunc(0, 0) } );
+    param.size += 3;
 
+    // // 
+    // for(GLuint i=0 ; i<slices ; i++)
+    // {    
+    //     for(GLuint j=0 ; j<slices/2 ; j++)
+    //     {
 
-    for(GLuint i=0 ; i<slices ; i++)
-    {
-    
-        for(GLuint j=0 ; j<slices ; j++)
-        {
+    //         indiceArray << QVector<GLuint>( { indexfunc(i, j), indexfunc(i, j+1), indexfunc(i+1, j+1) } );
 
-            indiceArray << QVector<GLuint>( { indexfunc(i, j), indexfunc(i, j+1), indexfunc(i+1, j+1) } );
+    //         //indiceArray << QVector<GLuint>( { indexfunc(i+1, j), indexfunc(i, j), indexfunc(i+1, j+1) } );
 
-            indiceArray << QVector<GLuint>( { indexfunc(i+1, j), indexfunc(i, j), indexfunc(i+1, j+1) } );
+    //         param.size += 6;
 
-            param.size += 6;
-
-        }
-    }
+    //     }
+    // }
 
 
 }
@@ -146,9 +152,9 @@ void Glub::Cylinder(
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
 {
     // Set buffer param
-    const GLuint index  = param.index;
     const GLuint vindex = vertexArray.size();
 
+    // Compute number of indice to append
     param.size += 4 * slices;   // nb triangles for top, bot circle and body
     param.size *= 3;            // 3 points per triangles
 
@@ -184,8 +190,8 @@ void Glub::Cylinder(
         GLuint tmp = i+1;
         if( tmp >= slices ) { tmp -= slices; }
 
-        const GLuint p1 = index + 2 + tmp; // i + 1
-        const GLuint p2 = index + 2 + i;   // i
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
 
         indiceArray << QVector<GLuint>( {p1, p2, 0} );
     }
@@ -196,8 +202,8 @@ void Glub::Cylinder(
         GLuint tmp = i+1;
         if( tmp >= slices ) { tmp -= slices; }
 
-        const GLuint p1 = index + 2 + slices + tmp; // i + 1
-        const GLuint p2 = index + 2 + slices + i;   // i
+        const GLuint p1 = vindex + 2 + slices + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + slices + i;   // i
 
         indiceArray << QVector<GLuint>( {p1, p2, 1} );
     }
@@ -208,11 +214,11 @@ void Glub::Cylinder(
         GLuint tmp = i+1;
         if( tmp >= slices ) { tmp -= slices; }
 
-        const GLuint p01 = index + 2 + tmp; // i + 1
-        const GLuint p02 = index + 2 + i;   // i
+        const GLuint p01 = vindex + 2 + tmp; // i + 1
+        const GLuint p02 = vindex + 2 + i;   // i
 
-        const GLuint p11 = index + 2 + slices + tmp; // i + 1
-        const GLuint p12 = index + 2 + slices + i;   // i
+        const GLuint p11 = vindex + 2 + slices + tmp; // i + 1
+        const GLuint p12 = vindex + 2 + slices + i;   // i
 
         indiceArray << QVector<GLuint>( {p12, p02, p01}  );
         indiceArray << QVector<GLuint>( {p12, p01, p11 } );
@@ -230,15 +236,14 @@ void Glub::Cone(
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
 {
     // Set buffer param
-    const GLuint index  = param.index;
     const GLuint vindex = vertexArray.size();
 
-   
+    // Compute number of indice to append
     param.size += 2 * slices;   // nb triangles for top, bot circle and body
     param.size *= 3;            // 3 points per triangles
 
     // Compute const
-    const qreal height2 = height/2;
+    const qreal height2 = height / 2;
     const qreal step = (M_PI * 2) / slices;
     
     // Append center bot and top
@@ -249,14 +254,11 @@ void Glub::Cone(
     for(GLuint i=0 ; i<slices ; i++)
     {
         const qreal angle = step * i;
-        const qreal sina  = qSin(angle); 
+        const qreal sina  = qSin(angle);
         const qreal cosa  = qCos(angle);
         
         vertexArray << QVector3D( cosa*radius, sina*radius, -height2 );
     }
-    
-        std::cout << " truc 1 ::: " << vertexArray.size() << std::endl;
-
 
     // Append points of the top circle
     for(GLuint i=0 ; i<slices ; i++)
@@ -266,23 +268,17 @@ void Glub::Cone(
         vertexArray << topPoint;
     }
 
-
-        std::cout << " truc 2" << std::endl;
-
-
     // Index for bot circle
     for(GLuint i=0 ; i<slices ; i++)
     {
         GLuint tmp = i+1;
         if( tmp >= slices ) { tmp -= slices; }
 
-        const GLuint p1 = index + 2 + tmp; // i + 1
-        const GLuint p2 = index + 2 + i;   // i
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
 
         indiceArray << QVector<GLuint>( {p1, p2, 0} );
     }
-
-        std::cout << " truc3 " << std::endl;
 
     // Index for body
     for(GLuint i=0 ; i<slices ; i++)
@@ -290,15 +286,13 @@ void Glub::Cone(
         GLuint tmp = i+1;
         if( tmp >= slices ) { tmp -= slices; }
 
-        const GLuint p1 = index + 2 + tmp; // i + 1
-        const GLuint p2 = index + 2 + i;   // i
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
 
         indiceArray << QVector<GLuint>( {p1, p2, 1} );
     }
 
-
-        std::cout << " truc 4" << std::endl;
-
+    return ;
 }
 
 
@@ -316,18 +310,7 @@ void Glub::Arrow(
 
     Cylinder( radius, height, slices, vertexArray, indiceArray, param );
 
-    std::cout << param.index << " - " << param.size << std::endl;
-
-    param.index = param.size-1;
 
     Cone    ( radius, height, slices, vertexArray, indiceArray, param );
-
-
-    std::cout << param.index << " - " << param.size << std::endl;
-
-    param.index = 0;
-
-    std::cout << param.index << " - " << param.size << std::endl;
-
 
 }
