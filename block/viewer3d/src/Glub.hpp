@@ -50,6 +50,15 @@ public:
         qreal radius, qreal height, GLuint slices,
         QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
 
+
+    static void Cone(
+        qreal radius, qreal height, GLuint slices,
+        QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
+
+    static void Arrow(
+        qreal radius, qreal height, GLuint slices,
+        QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
+
 };
 
 #endif // GLUB_HPP

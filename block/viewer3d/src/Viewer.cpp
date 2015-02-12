@@ -217,24 +217,35 @@ void Viewer::paintGL()
  * */
 void Viewer::initializeGL()
 {
+
+
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
 
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+    // glEnable(GL_BLEND);
+    // glEnable(GL_POLYGON_SMOOTH);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
     // Enable lighting
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    // glEnable(GL_LIGHTING);
+    // glEnable(GL_LIGHT0);
+
+    // float global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    // glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+    // int MatSpec [4] = {1,1,1,1};
+    // glMaterialiv(GL_FRONT_AND_BACK,GL_SPECULAR,MatSpec);
+    // glMateriali(GL_FRONT_AND_BACK,GL_SHININESS,100);
 
 
-    int MatSpec [4] = {1,1,1,1};
-    glMaterialiv(GL_FRONT_AND_BACK,GL_SPECULAR,MatSpec);
-    glMateriali(GL_FRONT_AND_BACK,GL_SHININESS,100);
+    // int LightPos[4] = {5,5,5,1};
+    // glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
 
-
-    int LightPos[4] = {5,5,5,1};
-    glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
 
     _vertexBuffer.create();
     _vertexBuffer.bind();
@@ -248,10 +259,27 @@ void Viewer::initializeGL()
     _indiceBuffer.allocate(MAX_VERTEX_USED * sizeof(GLuint    ));
     _indiceBuffer.release();
 
-    Glub::Cylinder(
+
+    // Glub::Cuboid(
+    //     2, 5, 2,
+    //     _vertexArray, _indiceArray, _testparam);
+
+    // Glub::Sphere(
+    //     2, 32,
+    //     _vertexArray, _indiceArray, _testparam);
+
+
+    // Glub::Cylinder(
+    // 1, 5, 32,
+    // _vertexArray, _indiceArray, _testparam);
+    
+
+    Glub::Arrow(
     1, 5, 32,
     _vertexArray, _indiceArray, _testparam);
     
+
+
     loadBuffers();
 }
 
