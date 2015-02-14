@@ -31,7 +31,7 @@ class RobotBlock : public BotBlock
 {
     Q_OBJECT
     Q_PROPERTY(QString    name READ name WRITE setName MEMBER _name)
-    Q_PROPERTY(BotBlock*  base READ base WRITE setBase             )
+  //  Q_PROPERTY(BotBlock*  base READ base WRITE setBase             )
 
 public:
     //!
@@ -41,7 +41,7 @@ public:
         : BotBlock(name, parent), _name(name)
     {
         appendBlockIProperty("name", IProperty(IProperty::IPTypeString  , true));
-        appendBlockIProperty("base", IProperty(IProperty::IPTypeSonBlock, {"kinasm"}));
+  //      appendBlockIProperty("base", IProperty(IProperty::IPTypeSonBlock, {"kinasm"}));
     }
 
     //! FROM BotBlock
@@ -104,21 +104,19 @@ public slots:
     }
 
     //! FROM BotBlock
-    virtual bool connect(BotBlock* block, bool master = true)
-    {
-        return BotBlock::connect(block, master);
-        return true;
-    }
+    virtual bool connect(BotBlock* block, bool master = true);
 
 protected:
+
     //! Robot name
     QString _name;
 
-    //! Robot base, a fixed assembly
-    QSharedPointer<BotBlock> _base;
+    //! Robot base kinematic assembly
+    QSharedPointer<KinAsmBlock> _base;
 
     //! Parts of the robot
-    QList<QSharedPointer<BotBlock> > _bodies;
+    // QList<QSharedPointer<BotBlock> > _bodies;
+
 };
 
 #endif // ROBOTBLOCK_HPP

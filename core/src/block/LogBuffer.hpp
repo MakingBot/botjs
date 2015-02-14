@@ -27,6 +27,7 @@
 #include <iostream>
 #include <QVector3D>
 #include <QVector4D>
+#include <QMatrix4x4>
 #include <QTextStream>
 #include <QSharedPointer>
 

@@ -1,9 +1,13 @@
 #include <Viewer.hpp>
 #include <iostream>
+#include <RobotBlock.hpp>
+
 #include <Viewer3DBlock.hpp>
 
+#include <RenderNodeRobot.hpp>
+
 //! Maximum vertice in the obj
-#define MAX_VERTEX_USED 2000
+#define MAX_VERTEX_USED 10000
 
 /* ============================================================================
  *
@@ -12,27 +16,44 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
     : QGLWidget(parent)
     , _up(0,1,0), _at(0,0,0), _eye(0,3,3)
     , _yaw(0)   , _pitch(0) , _zoom(5)
-    , _parentBlock  (parent_block)
-    , _vertexBuffer (QGLBuffer::VertexBuffer)
-    , _indiceBuffer (QGLBuffer::IndexBuffer )
-    , _testparam(0,0)
+    , _parentBlock(parent_block)
 {
-    //connect( getSharedparentBlock().data(), SIGNAL(propertyValuesChanged()), this, SLOT(onBlockPropertiesChanged()) );
-    onBlockPropertiesChanged();
+    // Connect the viewer with the evolution of the parent block 
+    connect( getSharedparentBlock().data(), SIGNAL(blockiPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
+    connect( getSharedparentBlock().data(), SIGNAL(blockfPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
+    
+    // First update
+    onBlockPropertiesChange();
 }
 
 /* ============================================================================
  *
  * */
-void Viewer::onBlockPropertiesChanged()
+void Viewer::onBlockPropertiesChange()
 {
+    // Get opengl context
     makeCurrent();
-    QSharedPointer<Viewer3DBlock> pblock = getSharedparentBlock();
-    if(pblock)
+
+    QSharedPointer<Viewer3DBlock> viewerBlock = getSharedparentBlock();
+    if(viewerBlock)
     {
         // Background color
-        glClearColor(pblock->bgColor().x(), pblock->bgColor().y(), pblock->bgColor().z(), 1.0f);
+        glClearColor(viewerBlock->bgColor().x(), viewerBlock->bgColor().y(), viewerBlock->bgColor().z(), 1.0f);
 
+
+        QSharedPointer<RobotBlock> robot = viewerBlock->sharedRobot();
+        if(robot)
+        {
+
+            _renderingTree = QSharedPointer<RenderNodeRobot>( new RenderNodeRobot(robot) );
+
+            // Log
+            viewerBlock->beglog() << "Update render tree" << viewerBlock->endlog();
+        }
+  
+
+        // Log
+        viewerBlock->beglog() << "Viewer updated from block properties" << viewerBlock->endlog();
     }
     else
     {
@@ -40,6 +61,8 @@ void Viewer::onBlockPropertiesChanged()
         glClearColor(128, 0, 0, 1.0f);
 
     }
+
+    // Free opengl context
     doneCurrent();
     
     // Update view
@@ -51,15 +74,15 @@ void Viewer::onBlockPropertiesChanged()
  * */
 void Viewer::loadBuffers()
 {
-    // Write vertex data in vertex buffer
-    _vertexBuffer.bind();
-    _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
-    _vertexBuffer.release();
+    // // Write vertex data in vertex buffer
+    // _vertexBuffer.bind();
+    // _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
+    // _vertexBuffer.release();
 
-    // Write indice data in indice buffer
-    _indiceBuffer.bind();
-    _indiceBuffer.write(0, _indiceArray.constData(), _indiceArray.size()  * sizeof(GLuint));
-    _indiceBuffer.release();
+    // // Write indice data in indice buffer
+    // _indiceBuffer.bind();
+    // _indiceBuffer.write(0, _indiceArray.constData(), _indiceArray.size()  * sizeof(GLuint));
+    // _indiceBuffer.release();
 }
 
 
@@ -159,7 +182,7 @@ void Viewer::paintGL()
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
+/*
     // Bind vertex buffer
     _vertexBuffer.bind();
     glVertexPointer(3, GL_FLOAT, 0, NULL);
@@ -174,7 +197,7 @@ void Viewer::paintGL()
 
 
     // Draw triangles
-    glDrawElements(GL_TRIANGLES, _testparam.size, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_testparam.index) );
+    //glDrawElements(GL_TRIANGLES, _testparam.size, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_testparam.index) );
 
     // Release indice buffer
     _indiceBuffer.release();
@@ -183,7 +206,7 @@ void Viewer::paintGL()
     glDisableClientState(GL_VERTEX_ARRAY);
 
 
-
+*/
 
 
 
@@ -247,17 +270,17 @@ void Viewer::initializeGL()
     // glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
 
 
-    _vertexBuffer.create();
-    _vertexBuffer.bind();
-    _vertexBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
-    _vertexBuffer.allocate(MAX_VERTEX_USED * sizeof(QVector3D));
-    _vertexBuffer.release();
+    // _vertexBuffer.create();
+    // _vertexBuffer.bind();
+    // _vertexBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
+    // _vertexBuffer.allocate(MAX_VERTEX_USED * sizeof(QVector3D));
+    // _vertexBuffer.release();
 
-    _indiceBuffer.create();
-    _indiceBuffer.bind();
-    _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
-    _indiceBuffer.allocate(MAX_VERTEX_USED * sizeof(GLuint    ));
-    _indiceBuffer.release();
+    // _indiceBuffer.create();
+    // _indiceBuffer.bind();
+    // _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
+    // _indiceBuffer.allocate(MAX_VERTEX_USED * sizeof(GLuint    ));
+    // _indiceBuffer.release();
 
 
     // Glub::Cuboid(
@@ -265,12 +288,12 @@ void Viewer::initializeGL()
     //     _vertexArray, _indiceArray, _testparam);
 
 
-    _testparam.index = 0;
-    _testparam.size  = 0;
+    // _testparam.index = 0;
+    // _testparam.size  = 0;
 
-    Glub::Sphere(
-        1, 4,
-        _vertexArray, _indiceArray, _testparam);
+    // Glub::Sphere(
+    //     3, 4,
+    //     _vertexArray, _indiceArray, _testparam);
 
 
     // Glub::Cylinder(

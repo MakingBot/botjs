@@ -20,6 +20,7 @@
 #include <QList>
 #include <Glub.hpp>
 #include <BotBlock.hpp>
+#include <VertexBufferObject.hpp>
 
 //!
 //! Convert a data block in to a rendering shape
@@ -30,29 +31,30 @@ class RenderNode
 {
 
 public:
-
-    static QSharedPointer<RenderNode> CreateRenderNode(QWeakPointer<BotBlock> block);
+    //!
+    //! Factory creator
+    //!
+    static QSharedPointer<RenderNode> CreateRenderNode(QSharedPointer<BotBlock> block);
 
     //!
     //! Default constructor
     //!
-    RenderNode( QWeakPointer<RenderNode> parent = QWeakPointer<RenderNode>() );
+    RenderNode( /* QWeakPointer<RenderNode> parent = QWeakPointer<RenderNode>() */ )
+    {
 
-    //! Update shape information
-    void updateNode();
+    }
+
 
 protected:
 
-    //! True if this node must be rendered
-    bool _mustBeRendered;
 
     //! Buffer parameters
-    BufferParam _bufferParam;
+    ObjBufferConfig _objConfig;
 
-    // Node parent
-    QWeakPointer<RenderNode> _nodeParent;
+    // // Node parent
+    // QWeakPointer<RenderNode> _nodeParent;
 
-    // Node childs
-    QList<QSharedPointer<RenderNode> > _nodeChilds;
+    // // Node childs
+    // QList<QSharedPointer<RenderNode> > _nodeChilds;
 
 };

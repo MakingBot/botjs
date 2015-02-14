@@ -23,6 +23,28 @@
 #include <QVector3D>
 
 //!
+//! Provide parameter structure to draw a previous stored vbo object
+//!
+class ObjBufferConfig
+{
+public:
+    //! Default constructor
+    ObjBufferConfig() : iindex(0), isize(0), vindex(0), vsize(0) { }
+
+    //! Index of the first object indice in the VBO 
+    unsigned int iindex;
+
+    //! Number of indice to compose the object
+    unsigned int isize;
+
+    //! Index of the first object vertex in the VBO 
+    unsigned int vindex;
+
+    //! Number of vertice to compose the object
+    unsigned int vsize;
+};
+
+//!
 //! Contain VBO configuration
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
@@ -31,15 +53,28 @@ class VertexBufferObject
 {
 
 public:
+    //!
+    //! Default constructor
+    //!
+    VertexBufferObject();
 
+    //!
+    //! Subdivide triangle of the sphere approximation 
+    //!
+    void subdivide( QVector3D p1, QVector3D p2, QVector3D p3, qreal radius, ObjBufferConfig& obj, int depth );
+
+    //!
+    //! Function to generate a sphere
+    //!
+    void createSphere( qreal radius, GLuint slices, ObjBufferConfig& obj );
 
 
 protected:
 
-    //! Array to store all vertex that will be rendered
+    //! Array to store vertices that will be rendered
     QVector<QVector3D>          _vertexArray;
 
-    //! Arrays to store vertex indices
+    //! Arrays to store vertices indices
     QVector<GLuint>             _indiceArray;
 
     //! Vertex buffer

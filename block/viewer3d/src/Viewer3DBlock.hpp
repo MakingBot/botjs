@@ -93,6 +93,20 @@ public:
     void setBgColor(const QVector3D& vec) { _bgColor = vec; emit blockiPropertyValuesChanged(); }
 
     // ========================================================================
+    // => Robot property
+
+    //! Weak pointer on robot getter
+    QWeakPointer<RobotBlock> weakRobot() { return _robot; }
+
+    //! 
+    QSharedPointer<RobotBlock> sharedRobot()
+    {
+        if(_robot) return _robot.toStrongRef(); else return QSharedPointer<RobotBlock>(0);
+    }
+
+
+
+    // ========================================================================
     // => widget management
 
     //!
@@ -112,7 +126,19 @@ signals:
 public slots:
 
     // ========================================================================
-    // => visible member
+    // => BotBlock redefinition
+
+    //! FROM BotBlock
+    virtual bool connect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnect(BotBlock* block, bool master=true);
+
+    //! FROM BotBlock
+    virtual void disconnectAll();
+
+    // ========================================================================
+    // => visible property
 
     //! Widget visibility setter
     virtual void show()
@@ -132,6 +158,10 @@ public slots:
     }
 
 protected:
+
+    // ========================================================================
+    // => properties
+
     //! Widget visibility
     bool _visible;
 
@@ -144,11 +174,15 @@ protected:
     //! Background color
     QVector3D _bgColor;
 
+    //! Connection on the robot managed by this session
+    QWeakPointer<RobotBlock> _robot;
+
+    // ========================================================================
+    // => widget management
+
     //! Pointer on the viewer widget
     QSharedPointer<Viewer> _widget;
 
-    //! Connection on the robot managed by this session
-    QWeakPointer<RobotBlock> _robot;
 };
 
 

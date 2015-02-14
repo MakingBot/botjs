@@ -31,6 +31,12 @@ link2.connect(jointEnd);
 
 core.create("viewer3d", "viewer3d");
 viewer3d.visible = true
+viewer3d.logTalking = true;
+
+
+viewer3d.connect(proteo)
+
+
 
 // Display spies
 agent007.show();

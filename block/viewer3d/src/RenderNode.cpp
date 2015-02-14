@@ -1,6 +1,7 @@
 //!
-//! \file RobotBlock.cpp
+//! \file RenderNode.cpp
 //!
+// Copyright 2015 MakingBot
 // This file is part of BotJs.
 //
 // BotJs is free software: you can redistribute it and/or modify
@@ -16,20 +17,36 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <RenderNode.hpp>
+
 #include <RobotBlock.hpp>
+#include <RenderNodeRobot.hpp>
 
 /* ============================================================================
  *
  * */
-EXPORT_BLOCK(RobotBlock)
-
-/* ============================================================================
- *
- * */
-bool RobotBlock::connect(BotBlock* block, bool master)
+QSharedPointer<RenderNode> RenderNode::CreateRenderNode(QSharedPointer<BotBlock> block)
 {
-    return BotBlock::connect(block, master);
-    return true;
+    // Basic check
+    if(!block) { return QSharedPointer<RenderNode>(0); }
+
+
+
+    QSharedPointer<RobotBlock> robot = block->toSpecializedSharedPointer<RobotBlock>();
+    if( robot )
+    {
+
+        //QSharedPointer<RenderNode>   qSharedPointerObjectCast<RenderNode, RenderNodeRobot>( QSharedPointer<RenderNodeRobot> ( new RenderNodeRobot(robot) ) ) ;
+
+        //return
+
+        // RenderNodeRobot
+
+    }
+
+
+
+    return QSharedPointer<RenderNode>(0);
 }
 
 

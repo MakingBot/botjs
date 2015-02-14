@@ -34,16 +34,15 @@ public:
         else             { return QSharedPointer<Viewer3DBlock>(0); }
     }
 
-public:
+public slots:
 
-    //! 
-    void onBlockPropertiesChanged();
+    //! Action to perform when the block properties change 
+    void onBlockPropertiesChange();
 
 protected:
 
-    BufferParam _testparam;
-
-    // === VIEWER MANAGEMENT ===
+    // ========================================================================
+    // => Viewer Management
 
     //! Up vector
     QVector3D                   _up;
@@ -72,21 +71,17 @@ protected:
     //! The parent block
     QWeakPointer<Viewer3DBlock> _parentBlock;
 
-    // === ARRAY AND BUFFERS ===
+    // ========================================================================
+    // => VBO configuration
 
-    //! Array to store all vertex that will be rendered
-    QVector<QVector3D>          _vertexArray;
+    //! VBO configuration
+    VertexBufferObject          _vbo;
 
-    //! Arrays to store vertex indices
-    QVector<GLuint>             _indiceArray;
+    //! Rendering tree
+    QSharedPointer<RenderNode>  _renderingTree;
 
-    //! Vertex buffer
-    QGLBuffer                   _vertexBuffer;
-
-    //! Indice buffer
-    QGLBuffer                   _indiceBuffer;
-
-    // === FUNCTIONS ===
+    // ========================================================================
+    // => Functions
 
     //! To load VBO from arrays
     void loadBuffers();

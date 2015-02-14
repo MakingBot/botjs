@@ -14,10 +14,12 @@ SET(PROJECT_HEADER_FILES
     src/app/BotApp.hpp
     src/app/BotEngine.hpp
     src/app/CoreBlock.hpp
-    
+
     src/block/BotBlock.hpp
     src/block/IProperty.hpp
     src/block/LogBuffer.hpp
+
+    src/block/PhysicBlock.hpp
 
     src/type/QRealList.hpp
     )

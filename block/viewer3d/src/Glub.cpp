@@ -23,7 +23,7 @@
  * A ----- B  X  X  E ----- F
  *
  * Front Z to us Back Z to the screen
- * */
+ * *
 void Glub::Cuboid(
     qreal rx, qreal ry, qreal rz,
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
@@ -80,73 +80,80 @@ void Glub::Cuboid(
     param.size += 2 * 3;
 }
 
+
+
+
 /* ============================================================================
  *
- * */
+ * *
+void subdivide( QVector3D p1, QVector3D p2, QVector3D p3, qreal radius,
+    QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param,
+    int depth)
+{
+
+    if(depth <= 0)
+    {
+        const GLuint vindex = vertexArray.size();
+
+        // Append indices
+        indiceArray << QVector<GLuint>( { vindex + 0, vindex + 1, vindex + 2} );
+        
+        // Append vertices
+        vertexArray << p1 << p2 << p3;
+
+        // Adjust the number of vertex to render
+        param.size += 3;
+    }
+    else
+    {
+        auto moy = [](float n1, float n2) {  return (n1+n2)/2;  };
+
+        QVector3D p12( moy(p1.x(), p2.x()), moy(p1.y(), p2.y()), moy(p1.z(), p2.z()) );
+        p12 = p12.normalized() * radius;
+        QVector3D p23( moy(p3.x(), p2.x()), moy(p3.y(), p2.y()), moy(p3.z(), p2.z()) );
+        p23 = p23.normalized() * radius;
+        QVector3D p31( moy(p1.x(), p3.x()), moy(p1.y(), p3.y()), moy(p1.z(), p3.z()) );
+        p31 = p31.normalized() * radius;
+
+        subdivide( p1 , p12, p31, radius, vertexArray, indiceArray, param, depth-1);
+        subdivide( p12, p2 , p23, radius, vertexArray, indiceArray, param, depth-1);
+        subdivide( p12, p23, p31, radius, vertexArray, indiceArray, param, depth-1);
+        subdivide( p31, p23, p3 , radius, vertexArray, indiceArray, param, depth-1);
+    }
+}
+
+
+/* ============================================================================
+ *
+ * *
 void Glub::Sphere(
-    qreal radius, GLuint slices,
+    const qreal radius, const GLuint slices,
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
 {
-    // Set buffer param
-    const GLuint index = param.index;
+    // Compute initial points
+    QVector3D pA(  radius,  0     ,  0     );
+    QVector3D pB(  0     ,  radius,  0     );
+    QVector3D pC( -radius,  0     ,  0     );
+    QVector3D pD(  0     , -radius,  0     );
 
-    // Compute const
-    const qreal stepxz = (M_PI * 2) /  slices    ; // Angle on 360 deg
-    const qreal stepxy = (M_PI    ) / (slices/2) ; // Angle on 180 deg
+    QVector3D pE(  0     ,  0     ,  radius);
+    QVector3D pF(  0     ,  0     , -radius);
 
-    std::cout << stepxz << std::endl;
-    std::cout << stepxy << std::endl;
+    // sub
+    subdivide( pE, pA, pB, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pE, pB, pC, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pD, pE, pC, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pD, pA, pE, radius, vertexArray, indiceArray, param, slices);
 
-    // Compute slices
-    for(GLuint i=0 ; i<slices ; i++)
-    {
-        const qreal tetaxz = stepxz * i;
-
-        for(GLuint j=0 ; j<slices/2 ; j++)
-        {
-            const qreal tetaxy = stepxy * i;
-
-            // Compute coordonates
-            const qreal x = radius * qCos(tetaxy) * qSin(tetaxz);
-            const qreal y = radius * qSin(tetaxy);  
-            const qreal z = radius * qCos(tetaxy) * qCos(tetaxz);
-
-            QVector3D point(x, y, z);
-
-            vertexArray << point;
-
-            std::cout << point.x() << " - " << point.y() << " - " << point.z() << " - " << std::endl;
-        }
-    }
-
-    // Index function
-    auto indexfunc = [slices](GLuint i, GLuint j) { return ( i * (slices/2) + j ); };
-
-
-    indiceArray << QVector<GLuint>( { indexfunc(0, 0), indexfunc(0, 0), indexfunc(0, 0) } );
-    param.size += 3;
-
-    // // 
-    // for(GLuint i=0 ; i<slices ; i++)
-    // {    
-    //     for(GLuint j=0 ; j<slices/2 ; j++)
-    //     {
-
-    //         indiceArray << QVector<GLuint>( { indexfunc(i, j), indexfunc(i, j+1), indexfunc(i+1, j+1) } );
-
-    //         //indiceArray << QVector<GLuint>( { indexfunc(i+1, j), indexfunc(i, j), indexfunc(i+1, j+1) } );
-
-    //         param.size += 6;
-
-    //     }
-    // }
-
-
+    subdivide( pF, pA, pB, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pF, pB, pC, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pD, pF, pC, radius, vertexArray, indiceArray, param, slices);
+    subdivide( pD, pA, pF, radius, vertexArray, indiceArray, param, slices);
 }
 
 /* ============================================================================
  *
- * */
+ * *
 void Glub::Cylinder(
     qreal radius, qreal height, GLuint slices,
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
@@ -230,7 +237,7 @@ void Glub::Cylinder(
 
 /* ============================================================================
  *
- * */
+ * *
 void Glub::Cone(
     qreal radius, qreal height, GLuint slices,
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
@@ -300,7 +307,18 @@ void Glub::Cone(
 
 /* ============================================================================
  *
- * */
+ * *
+void Glub::Translate( QVector3D translation, BufferParam& objparam,
+    QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray
+    )
+{
+
+}
+
+
+/* ============================================================================
+ *
+ * *
 void Glub::Arrow(
     qreal radius, qreal height, GLuint slices,
     QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param)
@@ -314,3 +332,6 @@ void Glub::Arrow(
     Cone    ( radius, height, slices, vertexArray, indiceArray, param );
 
 }
+
+
+// */

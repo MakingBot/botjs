@@ -19,7 +19,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QMatrix4x4>
-#include <BotBlock.hpp>
+#include <PhysicBlock.hpp>
 
 class LinkBlock;
 
@@ -28,7 +28,7 @@ class LinkBlock;
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class JointBlock : public BotBlock
+class JointBlock : public PhysicBlock
 {
     Q_OBJECT
 
@@ -50,7 +50,7 @@ public:
     //! Default constructor
     //!
     explicit JointBlock(const QString& name = QString("joint"), QObject *parent = 0)
-        : BotBlock(name, parent)
+        : PhysicBlock(name, parent)
     {
         // TYPE
         QMap<QString, int> type_enum;
@@ -69,9 +69,6 @@ public:
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
 
-    //! FROM BotBlock
-    virtual BlockRole getBlockRole() const { return BotBlock::BlockData; }
-    
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("joint"); }
 

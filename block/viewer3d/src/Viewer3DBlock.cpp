@@ -19,6 +19,8 @@
 
 #include <Viewer3DBlock.hpp>
 
+#include <RobotBlock.hpp>
+
 /* ============================================================================
  *
  * */
@@ -37,3 +39,89 @@ Viewer3DBlock::Viewer3DBlock(const QString& name, QObject *parent)
 }
 
 
+
+
+/* ============================================================================
+ *
+ * */
+bool Viewer3DBlock::connect(BotBlock* block, bool master)
+{
+    // Basic checks
+    if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
+    if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
+
+    // Check if the block is a robot block
+    RobotBlock* robot = qobject_cast<RobotBlock*>(block);
+    if(!robot)
+    {
+        return BotBlock::connect(block, master);
+    }
+
+
+
+
+
+
+    // Else it is a joint block
+    // if the link ask for the connection
+    if(master)
+    {
+        // Ask for connection
+        if( ! block->connect(this, false) )
+        {
+            // If the other block rejected the connection and log it
+            beglog() << "Connection to the link #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
+            return false;
+        }
+
+        // Set the new output joint
+        QSharedPointer<RobotBlock> shared_robot = qSharedPointerObjectCast<RobotBlock, BotBlock>( block->getBlockSharedFromThis() );        
+        _robot = shared_robot.toWeakRef();
+
+        // Log
+        beglog() << "Connection to the joint #" << block->getBlockFathersChain() << "#" << endlog();
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+        return true;
+    }
+    else
+    {
+
+        // Create the shared pointer
+        QSharedPointer<RobotBlock> shared_robot = qSharedPointerObjectCast<RobotBlock, BotBlock>( block->getBlockSharedFromThis() );
+        
+        // Set the new output joint
+        _robot = shared_robot.toWeakRef();
+
+
+
+
+        // Log
+        beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+        return true;
+
+    }
+
+}
+
+/* ============================================================================
+ *
+ * */
+void Viewer3DBlock::disconnect(BotBlock* block, bool master)
+{
+    // TODO
+    BotBlock::disconnect(block, master);
+}
+
+/* ============================================================================
+ *
+ * */
+void Viewer3DBlock::disconnectAll()
+{
+    // TODO
+    BotBlock::disconnectAll();
+}

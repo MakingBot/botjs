@@ -14,18 +14,7 @@
 //! Buffer helper
 #define GLUB_BUFFER_OFFSET(i) ((void*)(i*sizeof(GLuint)))
 
-//!
-//! Provide parameter structure to draw a previous stored vbo object
-//!
-class BufferParam
-{
-public:
-    BufferParam(GLuint i=0, GLuint s=1) : index(i), size(s) { }
-    //! Start index of the object in the VBO
-    GLuint index;
-    //! Size of the object in number of indice
-    GLuint size;
-};
+
 
 //!
 //! Custom clone of glu functions
@@ -36,7 +25,7 @@ class Glub
 {
 
 public:
-
+/*
     static void Cuboid(
         qreal rx, qreal ry, qreal rz,
         QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
@@ -60,7 +49,7 @@ public:
     static void Arrow(
         qreal radius, qreal height, GLuint slices,
         QVector<QVector3D>& vertexArray, QVector<GLuint>& indiceArray, BufferParam& param);
-
+*/
 };
 
 #endif // GLUB_HPP

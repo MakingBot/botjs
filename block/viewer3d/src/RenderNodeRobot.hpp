@@ -27,14 +27,22 @@
 class RenderNodeRobot : public RenderNode
 {
 
-    RenderNodeRobot( QWeakPointer<RobotBlock> robot, QWeakPointer<RenderNode> parent = QWeakPointer<RenderNode>(0) );
-
 public:
+
+    //!
+    //! Default constructor
+    //!
+    RenderNodeRobot( QSharedPointer<RobotBlock> robot, QWeakPointer<RenderNode> parent = QWeakPointer<RenderNode>() )
+    {
+
+
+        _robot = robot.toWeakRef();
+    }
 
 
 protected:
 
     //! Pointer on the robot
-    QWeakPointer<RobotBlock> robot;
+    QWeakPointer<RobotBlock> _robot;
 
 };
