@@ -66,6 +66,9 @@ public:
         updateKinematic();
     }
     
+    // ========================================================================
+    // => BotBlock redefinition
+
     //! FROM BotBlock
     virtual float getBlockVersion() const { return 1.0; }
 
@@ -83,6 +86,28 @@ public:
         conn += _outputLinks.size();
         return conn;
     }
+
+    // ========================================================================
+    // => PhysicBlock redefinition
+
+    //! FROM PhysicBlock
+    ShapeType getShapeType(ModelType model)
+    {
+        switch(model)
+        {
+            case ModelTypeKinematic: 
+                return PhysicBlock::ShapeTypeSphere;
+                break;
+
+            default: return ShapeTypeNone; break;
+        }
+    }
+
+    //! FROM PhysicBlock
+    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves();
+
+    // ========================================================================
+    // => Property value
 
     //! Current value getter
     qreal value() { return _value; }

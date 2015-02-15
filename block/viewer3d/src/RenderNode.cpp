@@ -29,7 +29,8 @@
 RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
     : _viewer(viewer)
 {
-
+    // Reset object config
+    _viewer.vbo().ini(_objConfig);
 
     if( viewer.model() == PhysicBlock::ModelTypeBase )
     {
@@ -45,11 +46,11 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
             
 
             case PhysicBlock::ShapeTypeSphere:
+
                 _viewer.vbo().createSphere( 0.5, 4, _objConfig );
                 break;
 
             case PhysicBlock::ShapeTypeArrow :
-                _viewer.vbo().ini(_objConfig);
                 _viewer.vbo().createArrow( 0.25, 3, 10, _objConfig );
 
                 
@@ -61,15 +62,11 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
     
     }
 
-    
-    //ShapeType
-
-// ShapeTypeNone, ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender, ShapeTypeArrow
-    
-
-    
-
-
+    QList<QSharedPointer<PhysicBlock> > slaves = ref->getPhysicSlaves();
+    foreach(QSharedPointer<PhysicBlock> slave, slaves)
+    {
+        _nodeChilds << QSharedPointer<RenderNode>( new RenderNode(slave, _viewer) );
+    }
 
     // Track the reference
     _ref = ref.toWeakRef();
@@ -84,5 +81,12 @@ void RenderNode::draw()
 
     // Draw the shape triangles
     glDrawElements(GL_TRIANGLES, _objConfig.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_objConfig.iindex) );
+
+
+    // Draw child nodes
+    foreach(QSharedPointer<RenderNode> node, _nodeChilds)
+    {
+        node->draw();
+    }
 
 }

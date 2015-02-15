@@ -49,19 +49,19 @@ protected:
     ObjBufferConfig                         _objConfig;
 
     // // Node parent
-    // QWeakPointer<RenderNode>     _nodeParent;
+    // RenderNode*                             _nodeParent;
 
-    // // Node childs
-    // QList<QSharedPointer<RenderNode> > _nodeChilds;
+    // Node childs
+    QList<QSharedPointer<RenderNode> >      _nodeChilds;
 
     // ========================================================================
     // => External reference
 
     //! Reference on the viewer
-    Viewer&                     _viewer;
+    Viewer&                                 _viewer;
 
     //! Object block reference
-    QWeakPointer<PhysicBlock>   _ref;
+    QWeakPointer<PhysicBlock>               _ref;
 
 };
 

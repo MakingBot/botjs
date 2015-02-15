@@ -54,6 +54,9 @@ void Viewer::onBlockPropertiesChange()
         QSharedPointer<PhysicBlock> physic_object = viewerBlock->sharedObject();
         if(physic_object)
         {
+
+            _vbo.reset();
+
             //! Update the rendering tree
             _renderingTree = QSharedPointer<RenderNode>( new RenderNode(physic_object, *this) );
 

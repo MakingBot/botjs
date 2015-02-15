@@ -88,6 +88,25 @@ void JointBlock::updateKinematic()
 /* ============================================================================
  *
  * */
+QList<QSharedPointer<PhysicBlock> > JointBlock::getPhysicSlaves()
+{
+    QList<QSharedPointer<PhysicBlock> > slaves;
+    
+    foreach( QWeakPointer<LinkBlock> link, _outputLinks )
+    {
+        QSharedPointer<LinkBlock> shared_link = link.toStrongRef();
+
+        QSharedPointer<PhysicBlock> shared_physic = qSharedPointerObjectCast<PhysicBlock, LinkBlock>(shared_link);
+
+        slaves << shared_physic;
+    }
+
+    return slaves;
+}
+
+/* ============================================================================
+ *
+ * */
 bool JointBlock::connect(BotBlock* block, bool master)
 {
     // Basic checks
@@ -111,6 +130,15 @@ bool JointBlock::connect(BotBlock* block, bool master)
             beglog() << "Connection to the link #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
             return false;
         }
+
+        // Create the shared pointer
+        QSharedPointer<LinkBlock> shared_link = qSharedPointerObjectCast<LinkBlock, BotBlock>( block->getBlockSharedFromThis() );
+        
+        // Set the new output joint
+        QWeakPointer<LinkBlock> weak_link = shared_link.toWeakRef();
+
+        // 
+        _outputLinks << weak_link;
 
         // Log and return
         beglog() << "Connection to the link #" << block->getBlockFathersChain() << "#" << endlog();

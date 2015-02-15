@@ -84,6 +84,15 @@ public:
     }
 
     //!
+    //! Reset array
+    //!
+    void reset()
+    {
+        _vertexArray.clear();
+        _indiceArray.clear();
+    }
+
+    //!
     //! Write array data in buffers
     //!
     void write()

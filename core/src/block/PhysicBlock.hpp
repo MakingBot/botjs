@@ -68,11 +68,12 @@ public:
     //!
     virtual ShapeType getShapeType(ModelType model) { return ShapeTypeNone; }
 
-
-    //const QList<QSharedPointer>
+    //!
+    //! Interface to provide connected physic object blocks
+    //!
+    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
 
 protected:
-
 
 };
 

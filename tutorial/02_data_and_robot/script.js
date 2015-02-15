@@ -17,15 +17,18 @@ var link1     = body.create  ("link"  , "link1"    );
 
 var jointMiddle = body.create  ("joint" , "jointMiddle");
 
+/*
+
+
 var link2     = body.create  ("link"  , "link2"    );
 
 var jointEnd = body.create  ("joint" , "jointEnd");
-
+*/
 
 jointOrigine.connect(link1);
 link1.connect(jointMiddle);
-jointMiddle.connect(link2);
-link2.connect(jointEnd);
+// jointMiddle.connect(link2);
+// link2.connect(jointEnd);
 
 
 
@@ -36,7 +39,7 @@ viewer3d.logTalking = true;
 
 agent007.connect(viewer3d);
 
-viewer3d.connect(link1);
+viewer3d.connect(jointOrigine);
 
 
 
