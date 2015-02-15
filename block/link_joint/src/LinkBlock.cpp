@@ -16,8 +16,10 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <math.h>
 #include <LinkBlock.hpp>
 #include <JointBlock.hpp>
+#include <QtCore/qmath.h>
 
 /* ============================================================================
  *
@@ -86,6 +88,25 @@ QString LinkBlock::endName()
  * */
 void LinkBlock::updateKinematic()
 {
+    // Angle xz
+    QVector3D projxz = _translation;
+    projxz.setY(0);
+    qreal anglexz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projxz ) / projxz.length() );
+
+    // Angle yz
+    QVector3D projyz = _translation;
+    projyz.setX(0);
+    qreal angleyz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projyz ) / projyz.length() );
+
+    // Apply rotations
+    _preTransform.setToIdentity();
+    _preTransform.rotate( ((anglexz * 180)/M_PI), QVector3D(0, 1, 0) );
+    _preTransform.rotate( ((angleyz * 180)/M_PI), QVector3D(1, 0, 0) );
+
+
+
+
+
     // Start with the identity matrix
     QMatrix4x4 new_transform;
 

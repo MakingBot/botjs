@@ -47,11 +47,11 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
 
             case PhysicBlock::ShapeTypeSphere:
 
-                _viewer.vbo().createSphere( 0.5, 4, _objConfig );
+                _viewer.vbo().createSphere( 0.25, 4, _objConfig );
                 break;
 
             case PhysicBlock::ShapeTypeArrow :
-                _viewer.vbo().createArrow( 0.25, 3, 10, _objConfig );
+                _viewer.vbo().createArrow( 0.25, ref->getShapeLenght(), 10, _objConfig );
 
                 
 
@@ -61,6 +61,10 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
         }
     
     }
+
+    //QObject::connect( ref.data(), SIGNAL(blockiPropertyValuesChanged()), &viewer, SLOT(onBlockPropertiesChange()) );
+    
+
 
     QList<QSharedPointer<PhysicBlock> > slaves = ref->getPhysicSlaves();
     foreach(QSharedPointer<PhysicBlock> slave, slaves)
@@ -78,6 +82,18 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
  * */
 void RenderNode::draw()
 {
+    if(!_ref) { }
+
+
+    QSharedPointer<PhysicBlock> ref = _ref.toStrongRef();
+
+
+
+    glPushMatrix();
+
+
+    glMultMatrixf( ref->getPreTransform().constData()  );
+
 
     // Draw the shape triangles
     glDrawElements(GL_TRIANGLES, _objConfig.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_objConfig.iindex) );
@@ -89,4 +105,6 @@ void RenderNode::draw()
         node->draw();
     }
 
+
+    glPopMatrix();
 }

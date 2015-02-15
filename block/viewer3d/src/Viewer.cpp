@@ -86,18 +86,13 @@ void Viewer::onBlockPropertiesChange()
 /* ============================================================================
  *
  * */
-void Viewer::loadBuffers()
+void Viewer::onRenderNodeChange()
 {
-    // // Write vertex data in vertex buffer
-    // _vertexBuffer.bind();
-    // _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
-    // _vertexBuffer.release();
 
-    // // Write indice data in indice buffer
-    // _indiceBuffer.bind();
-    // _indiceBuffer.write(0, _indiceArray.constData(), _indiceArray.size()  * sizeof(GLuint));
-    // _indiceBuffer.release();
+
+
 }
+
 
 
 //Compat method: gluLookAt deprecated
@@ -270,45 +265,6 @@ void Viewer::initializeGL()
     // int LightPos[4] = {5,5,5,1};
     // glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
 
-
-    // _vertexBuffer.create();
-    // _vertexBuffer.bind();
-    // _vertexBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
-    // _vertexBuffer.allocate(MAX_VERTEX_USED * sizeof(QVector3D));
-    // _vertexBuffer.release();
-
-    // _indiceBuffer.create();
-    // _indiceBuffer.bind();
-    // _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
-    // _indiceBuffer.allocate(MAX_VERTEX_USED * sizeof(GLuint    ));
-    // _indiceBuffer.release();
-
-
-    // Glub::Cuboid(
-    //     2, 5, 2,
-    //     _vertexArray, _indiceArray, _testparam);
-
-
-    // _testparam.index = 0;
-    // _testparam.size  = 0;
-
-    // Glub::Sphere(
-    //     3, 4,
-    //     _vertexArray, _indiceArray, _testparam);
-
-
-    // Glub::Cylinder(
-    // 1, 5, 32,
-    // _vertexArray, _indiceArray, _testparam);
-    
-
-    // Glub::Arrow(
-    // 1, 5, 32,
-    // _vertexArray, _indiceArray, _testparam);
-    
-
-
-    loadBuffers();
 }
 
 

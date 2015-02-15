@@ -16,11 +16,10 @@ var jointOrigine = body.create  ("joint" , "jointOrigine");
 var link1     = body.create  ("link"  , "link1"    );
 link1.logTalking = true;
 
+
 var jointMiddle = body.create  ("joint" , "jointMiddle");
 
 /*
-
-
 var link2     = body.create  ("link"  , "link2"    );
 
 var jointEnd = body.create  ("joint" , "jointEnd");

@@ -107,6 +107,10 @@ public:
     //! FROM PhysicBlock
     virtual QMatrix4x4 getPostTransform();
 
+
+    virtual qreal getShapeLenght() { return lenght(); }
+
+
     // ========================================================================
     // => Property lenght
 

@@ -49,6 +49,9 @@ public slots:
     //! Action to perform when the block properties change 
     void onBlockPropertiesChange();
 
+
+    void onRenderNodeChange();
+
 protected:
 
     // ========================================================================
@@ -92,9 +95,6 @@ protected:
 
     // ========================================================================
     // => Functions
-
-    //! To load VBO from arrays
-    void loadBuffers();
 
     //! QOpenGLWidget
     virtual void paintGL();

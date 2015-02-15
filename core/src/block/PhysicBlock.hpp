@@ -80,6 +80,11 @@ public:
 
 
 
+
+    virtual qreal getShapeLenght() { return 1; }
+
+
+
 protected:
 
 };
