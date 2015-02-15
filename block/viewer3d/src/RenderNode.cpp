@@ -30,24 +30,38 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
     : _viewer(viewer)
 {
 
-std::cout << "plop" << std::endl;
-    switch( ref->getShapeType(viewer.model()) )
+
+    if( viewer.model() == PhysicBlock::ModelTypeBase )
     {
-        
 
-        case PhysicBlock::ShapeTypeSphere:
-            _viewer.vbo().createSphere( 0.5, 4, _objConfig );
-            std::cout << "sphere" << std::endl;
-            break;
+        _viewer.vbo().createBase( _objConfig );
 
-        case PhysicBlock::ShapeTypeArrow :
-            _viewer.vbo().createCylinder( 0.5, 1, 5, _objConfig );
-            std::cout << "arrow" << std::endl;
-            break;
+    }
+    else
+    {
 
-        default: break;
+        switch( ref->getShapeType(viewer.model()) )
+        {
+            
+
+            case PhysicBlock::ShapeTypeSphere:
+                _viewer.vbo().createSphere( 0.5, 4, _objConfig );
+                break;
+
+            case PhysicBlock::ShapeTypeArrow :
+                _viewer.vbo().ini(_objConfig);
+                _viewer.vbo().createArrow( 0.25, 3, 10, _objConfig );
+
+                
+
+                break;
+
+            default: break;
+        }
+    
     }
 
+    
     //ShapeType
 
 // ShapeTypeNone, ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender, ShapeTypeArrow

@@ -100,6 +100,11 @@ public:
     }
 
     //!
+    //! Initialize object
+    //!
+    void ini(ObjBufferConfig& obj);
+
+    //!
     //! Subdivide triangle of the sphere approximation 
     //!
     void subdivide( QVector3D p1, QVector3D p2, QVector3D p3, qreal radius, ObjBufferConfig& obj, int depth );
@@ -124,9 +129,23 @@ public:
     //!
     void createCuboid( qreal rx, qreal ry, qreal rz, ObjBufferConfig& obj );
 
+    //!
+    //! Function to generate an arrow
+    //!
     void createArrow( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
 
-    void Translate( QVector3D translation, ObjBufferConfig& obj );
+
+    void createBase( ObjBufferConfig& obj );
+
+    //!
+    //! Function to translation vertex of an object
+    //!
+    void translate( QVector3D translation, ObjBufferConfig& obj );
+
+    //!
+    //! Function to rotate vertex of an object
+    //!
+    void rotate( QVector3D axe, qreal angle, ObjBufferConfig& obj );
 
 protected:
 
