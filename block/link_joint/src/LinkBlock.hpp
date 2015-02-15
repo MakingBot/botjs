@@ -33,8 +33,14 @@ class LinkBlock : public PhysicBlock
 {
     Q_OBJECT
 
+    // ========================================================================
+    // => Properties
+
+    Q_PROPERTY(qreal        lenght      READ lenght         WRITE setLenght      )
+    Q_PROPERTY(QVector3D    direction   READ direction      WRITE setDirection   )
+    Q_PROPERTY(QVector3D    translation READ translation    WRITE setTranslation )
+
     Q_PROPERTY(QList<qreal>  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
-    Q_PROPERTY(QList<qreal>  translation READ translation WRITE setTranslation  MEMBER _translation)
     Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
 
     Q_PROPERTY(QString       nameBase    READ baseName                                             )
@@ -45,10 +51,13 @@ public:
     //! Default constructor
     //!
     explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
-        : PhysicBlock(name, parent), _rotation({0,0,0}), _translation({0,0,0})
+        : PhysicBlock(name, parent), _rotation({0,0,0})
     {
+        appendBlockIProperty("lenght"     , IProperty(IProperty::IPTypeReal    , true  ));
+        appendBlockIProperty("direction"  , IProperty(IProperty::IPTypeVector3D, false ));
+        appendBlockIProperty("translation", IProperty(IProperty::IPTypeVector3D, false ));
+
         appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true ));
-        appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true ));
         appendBlockIProperty("transform"  , IProperty(IProperty::IPTypeMatrix44, false));
 
         appendBlockIProperty("nameBase"   , IProperty(IProperty::IPTypeString, false));
@@ -89,6 +98,60 @@ public:
         }
     }
 
+    //! FROM PhysicBlock
+    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves();
+
+    //! FROM PhysicBlock
+    virtual QMatrix4x4 getPreTransform();
+
+    //! FROM PhysicBlock
+    virtual QMatrix4x4 getPostTransform();
+
+    // ========================================================================
+    // => Property lenght
+
+    //! Lenght getter
+    qreal lenght() { return _translation.length(); }
+
+    //! Lenght setter
+    void setLenght(qreal lenght)
+    {
+        if( lenght >= 0 )
+        {
+            if( direction() == QVector3D(0,0,0) ) { _translation = QVector3D(0,0,1); }
+            setTranslation( direction() * lenght );
+        }
+    }
+
+    // ========================================================================
+    // => Property direction
+
+    //! Direction getter
+    QVector3D direction() { return _translation.normalized(); }
+
+    //! Direction setter
+    void setDirection(const QVector3D& direction) { setTranslation( direction * lenght() ); }
+
+    // ========================================================================
+    // => Property translation
+
+    //! Link translation getter
+    const QVector3D& translation() { return _translation; }
+
+    //! Link translation setter
+    void setTranslation(const QVector3D& translation)
+    {
+        // Set the new translation
+        _translation = translation;
+
+        // Log
+        beglog() << "Change translation parameter: " << _translation << endlog();
+        
+        // Update transformation
+        updateKinematic();
+    }
+
+
 
 
 
@@ -109,21 +172,7 @@ public:
         updateKinematic();
     }
    
-    //! Link translation getter
-    const QList<qreal>& translation() { return _translation; }
 
-    //! Link translation setter
-    void setTranslation(const QList<qreal>& translation)
-    {
-        // Set the new translation
-        _translation = translation;
-
-        // Log
-        beglog() << "Change translation parameter: " << _translation << endlog();
-        
-        // Update transformation
-        updateKinematic();
-    }
 
     //! Transform matrix getter
     const QMatrix4x4& transform() const { return _transform; }
@@ -174,6 +223,7 @@ signals:
 
 public slots:
 
+
     //! To update the transform matrix with the translation and rotation matrix
     //! after a parameter change
     void updateKinematic();
@@ -188,6 +238,9 @@ public slots:
     virtual void disconnectAll();
 
 protected:
+    
+    //! Position of the outputJoint in the baseJoint basis
+    QVector3D _translation;
 
     //! Link rotation
     //! By default, Joints are axed on the Z vector.
@@ -198,13 +251,16 @@ protected:
     //!                                 rotate 45° around z axis
     QRealList _rotation;
     
-    //! Position of the outputJoint in the baseJoint basis
-    QRealList _translation;
-    
+
+
     //! Transform matrix
     //! It is computed from translation and rotation
     QMatrix4x4  _transform;
 
+    QMatrix4x4 _preTransform;
+
+    QMatrix4x4 _postTransform;
+    
     //! Joint base
     QWeakPointer<JointBlock> _baseJoint;
 

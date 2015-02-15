@@ -88,6 +88,8 @@ public:
     //!
     void reset()
     {
+        
+
         _vertexArray.clear();
         _indiceArray.clear();
     }

@@ -73,6 +73,12 @@ public slots:
     //! For real list modification
     void onListModified(QList<qreal>& list);
 
+    void onVector3DEdit(const QVector3D&);
+    void onVector4DEdit(const QVector4D&);
+
+
+    void onDoubleSpinBoxChange(double);
+
 protected:
     //! Map that contains widget of each property
     QMap<QString, QWidget*> _widgetMap;

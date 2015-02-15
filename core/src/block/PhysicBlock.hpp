@@ -73,6 +73,13 @@ public:
     //!
     virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
 
+
+    virtual QMatrix4x4 getPreTransform() { return QMatrix4x4(); }
+
+    virtual QMatrix4x4 getPostTransform() { return QMatrix4x4(); }
+
+
+
 protected:
 
 };

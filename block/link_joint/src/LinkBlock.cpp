@@ -38,6 +38,42 @@ QString LinkBlock::baseName()
 /* ============================================================================
  *
  * */
+QList<QSharedPointer<PhysicBlock> > LinkBlock::getPhysicSlaves()
+{
+
+    QList<QSharedPointer<PhysicBlock> > slaves;
+
+
+    QSharedPointer<JointBlock> shared_joint = _outputJoint.toStrongRef();
+
+    QSharedPointer<PhysicBlock> shared_physic = qSharedPointerObjectCast<PhysicBlock, JointBlock>(shared_joint);
+
+    slaves << shared_physic;
+    
+
+    return slaves;
+
+}
+
+/* ============================================================================
+ *
+ * */
+QMatrix4x4 LinkBlock::getPreTransform()
+{
+    return _preTransform;
+}
+
+/* ============================================================================
+ *
+ * */
+QMatrix4x4 LinkBlock::getPostTransform()
+{
+    return QMatrix4x4();
+}
+
+/* ============================================================================
+ *
+ * */
 QString LinkBlock::endName()
 {
     QSharedPointer<JointBlock> end = sharedOutput();
@@ -54,10 +90,13 @@ void LinkBlock::updateKinematic()
     QMatrix4x4 new_transform;
 
     // Translate
-    new_transform.translate(_translation.toVector3D());
+    new_transform.translate( translation() );
     new_transform.rotate( _rotation[0], QVector3D(1, 0, 0) );
     new_transform.rotate( _rotation[1], QVector3D(0, 1, 0) );
     new_transform.rotate( _rotation[2], QVector3D(0, 0, 1) );
+
+
+    _preTransform.rotate( 45, QVector3D(1, 0, 0) );
 
     // Set the new transformation
     _transform = new_transform;

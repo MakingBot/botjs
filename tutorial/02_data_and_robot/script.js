@@ -14,6 +14,7 @@ var body     = proteo.create("kinasm", "body"    );
 var jointOrigine = body.create  ("joint" , "jointOrigine");
 
 var link1     = body.create  ("link"  , "link1"    );
+link1.logTalking = true;
 
 var jointMiddle = body.create  ("joint" , "jointMiddle");
 
