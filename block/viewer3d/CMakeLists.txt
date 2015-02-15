@@ -9,10 +9,6 @@ SET(PROJECT_HEADER_FILES
     src/VertexBufferObject.hpp
     
     src/RenderNode.hpp
-    src/RenderNodeLink.hpp
-    src/RenderNodeRobot.hpp
-    src/RenderNodeJoint.hpp
-    src/RenderNodeKinAsm.hpp
     )
 
 # Sources
@@ -23,7 +19,6 @@ SET(PROJECT_SOURCE_FILES
     src/VertexBufferObject.cpp
 
     src/RenderNode.cpp
-    
     )
 
 # Qt Modules

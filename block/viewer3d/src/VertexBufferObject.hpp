@@ -22,6 +22,8 @@
 #include <QGLBuffer>
 #include <QVector3D>
 
+class Viewer;
+
 //!
 //! Provide parameter structure to draw a previous stored vbo object
 //!
@@ -56,7 +58,46 @@ public:
     //!
     //! Default constructor
     //!
-    VertexBufferObject();
+    VertexBufferObject(Viewer& viewer);
+
+    //!
+    //! Bind buffers
+    //!
+    void bind()
+    {
+        // Bind vertex buffer
+        _vertexBuffer.bind();
+        glVertexPointer(3, GL_FLOAT, 0, NULL);
+        _vertexBuffer.release();
+
+        // Bind indice buffer
+        _indiceBuffer.bind();
+    }
+
+    //!
+    //! Release buffers
+    //!
+    void release()
+    {
+        // Release indice buffer
+        _indiceBuffer.release();
+    }
+
+    //!
+    //! Write array data in buffers
+    //!
+    void write()
+    {
+        // Write vertex data in vertex buffer
+        _vertexBuffer.bind();
+        _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
+        _vertexBuffer.release();
+
+        // Write indice data in indice buffer
+        _indiceBuffer.bind();
+        _indiceBuffer.write(0, _indiceArray.constData(), _indiceArray.size()  * sizeof(GLuint));
+        _indiceBuffer.release();
+    }
 
     //!
     //! Subdivide triangle of the sphere approximation 
@@ -66,10 +107,31 @@ public:
     //!
     //! Function to generate a sphere
     //!
-    void createSphere( qreal radius, GLuint slices, ObjBufferConfig& obj );
+    void createSphere( qreal radius, GLuint subdiv, ObjBufferConfig& obj );
 
+    //!
+    //! Function to generate a cylinder
+    //!
+    void createCylinder( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
+
+    //!
+    //! Function to generate a cone
+    //!
+    void createCone( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
+
+    //!
+    //! Function to generate a cuboid
+    //!
+    void createCuboid( qreal rx, qreal ry, qreal rz, ObjBufferConfig& obj );
+
+    void createArrow( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
+
+    void Translate( QVector3D translation, ObjBufferConfig& obj );
 
 protected:
+
+    //! Reference on the viewer
+    Viewer&                     _viewer;
 
     //! Array to store vertices that will be rendered
     QVector<QVector3D>          _vertexArray;
@@ -83,6 +145,12 @@ protected:
     //! Indice buffer
     QGLBuffer                   _indiceBuffer;
 
+    //! Maximum size of the vertex buffer 
+    unsigned int                _vertexBufferMaxSize;
+
+    //! Maximum size of the indice buffer
+    unsigned int                _indiceBufferMaxSize;
+    
 };
 
 

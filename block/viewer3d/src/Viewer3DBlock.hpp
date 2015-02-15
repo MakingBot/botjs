@@ -21,7 +21,7 @@
 
 #include <QtGlobal>
 #include <Viewer.hpp>
-#include <BotBlock.hpp>
+#include <PhysicBlock.hpp>
 
 class RobotBlock;
 
@@ -37,6 +37,8 @@ class Viewer3DBlock : public BotBlock
 
     Q_PROPERTY(int  vboUsedSize        READ vboUsedSize        WRITE setVboUsedSize        MEMBER _vboUsedSize        )
     Q_PROPERTY(int  nbOfRenderedObject READ nbOfRenderedObject WRITE setNbOfRenderedObject MEMBER _nbOfRenderedObject )
+
+    Q_PROPERTY(PhysicBlock::ModelType model READ model WRITE setModel MEMBER _model)
 
 public:
     //!
@@ -72,7 +74,7 @@ public:
     int vboUsedSize() { return _vboUsedSize; }
 
     //! Vbo used size setter
-    void setVboUsedSize(int size) { _vboUsedSize = size; }
+    void setVboUsedSize(int size) { _vboUsedSize = size; emit blockiPropertyValuesChanged(); }
 
     // ========================================================================
     // => number of rendere object
@@ -81,7 +83,16 @@ public:
     int nbOfRenderedObject() { return _nbOfRenderedObject; }
 
     //! The number of object rendered by the viewer setter
-    void setNbOfRenderedObject(int nb) { _nbOfRenderedObject = nb; }
+    void setNbOfRenderedObject(int nb) { _nbOfRenderedObject = nb; emit blockiPropertyValuesChanged(); }
+
+    // ========================================================================
+    // => Property model
+
+    //! Current model getter 
+    PhysicBlock::ModelType model() { return _model; }
+
+    //! Set the current model
+    void setModel(PhysicBlock::ModelType model) { _model = model; emit blockiPropertyValuesChanged(); }
 
     // ========================================================================
     // => background color
@@ -95,16 +106,12 @@ public:
     // ========================================================================
     // => Robot property
 
-    //! Weak pointer on robot getter
-    QWeakPointer<RobotBlock> weakRobot() { return _robot; }
+    //! Weak pointer on object getter
+    QWeakPointer<PhysicBlock> weakObject() { return _object; }
 
-    //! 
-    QSharedPointer<RobotBlock> sharedRobot()
-    {
-        if(_robot) return _robot.toStrongRef(); else return QSharedPointer<RobotBlock>(0);
-    }
-
-
+    //! Shared pointer on the object getter
+    QSharedPointer<PhysicBlock> sharedObject()
+    { if(_object) return _object.toStrongRef(); else return QSharedPointer<PhysicBlock>(0); }
 
     // ========================================================================
     // => widget management
@@ -171,11 +178,14 @@ protected:
     //! The number of object rendered by the viewer
     int _nbOfRenderedObject;
 
+    //! Define the model that must be rendered
+    PhysicBlock::ModelType _model;
+
     //! Background color
     QVector3D _bgColor;
 
-    //! Connection on the robot managed by this session
-    QWeakPointer<RobotBlock> _robot;
+    //! Object that must be rendered
+    QWeakPointer<PhysicBlock> _object;
 
     // ========================================================================
     // => widget management

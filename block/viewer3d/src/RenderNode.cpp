@@ -19,34 +19,56 @@
 
 #include <RenderNode.hpp>
 
-#include <RobotBlock.hpp>
-#include <RenderNodeRobot.hpp>
+#include <Viewer.hpp>
+
+#include <iostream>
 
 /* ============================================================================
  *
  * */
-QSharedPointer<RenderNode> RenderNode::CreateRenderNode(QSharedPointer<BotBlock> block)
+RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
+    : _viewer(viewer)
 {
-    // Basic check
-    if(!block) { return QSharedPointer<RenderNode>(0); }
 
-
-
-    QSharedPointer<RobotBlock> robot = block->toSpecializedSharedPointer<RobotBlock>();
-    if( robot )
+std::cout << "plop" << std::endl;
+    switch( ref->getShapeType(viewer.model()) )
     {
+        
 
-        //QSharedPointer<RenderNode>   qSharedPointerObjectCast<RenderNode, RenderNodeRobot>( QSharedPointer<RenderNodeRobot> ( new RenderNodeRobot(robot) ) ) ;
+        case PhysicBlock::ShapeTypeSphere:
+            _viewer.vbo().createSphere( 0.5, 4, _objConfig );
+            std::cout << "sphere" << std::endl;
+            break;
 
-        //return
+        case PhysicBlock::ShapeTypeArrow :
+            _viewer.vbo().createCylinder( 0.5, 1, 5, _objConfig );
+            std::cout << "arrow" << std::endl;
+            break;
 
-        // RenderNodeRobot
-
+        default: break;
     }
 
+    //ShapeType
+
+// ShapeTypeNone, ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender, ShapeTypeArrow
+    
+
+    
 
 
-    return QSharedPointer<RenderNode>(0);
+
+    // Track the reference
+    _ref = ref.toWeakRef();
 }
 
 
+/* ============================================================================
+ *
+ * */
+void RenderNode::draw()
+{
+
+    // Draw the shape triangles
+    glDrawElements(GL_TRIANGLES, _objConfig.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_objConfig.iindex) );
+
+}

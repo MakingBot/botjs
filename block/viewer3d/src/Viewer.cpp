@@ -1,10 +1,9 @@
 #include <Viewer.hpp>
-#include <iostream>
-#include <RobotBlock.hpp>
-
+#include <QCloseEvent>
+#include <RenderNode.hpp>
 #include <Viewer3DBlock.hpp>
 
-#include <RenderNodeRobot.hpp>
+#include <iostream>
 
 //! Maximum vertice in the obj
 #define MAX_VERTEX_USED 10000
@@ -17,6 +16,7 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
     , _up(0,1,0), _at(0,0,0), _eye(0,3,3)
     , _yaw(0)   , _pitch(0) , _zoom(5)
     , _parentBlock(parent_block)
+    , _vbo(*this)
 {
     // Connect the viewer with the evolution of the parent block 
     connect( getSharedparentBlock().data(), SIGNAL(blockiPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
@@ -26,6 +26,16 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
     onBlockPropertiesChange();
 }
 
+/* ============================================================================
+ *
+ * */
+PhysicBlock::ModelType Viewer::model()
+{ 
+    QSharedPointer<Viewer3DBlock> block = getSharedparentBlock();
+    if(block) { return block->model(); }
+    else      { return PhysicBlock::ModelTypeBase; }
+}
+    
 /* ============================================================================
  *
  * */
@@ -40,20 +50,21 @@ void Viewer::onBlockPropertiesChange()
         // Background color
         glClearColor(viewerBlock->bgColor().x(), viewerBlock->bgColor().y(), viewerBlock->bgColor().z(), 1.0f);
 
-
-        QSharedPointer<RobotBlock> robot = viewerBlock->sharedRobot();
-        if(robot)
+        // Check if there is an object to render
+        QSharedPointer<PhysicBlock> physic_object = viewerBlock->sharedObject();
+        if(physic_object)
         {
+            //! Update the rendering tree
+            _renderingTree = QSharedPointer<RenderNode>( new RenderNode(physic_object, *this) );
 
-            _renderingTree = QSharedPointer<RenderNodeRobot>( new RenderNodeRobot(robot) );
+            _vbo.write();
 
             // Log
             viewerBlock->beglog() << "Update render tree" << viewerBlock->endlog();
         }
   
-
         // Log
-        viewerBlock->beglog() << "Viewer updated from block properties" << viewerBlock->endlog();
+        viewerBlock->beglog() << "New properties have been taken into account" << viewerBlock->endlog();
     }
     else
     {
@@ -182,32 +193,19 @@ void Viewer::paintGL()
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-/*
-    // Bind vertex buffer
-    _vertexBuffer.bind();
-    glVertexPointer(3, GL_FLOAT, 0, NULL);
-    _vertexBuffer.release();
-
-    // Bind indice buffer
-    _indiceBuffer.bind();
 
 
+    _vbo.bind();
+
+    // Draw the object
+    _renderingTree->draw();
+
+    _vbo.release();
 
 
-
-
-    // Draw triangles
-    //glDrawElements(GL_TRIANGLES, _testparam.size, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_testparam.index) );
-
-    // Release indice buffer
-    _indiceBuffer.release();
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
-
-
-*/
-
 
 
 

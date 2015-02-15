@@ -19,8 +19,6 @@
 
 #include <Viewer3DBlock.hpp>
 
-#include <RobotBlock.hpp>
-
 /* ============================================================================
  *
  * */
@@ -34,7 +32,16 @@ Viewer3DBlock::Viewer3DBlock(const QString& name, QObject *parent)
 {
     appendBlockIProperty("visible"            , IProperty(IProperty::IPTypeBool, true ));
 
+    // MODEL
+    QMap<QString, int> model_enum;
+    model_enum["Base"     ] = PhysicBlock::ModelTypeBase     ;
+    model_enum["Kinematic"] = PhysicBlock::ModelTypeKinematic;
+    appendBlockIProperty("model" , IProperty(IProperty::IPTypeEnum, true, model_enum));
+
+    // VBO Used Size
     appendBlockIProperty("vboUsedSize"        , IProperty(IProperty::IPTypeInt , false));
+    
+    // 
     appendBlockIProperty("nbOfRenderedObject" , IProperty(IProperty::IPTypeInt , false));
 }
 
@@ -50,23 +57,18 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
     if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
     if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
 
-    // Check if the block is a robot block
-    RobotBlock* robot = qobject_cast<RobotBlock*>(block);
-    if(!robot)
+    // Check if the block is a physic object block
+    PhysicBlock* physic_object = qobject_cast<PhysicBlock*>(block);
+    if(!physic_object)
     {
         return BotBlock::connect(block, master);
     }
 
-
-
-
-
-
-    // Else it is a joint block
-    // if the link ask for the connection
+    // Else it is a physic object block
+    // if this ask for the connection
     if(master)
     {
-        // Ask for connection
+        // Ask for connection return
         if( ! block->connect(this, false) )
         {
             // If the other block rejected the connection and log it
@@ -74,9 +76,9 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
             return false;
         }
 
-        // Set the new output joint
-        QSharedPointer<RobotBlock> shared_robot = qSharedPointerObjectCast<RobotBlock, BotBlock>( block->getBlockSharedFromThis() );        
-        _robot = shared_robot.toWeakRef();
+        // Set
+        QSharedPointer<PhysicBlock> shared_physic_object = qSharedPointerObjectCast<PhysicBlock, BotBlock>( block->getBlockSharedFromThis() );        
+        _object = shared_physic_object.toWeakRef();
 
         // Log
         beglog() << "Connection to the joint #" << block->getBlockFathersChain() << "#" << endlog();
@@ -88,21 +90,21 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
     else
     {
 
-        // Create the shared pointer
-        QSharedPointer<RobotBlock> shared_robot = qSharedPointerObjectCast<RobotBlock, BotBlock>( block->getBlockSharedFromThis() );
+        // // Create the shared pointer
+        // QSharedPointer<RobotBlock> shared_physic_object = qSharedPointerObjectCast<RobotBlock, BotBlock>( block->getBlockSharedFromThis() );
         
-        // Set the new output joint
-        _robot = shared_robot.toWeakRef();
+        // // Set the new output joint
+        // _robot = shared_physic_object.toWeakRef();
 
 
 
 
-        // Log
-        beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
+        // // Log
+        // beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
 
-        // Alert BotJs
-        emit blockfPropertyValuesChanged();
-        return true;
+        // // Alert BotJs
+        // emit blockfPropertyValuesChanged();
+        // return true;
 
     }
 

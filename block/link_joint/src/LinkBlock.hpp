@@ -18,11 +18,10 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <BotBlock.hpp>
-
 #include <QMatrix4x4>
 #include <QVariantList>
 #include <QRealList.hpp>
+#include <PhysicBlock.hpp>
 
 class JointBlock;
 
@@ -30,7 +29,7 @@ class JointBlock;
 //! Fixe transformation between 2 joints
 //! The link between 2 motors of a robot arm for example
 //!
-class LinkBlock : public BotBlock
+class LinkBlock : public PhysicBlock
 {
     Q_OBJECT
 
@@ -46,7 +45,7 @@ public:
     //! Default constructor
     //!
     explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
-        : BotBlock(name, parent), _rotation({0,0,0}), _translation({0,0,0})
+        : PhysicBlock(name, parent), _rotation({0,0,0}), _translation({0,0,0})
     {
         appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true ));
         appendBlockIProperty("translation", IProperty(IProperty::IPTypeRealList, true ));
@@ -56,11 +55,11 @@ public:
         appendBlockIProperty("nameEnd"    , IProperty(IProperty::IPTypeString, false));
     }
 
-    //! FROM BotBlock
-    virtual float getBlockVersion() const { return 1.0; }
+    // ========================================================================
+    // => BotBlock redefinition
 
     //! FROM BotBlock
-    virtual BlockRole getBlockRole() const { return BotBlock::BlockData; }
+    virtual float getBlockVersion() const { return 1.0; }
   
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("link"); }
@@ -73,6 +72,26 @@ public:
         if( _outputJoint ) { nb++; }
         return nb;
     }
+
+    // ========================================================================
+    // => PhysicBlock redefinition
+
+    //! FROM PhysicBlock
+    ShapeType getShapeType(ModelType model)
+    {
+        switch(model)
+        {
+            case ModelTypeKinematic: 
+                return PhysicBlock::ShapeTypeArrow;
+                break;
+
+            default: return ShapeTypeNone; break;
+        }
+    }
+
+
+
+
 
     //! Link rotation getter
     const QList<qreal>& rotation() { return _rotation; }

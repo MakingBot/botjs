@@ -19,13 +19,32 @@
 
 #include <VertexBufferObject.hpp>
 
+#include <Viewer.hpp>
+
 /* ============================================================================
  *
  * */
-VertexBufferObject::VertexBufferObject()
-    : _vertexBuffer (QGLBuffer::VertexBuffer)
+VertexBufferObject::VertexBufferObject(Viewer& viewer)
+    : _viewer       (viewer) 
+    , _vertexBuffer (QGLBuffer::VertexBuffer)
     , _indiceBuffer (QGLBuffer::IndexBuffer )
 {
+
+    _viewer.makeCurrent();
+
+    _vertexBuffer.create();
+    _vertexBuffer.bind();
+    _vertexBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
+    _vertexBuffer.allocate(300000 * sizeof(QVector3D));
+    _vertexBuffer.release();
+
+    _indiceBuffer.create();
+    _indiceBuffer.bind();
+    _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
+    _indiceBuffer.allocate(300000 * sizeof(GLuint    ));
+    _indiceBuffer.release();
+
+    _viewer.doneCurrent();
 
 }
 
@@ -91,4 +110,241 @@ void VertexBufferObject::createSphere( qreal radius, GLuint subdiv, ObjBufferCon
     subdivide( pD, pA, pF, radius, obj, subdiv );
 }
 
+
+/* ============================================================================
+ *
+ * */
+void VertexBufferObject::createCylinder( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj )
+{
+    // Set buffer param
+    const GLuint vindex = _vertexArray.size();
+
+    // Compute number of indice to append
+    obj.isize += 4 * slices;   // nb triangles for top, bot circle and body
+    obj.isize *= 3;            // 3 points per triangles
+
+    // Compute const
+    const qreal height2 = height/2;
+    const qreal step = (M_PI * 2) / slices;
+    
+    // Append center bot and top
+    _vertexArray << QVector3D(0, 0, -height2); // bot 0
+    _vertexArray << QVector3D(0, 0,  height2); // top 1
+    
+    // Append points of the bot circle
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        const qreal angle = step * i;
+        const qreal sina  = qSin(angle); 
+        const qreal cosa  = qCos(angle);
+        
+        _vertexArray << QVector3D( cosa*radius, sina*radius, -height2 );
+    }
+    
+    // Append points of the top circle
+    for(GLuint i=0 ; i<slices ; i++)
+    { 
+        QVector3D topPoint(_vertexArray.at(vindex + 2 + i));
+        topPoint.setZ(height2);
+        _vertexArray << topPoint;
+    }
+
+    // Index for bot circle
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        GLuint tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<GLuint>( {p1, p2, 0} );
+    }
+
+    // Index for top circle
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        GLuint tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const GLuint p1 = vindex + 2 + slices + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + slices + i;   // i
+
+        _indiceArray << QVector<GLuint>( {p1, p2, 1} );
+    }
+
+    // Index for body
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        GLuint tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const GLuint p01 = vindex + 2 + tmp; // i + 1
+        const GLuint p02 = vindex + 2 + i;   // i
+
+        const GLuint p11 = vindex + 2 + slices + tmp; // i + 1
+        const GLuint p12 = vindex + 2 + slices + i;   // i
+
+        _indiceArray << QVector<GLuint>( {p12, p02, p01}  );
+        _indiceArray << QVector<GLuint>( {p12, p01, p11 } );
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void VertexBufferObject::createCone( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj )
+{
+    // Set buffer param
+    const GLuint vindex = _vertexArray.size();
+
+    // Compute number of indice to append
+    obj.isize += 2 * slices;   // nb triangles for top, bot circle and body
+    obj.isize *= 3;            // 3 points per triangles
+
+    // Compute const
+    const qreal height2 = height / 2;
+    const qreal step = (M_PI * 2) / slices;
+    
+    // Append center bot and top
+    _vertexArray << QVector3D(0, 0, -height2); // bot 0
+    _vertexArray << QVector3D(0, 0,  height2); // top 1
+    
+    // Append points of the bot circle
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        const qreal angle = step * i;
+        const qreal sina  = qSin(angle);
+        const qreal cosa  = qCos(angle);
+        
+        _vertexArray << QVector3D( cosa*radius, sina*radius, -height2 );
+    }
+
+    // Append points of the top circle
+    for(GLuint i=0 ; i<slices ; i++)
+    { 
+        QVector3D topPoint(_vertexArray.at(vindex + 2 + i));
+        topPoint.setZ(height2);
+        _vertexArray << topPoint;
+    }
+
+    // Index for bot circle
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        GLuint tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<GLuint>( {p1, p2, 0} );
+    }
+
+    // Index for body
+    for(GLuint i=0 ; i<slices ; i++)
+    {
+        GLuint tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const GLuint p1 = vindex + 2 + tmp; // i + 1
+        const GLuint p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<GLuint>( {p1, p2, 1} );
+    }
+
+    return ;
+}
+
+
+/* ============================================================================
+ * Y                        Y
+ *
+ * D ----- C        H ----- G
+ *
+ * 
+ * A ----- B  X  X  E ----- F
+ *
+ * Front Z to us Back Z to the screen
+ * */
+
+#define CUBE_A 0
+#define CUBE_B 1
+#define CUBE_C 2
+#define CUBE_D 3
+#define CUBE_E 4
+#define CUBE_F 5
+#define CUBE_G 6
+#define CUBE_H 7
+
+void VertexBufferObject::createCuboid( qreal rx, qreal ry, qreal rz, ObjBufferConfig& obj )
+{
+    // Set buffer param
+    const GLuint vindex = _vertexArray.size();
+
+    // Compute const
+    const qreal rx2 = rx / 2;
+    const qreal ry2 = ry / 2;
+    const qreal rz2 = rz / 2;
+
+    // Append 8 points
+    _vertexArray << QVector3D( -rx2, -ry2,  rz2 ); // A
+    _vertexArray << QVector3D(  rx2, -ry2,  rz2 ); // B
+    _vertexArray << QVector3D(  rx2,  ry2,  rz2 ); // C
+    _vertexArray << QVector3D( -rx2,  ry2,  rz2 ); // D
+
+    _vertexArray << QVector3D(  rx2, -ry2, -rz2 ); // E
+    _vertexArray << QVector3D( -rx2, -ry2, -rz2 ); // F
+    _vertexArray << QVector3D( -rx2,  ry2, -rz2 ); // G
+    _vertexArray << QVector3D(  rx2,  ry2, -rz2 ); // H
+
+    // Append indices to compose faces
+
+    // Front
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_A, vindex + CUBE_C, vindex + CUBE_D} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_A, vindex + CUBE_B, vindex + CUBE_C} );
+    obj.isize += 2 * 3;
+
+    // Back
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_E, vindex + CUBE_G, vindex + CUBE_H} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_E, vindex + CUBE_F, vindex + CUBE_G} );
+    obj.isize += 2 * 3;
+
+    // Top
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_D, vindex + CUBE_H, vindex + CUBE_G} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_D, vindex + CUBE_C, vindex + CUBE_H} );
+    obj.isize += 2 * 3;
+
+    // Bottom
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_F, vindex + CUBE_B, vindex + CUBE_A} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_F, vindex + CUBE_E, vindex + CUBE_B} );
+    obj.isize += 2 * 3;
+
+    // Left
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_B, vindex + CUBE_H, vindex + CUBE_C} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_B, vindex + CUBE_E, vindex + CUBE_H} );
+    obj.isize += 2 * 3;
+
+    // Right
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_F, vindex + CUBE_D, vindex + CUBE_G} );
+    _indiceArray << QVector<GLuint>( { vindex + CUBE_F, vindex + CUBE_A, vindex + CUBE_D} );
+    obj.isize += 2 * 3;
+}
+
+/* ============================================================================
+ *
+ * */
+void VertexBufferObject::createArrow( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj )
+{
+    
+    createCylinder( radius, height, slices, obj );
+    //Cone    ( radius, height, slices, obj );
+}
+
+/* ============================================================================
+ *
+ * */
+void VertexBufferObject::Translate( QVector3D translation, ObjBufferConfig& obj )
+{
+
+}
 

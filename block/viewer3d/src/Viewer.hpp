@@ -4,10 +4,9 @@
 #include <QtMath>
 #include <Glub.hpp>
 #include <QGLWidget>
-#include <QCloseEvent>
+#include <PhysicBlock.hpp>
 
-#include <RenderNode.hpp>
-
+class RenderNode;
 class Viewer3DBlock;
 
 //!
@@ -33,6 +32,17 @@ public:
         if(_parentBlock) { return _parentBlock.toStrongRef();       }
         else             { return QSharedPointer<Viewer3DBlock>(0); }
     }
+
+    //!
+    //! Vertex buffer object getter
+    //!
+    VertexBufferObject& vbo() { return _vbo; }
+
+    //!
+    //! Model getter
+    //!
+    PhysicBlock::ModelType model();
+
 
 public slots:
 

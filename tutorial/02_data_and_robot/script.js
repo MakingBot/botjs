@@ -29,12 +29,14 @@ link2.connect(jointEnd);
 
 
 
+
 core.create("viewer3d", "viewer3d");
 viewer3d.visible = true
 viewer3d.logTalking = true;
 
+agent007.connect(viewer3d);
 
-viewer3d.connect(proteo)
+viewer3d.connect(link1);
 
 
 

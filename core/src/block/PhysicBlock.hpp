@@ -21,6 +21,9 @@
 
 #include <BotBlock.hpp>
 
+#include <QMap>
+#include <QMatrix4x4>
+
 //!
 //! The physic block is an interface for blocks with a physic reality.
 //! For example, they have a mass and a solid shape. They can be rendered in an 3D environment.
@@ -30,18 +33,16 @@
 class PhysicBlock : public BotBlock
 {
     Q_OBJECT
-
-    // ========================================================================
-    // => Properties
-
-
+    Q_ENUMS(ShapeType)
+    Q_ENUMS(ModelType)
+    
 public:
 
     // ========================================================================
     // => Global
 
     //! Define shape types
-    enum ShapeType { ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender } ;
+    enum ShapeType { ShapeTypeNone, ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender, ShapeTypeArrow };
 
     //! Define model types
     enum ModelType { ModelTypeBase, ModelTypeKinematic };
@@ -51,26 +52,26 @@ public:
     //!
     explicit PhysicBlock(const QString& name = QString(), QObject *parent = 0)
         : BotBlock(name, parent)
-    {
-
-    }
+    { }
 
     // ========================================================================
     // => BotBlock redefinition
 
     //! FROM BotBlock
     virtual BlockRole getBlockRole() const { return BotBlock::BlockData; }
-    
+
+    // ========================================================================
+    // => Interface definition
+
+    //!
+    //! Interface to get the shape of the object in function of the model
+    //!
+    virtual ShapeType getShapeType(ModelType model) { return ShapeTypeNone; }
 
 
-    //const QMatrix4x4& 
-
-
+    //const QList<QSharedPointer>
 
 protected:
-
-
-    
 
 
 };

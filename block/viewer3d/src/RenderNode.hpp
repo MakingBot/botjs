@@ -1,3 +1,5 @@
+#ifndef RENDERNODE_HPP
+#define RENDERNODE_HPP
 //!
 //! \file RenderNode.hpp
 //!
@@ -19,7 +21,7 @@
 
 #include <QList>
 #include <Glub.hpp>
-#include <BotBlock.hpp>
+#include <PhysicBlock.hpp>
 #include <VertexBufferObject.hpp>
 
 //!
@@ -32,29 +34,35 @@ class RenderNode
 
 public:
     //!
-    //! Factory creator
-    //!
-    static QSharedPointer<RenderNode> CreateRenderNode(QSharedPointer<BotBlock> block);
-
-    //!
     //! Default constructor
     //!
-    RenderNode( /* QWeakPointer<RenderNode> parent = QWeakPointer<RenderNode>() */ )
-    {
+    RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer );
 
-    }
-
+    //!
+    //! Ask for node drawing
+    //!
+    void draw();
 
 protected:
 
-
-    //! Buffer parameters
-    ObjBufferConfig _objConfig;
+    //! Buffer parameters for the current object
+    ObjBufferConfig                         _objConfig;
 
     // // Node parent
-    // QWeakPointer<RenderNode> _nodeParent;
+    // QWeakPointer<RenderNode>     _nodeParent;
 
     // // Node childs
     // QList<QSharedPointer<RenderNode> > _nodeChilds;
 
+    // ========================================================================
+    // => External reference
+
+    //! Reference on the viewer
+    Viewer&                     _viewer;
+
+    //! Object block reference
+    QWeakPointer<PhysicBlock>   _ref;
+
 };
+
+#endif // RENDERNODE_HPP
