@@ -250,11 +250,8 @@ void Viewer::initializeGL()
 
     // glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-    // Enable lighting
-    // glEnable(GL_LIGHTING);
-    // glEnable(GL_LIGHT0);
 
-    // float global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    // float global_ambient[] = { 1.0f, 0.5f, 0.5f, 1.0f };
     // glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 
     // int MatSpec [4] = {1,1,1,1};
@@ -264,6 +261,10 @@ void Viewer::initializeGL()
 
     // int LightPos[4] = {5,5,5,1};
     // glLightiv(GL_LIGHT0,GL_POSITION,LightPos);
+
+    // // Enable lighting
+    // glEnable(GL_LIGHTING);
+    // glEnable(GL_LIGHT0);
 
 }
 

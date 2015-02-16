@@ -45,6 +45,8 @@ public:
 
 protected:
 
+    VboSector _sector;
+
     //! Buffer parameters for the current object
     ObjBufferConfig                         _objConfig;
 

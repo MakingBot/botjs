@@ -24,6 +24,7 @@ SET(PROJECT_HEADER_FILES
 
     src/type/QRealList.hpp
     src/type/Type.hpp
+    src/type/ShapeData.hpp
     )
 
 # Sources
@@ -34,6 +35,7 @@ SET(PROJECT_SOURCE_FILES
     src/app/CoreBlock.cpp
 
     src/block/BotBlock.cpp
+    src/type/ShapeData.cpp
     )
 
 # 

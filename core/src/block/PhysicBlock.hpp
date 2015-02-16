@@ -21,8 +21,8 @@
 
 #include <BotBlock.hpp>
 
-#include <QMap>
 #include <QMatrix4x4>
+#include <ShapeData.hpp>
 
 //!
 //! The physic block is an interface for blocks with a physic reality.
@@ -51,7 +51,8 @@ public:
     //! Default constructor
     //!
     explicit PhysicBlock(const QString& name = QString(), QObject *parent = 0)
-        : BotBlock(name, parent)
+        : BotBlock   (name, parent)
+        , _modelType (ModelTypeKinematic)
     { }
 
     // ========================================================================
@@ -59,6 +60,24 @@ public:
 
     //! FROM BotBlock
     virtual BlockRole getBlockRole() const { return BotBlock::BlockData; }
+
+    // ========================================================================
+    // => Basic getter and setter
+
+    //!
+    //! Model type getter
+    //!
+    virtual ModelType modelType() { return _modelType; }
+
+    //!
+    //! Model type setter
+    //!
+    virtual void setModelType(ModelType model) {  _modelType = model; }
+
+    //!
+    //! Shape data getter 
+    //!
+    virtual const ShapeData& getPhysicShapeData() { return _shapeData; }
 
     // ========================================================================
     // => Interface definition
@@ -81,11 +100,29 @@ public:
 
 
 
-    virtual qreal getShapeLenght() { return 1; }
 
+public slots:
 
+    //!
+    //! Update shape data with class parameters
+    //!
+    virtual void updateShapeData() {  }
+
+signals:
+
+    //!
+    void blockPhysicParameterChanged();
+
+    //!
+    void blockPhysicStructureChanged();
 
 protected:
+
+    //! Current model type
+    ModelType _modelType;
+
+    //! Shape data
+    ShapeData _shapeData;
 
 };
 

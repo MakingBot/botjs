@@ -29,6 +29,23 @@
 RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
     : _viewer(viewer)
 {
+
+    ref->updateShapeData();
+
+
+
+
+    _sector = _viewer.vbo().append( ref->getPhysicShapeData() );
+
+
+
+
+    std::cout << _sector.iindex << "   " << _sector.isize << std::endl;
+
+
+
+
+    /*
     // Reset object config
     _viewer.vbo().ini(_objConfig);
 
@@ -74,6 +91,7 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
 
     // Track the reference
     _ref = ref.toWeakRef();
+    */
 }
 
 
@@ -82,29 +100,31 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
  * */
 void RenderNode::draw()
 {
-    if(!_ref) { }
+    
+//    if(!_ref) { }
 
 
-    QSharedPointer<PhysicBlock> ref = _ref.toStrongRef();
+    // QSharedPointer<PhysicBlock> ref = _ref.toStrongRef();
 
 
 
     glPushMatrix();
 
 
-    glMultMatrixf( ref->getPreTransform().constData()  );
+    // glMultMatrixf( ref->getPreTransform().constData()  );
 
 
     // Draw the shape triangles
-    glDrawElements(GL_TRIANGLES, _objConfig.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_objConfig.iindex) );
+    glDrawElements(GL_TRIANGLES, _sector.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_sector.iindex) );
 
 
-    // Draw child nodes
-    foreach(QSharedPointer<RenderNode> node, _nodeChilds)
-    {
-        node->draw();
-    }
+    // // Draw child nodes
+    // foreach(QSharedPointer<RenderNode> node, _nodeChilds)
+    // {
+    //     node->draw();
+    // }
 
 
     glPopMatrix();
+    
 }

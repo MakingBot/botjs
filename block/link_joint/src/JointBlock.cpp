@@ -184,3 +184,28 @@ void JointBlock::disconnectAll()
 {
 
 }
+
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updateShapeData()
+{
+    // Reset the shape data
+    _shapeData.reset();
+
+
+    switch( _modelType )
+    {
+        case ModelTypeBase:
+
+            break;
+
+        case ModelTypeKinematic:
+            _shapeData.createSphere( 2, 2 );
+            break;
+    }
+
+}
+
+

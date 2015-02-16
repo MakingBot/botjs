@@ -28,8 +28,9 @@
  * */
 VertexBufferObject::VertexBufferObject(Viewer& viewer)
     : _viewer       (viewer) 
-    , _vertexBuffer (QGLBuffer::VertexBuffer)
     , _indiceBuffer (QGLBuffer::IndexBuffer )
+    , _vertexBuffer (QGLBuffer::VertexBuffer)
+    , _normalBuffer (QGLBuffer::VertexBuffer)
 {
 
     _viewer.makeCurrent();
@@ -45,6 +46,15 @@ VertexBufferObject::VertexBufferObject(Viewer& viewer)
     _indiceBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
     _indiceBuffer.allocate(300000 * sizeof(GLuint    ));
     _indiceBuffer.release();
+
+
+    _normalBuffer.create();
+    _normalBuffer.bind();
+    _normalBuffer.setUsagePattern(QGLBuffer::DynamicDraw);
+    _normalBuffer.allocate(300000 * sizeof(QVector3D    ));
+    _normalBuffer.release();
+
+
 
     _viewer.doneCurrent();
 

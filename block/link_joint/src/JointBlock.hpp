@@ -229,6 +229,10 @@ signals:
 
 public slots:
 
+
+    void updateShapeData();
+
+
     //! Update transform properties
     void updateKinematic();
     
