@@ -143,35 +143,6 @@ public:
     //!
     void ini(ObjBufferConfig& obj);
 
-    //!
-    //! Subdivide triangle of the sphere approximation 
-    //!
-    void subdivide( QVector3D p1, QVector3D p2, QVector3D p3, qreal radius, ObjBufferConfig& obj, int depth );
-
-    //!
-    //! Function to generate a sphere
-    //!
-    void createSphere( qreal radius, GLuint subdiv, ObjBufferConfig& obj );
-
-    //!
-    //! Function to generate a cylinder
-    //!
-    void createCylinder( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
-
-    //!
-    //! Function to generate a cone
-    //!
-    void createCone( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
-
-    //!
-    //! Function to generate a cuboid
-    //!
-    void createCuboid( qreal rx, qreal ry, qreal rz, ObjBufferConfig& obj );
-
-    //!
-    //! Function to generate an arrow
-    //!
-    void createArrow( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj );
 
 
     void createBase( ObjBufferConfig& obj );

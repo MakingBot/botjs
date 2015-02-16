@@ -26,16 +26,23 @@
 /* ============================================================================
  *
  * */
-RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
-    : _viewer(viewer)
+RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer )
+    :  _viewer(viewer), _physicObject(ref)
 {
 
-    ref->updateShapeData();
+    _physicObject->updateShapeData();
 
 
 
+    // Disconnect precedent connection
+    QObject::disconnect( _physicObject.data(), SIGNAL(blockPhysicStructureChanged()), _viewer, SLOT(onBlockPropertiesChange()) );
 
-    _sector = _viewer.vbo().append( ref->getPhysicShapeData() );
+
+    QObject::connect( _physicObject.data(), SIGNAL(blockPhysicStructureChanged()), viewer, SLOT(onBlockPropertiesChange()) );
+
+
+
+    _sector = _viewer->vbo().append( _physicObject->getPhysicShapeData() );
 
 
 
@@ -46,42 +53,6 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
 
 
     /*
-    // Reset object config
-    _viewer.vbo().ini(_objConfig);
-
-    if( viewer.model() == PhysicBlock::ModelTypeBase )
-    {
-
-        _viewer.vbo().createBase( _objConfig );
-
-    }
-    else
-    {
-
-        switch( ref->getShapeType(viewer.model()) )
-        {
-            
-
-            case PhysicBlock::ShapeTypeSphere:
-
-                _viewer.vbo().createSphere( 0.25, 4, _objConfig );
-                break;
-
-            case PhysicBlock::ShapeTypeArrow :
-                _viewer.vbo().createArrow( 0.25, ref->getShapeLenght(), 10, _objConfig );
-
-                
-
-                break;
-
-            default: break;
-        }
-    
-    }
-
-    //QObject::connect( ref.data(), SIGNAL(blockiPropertyValuesChanged()), &viewer, SLOT(onBlockPropertiesChange()) );
-    
-
 
     QList<QSharedPointer<PhysicBlock> > slaves = ref->getPhysicSlaves();
     foreach(QSharedPointer<PhysicBlock> slave, slaves)
@@ -89,11 +60,19 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer )
         _nodeChilds << QSharedPointer<RenderNode>( new RenderNode(slave, _viewer) );
     }
 
-    // Track the reference
-    _ref = ref.toWeakRef();
     */
 }
 
+/* ============================================================================
+ *
+ * */
+RenderNode::~RenderNode()
+{
+
+
+
+    
+}
 
 /* ============================================================================
  *
@@ -104,14 +83,16 @@ void RenderNode::draw()
 //    if(!_ref) { }
 
 
-    // QSharedPointer<PhysicBlock> ref = _ref.toStrongRef();
-
-
 
     glPushMatrix();
 
 
-    // glMultMatrixf( ref->getPreTransform().constData()  );
+    glMultMatrixf( _physicObject->getPreTransform().constData() );
+
+    // std::cout << _physicObject->getPreTransform()(0,0) << "  " << _physicObject->getPreTransform()(1,0) << "  " << _physicObject->getPreTransform()(2,0) << "  " << _physicObject->getPreTransform()(3,0)  << std::endl;
+    // std::cout << _physicObject->getPreTransform()(0,1) << "  " << _physicObject->getPreTransform()(1,1) << "  " << _physicObject->getPreTransform()(2,1) << "  " << _physicObject->getPreTransform()(3,1)  << std::endl;
+    // std::cout << _physicObject->getPreTransform()(0,2) << "  " << _physicObject->getPreTransform()(1,2) << "  " << _physicObject->getPreTransform()(2,2) << "  " << _physicObject->getPreTransform()(3,2)  << std::endl;
+    // std::cout << _physicObject->getPreTransform()(0,3) << "  " << _physicObject->getPreTransform()(1,3) << "  " << _physicObject->getPreTransform()(2,3) << "  " << _physicObject->getPreTransform()(3,3)  << std::endl;
 
 
     // Draw the shape triangles

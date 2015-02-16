@@ -17,6 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QtMath>
 #include <ShapeData.hpp>
 
 /* ============================================================================
@@ -81,3 +82,205 @@ void ShapeData::createSphere( qreal radius, unsigned int subdiv )
     subdivide( pD, pA, pF, radius, subdiv );
 }
 
+/* ============================================================================
+ *
+ * */
+void ShapeData::createCylinder( qreal radius, qreal height, unsigned int slices )
+{
+    // Set buffer param
+    const unsigned int vindex = _vertexArray.size();
+
+    // Compute const
+    const qreal height2 = height/2;
+    const qreal step = (M_PI * 2) / slices;
+    
+    // Append center bot and top
+    _vertexArray << QVector3D(0, 0, -height2); // bot 0
+    _vertexArray << QVector3D(0, 0,  height2); // top 1
+    
+    // Append points of the bot circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        const qreal angle = step * i;
+        const qreal sina  = qSin(angle); 
+        const qreal cosa  = qCos(angle);
+        
+        _vertexArray << QVector3D( cosa*radius, sina*radius, -height2 );
+    }
+
+    // Append points of the top circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    { 
+        QVector3D topPoint(_vertexArray.at(vindex + 2 + i));
+        topPoint.setZ(height2);
+        _vertexArray << topPoint;
+    }
+
+    // Index for bot circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        unsigned int tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const unsigned int p1 = vindex + 2 + tmp; // i + 1
+        const unsigned int p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<unsigned int>( {p1, p2, vindex+0} );
+    }
+
+    // Index for top circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        unsigned int tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const unsigned int p1 = vindex + 2 + slices + tmp; // i + 1
+        const unsigned int p2 = vindex + 2 + slices + i;   // i
+
+        _indiceArray << QVector<unsigned int>( {p1, p2, vindex+1} );
+    }
+
+    // Index for body
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        unsigned int tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const unsigned int p01 = vindex + 2 + tmp; // i + 1
+        const unsigned int p02 = vindex + 2 + i;   // i
+
+        const unsigned int p11 = vindex + 2 + slices + tmp; // i + 1
+        const unsigned int p12 = vindex + 2 + slices + i;   // i
+
+        _indiceArray << QVector<unsigned int>( {p12, p02, p01}  );
+        _indiceArray << QVector<unsigned int>( {p12, p01, p11 } );
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void ShapeData::createCone( qreal radius, qreal height, unsigned int slices )
+{
+    // Set buffer param
+    const unsigned int vindex = _vertexArray.size();
+
+    // Compute const
+    const qreal height2 = height / 2;
+    const qreal step = (M_PI * 2) / slices;
+    
+    // Append center bot and top
+    _vertexArray << QVector3D(0, 0, -height2); // bot 0
+    _vertexArray << QVector3D(0, 0,  height2); // top 1
+    
+    // Append points of the bot circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        const qreal angle = step * i;
+        const qreal sina  = qSin(angle);
+        const qreal cosa  = qCos(angle);
+        
+        _vertexArray << QVector3D( cosa*radius, sina*radius, -height2 );
+    }
+
+    // Append points of the top circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    { 
+        QVector3D topPoint(_vertexArray.at(vindex + 2 + i));
+        topPoint.setZ(height2);
+        _vertexArray << topPoint;
+    }
+
+    // Index for bot circle
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        unsigned int tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const unsigned int p1 = vindex + 2 + tmp; // i + 1
+        const unsigned int p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<unsigned int>( {p1, p2, vindex+0} );
+    }
+
+    // Index for body
+    for(unsigned int i=0 ; i<slices ; i++)
+    {
+        unsigned int tmp = i+1;
+        if( tmp >= slices ) { tmp -= slices; }
+
+        const unsigned int p1 = vindex + 2 + tmp; // i + 1
+        const unsigned int p2 = vindex + 2 + i;   // i
+
+        _indiceArray << QVector<unsigned int>( {p1, p2, vindex+1} );
+    }
+}
+
+
+/* ============================================================================
+ * Y                        Y
+ *
+ * D ----- C        H ----- G
+ *
+ * 
+ * A ----- B  X  X  E ----- F
+ *
+ * Front Z to us Back Z to the screen
+ * */
+
+#define CUBE_A 0
+#define CUBE_B 1
+#define CUBE_C 2
+#define CUBE_D 3
+#define CUBE_E 4
+#define CUBE_F 5
+#define CUBE_G 6
+#define CUBE_H 7
+
+void ShapeData::createCuboid( qreal rx, qreal ry, qreal rz )
+{
+    // Set buffer param
+    const unsigned int vindex = _vertexArray.size();
+
+    // Compute const
+    const qreal rx2 = rx / 2;
+    const qreal ry2 = ry / 2;
+    const qreal rz2 = rz / 2;
+
+    // Append 8 points
+    _vertexArray << QVector3D( -rx2, -ry2,  rz2 ); // A
+    _vertexArray << QVector3D(  rx2, -ry2,  rz2 ); // B
+    _vertexArray << QVector3D(  rx2,  ry2,  rz2 ); // C
+    _vertexArray << QVector3D( -rx2,  ry2,  rz2 ); // D
+
+    _vertexArray << QVector3D(  rx2, -ry2, -rz2 ); // E
+    _vertexArray << QVector3D( -rx2, -ry2, -rz2 ); // F
+    _vertexArray << QVector3D( -rx2,  ry2, -rz2 ); // G
+    _vertexArray << QVector3D(  rx2,  ry2, -rz2 ); // H
+
+    // Append indices to compose faces
+
+    // Front
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_C, vindex + CUBE_D} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_B, vindex + CUBE_C} );
+
+    // Back
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_G, vindex + CUBE_H} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_F, vindex + CUBE_G} );
+
+    // Top
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_H, vindex + CUBE_G} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_C, vindex + CUBE_H} );
+
+    // Bottom
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_B, vindex + CUBE_A} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_E, vindex + CUBE_B} );
+
+    // Left
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_H, vindex + CUBE_C} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_E, vindex + CUBE_H} );
+
+    // Right
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_D, vindex + CUBE_G} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_A, vindex + CUBE_D} );
+}

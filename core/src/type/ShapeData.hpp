@@ -101,17 +101,17 @@ public:
     //!
     //! Function to generate a cylinder
     //!
-    // void createCylinder ( qreal radius, qreal height, GLuint slices );
+    void createCylinder ( qreal radius, qreal height, unsigned int slices );
 
     //!
     //! Function to generate a cone
     //!
-    // void createCone     ( qreal radius, qreal height, GLuint slices );
+    void createCone     ( qreal radius, qreal height, unsigned int slices );
 
     //!
     //! Function to generate a cuboid
     //!
-    // void createCuboid   ( qreal rx, qreal ry, qreal rz );
+    void createCuboid   ( qreal rx, qreal ry, qreal rz );
 
     //!
     //! Function to generate an arrow

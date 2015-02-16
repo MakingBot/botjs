@@ -88,20 +88,27 @@ QString LinkBlock::endName()
  * */
 void LinkBlock::updateKinematic()
 {
+    auto sign = [](float val) { if(val>=0) return 1; else return -1; };
+
     // Angle xz
     QVector3D projxz = _translation;
     projxz.setY(0);
     qreal anglexz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projxz ) / projxz.length() );
+    QVector3D vec = QVector3D::crossProduct( QVector3D(0,0,1), projxz );
+    anglexz *= sign( vec.y() );
 
     // Angle yz
     QVector3D projyz = _translation;
     projyz.setX(0);
     qreal angleyz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projyz ) / projyz.length() );
+              vec = QVector3D::crossProduct( QVector3D(0,0,1), projyz );
+    angleyz *= sign( vec.x() );
 
     // Apply rotations
     _preTransform.setToIdentity();
     _preTransform.rotate( ((anglexz * 180)/M_PI), QVector3D(0, 1, 0) );
     _preTransform.rotate( ((angleyz * 180)/M_PI), QVector3D(1, 0, 0) );
+
 
 
 
@@ -117,7 +124,9 @@ void LinkBlock::updateKinematic()
     new_transform.rotate( _rotation[2], QVector3D(0, 0, 1) );
 
 
-    _preTransform.rotate( 45, QVector3D(1, 0, 0) );
+    //_preTransform.rotate( 45, QVector3D(1, 0, 0) );
+
+
 
     // Set the new transformation
     _transform = new_transform;
@@ -134,6 +143,7 @@ void LinkBlock::updateKinematic()
 
         shared_endjoint->updateKinematic();
     }
+
 }
 
 /* ============================================================================
@@ -229,4 +239,29 @@ void LinkBlock::disconnectAll()
 {
     // TODO
     BotBlock::disconnectAll();
+}
+
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updateShapeData()
+{
+    // Reset the shape data
+    _shapeData.reset();
+
+
+    switch( _modelType )
+    {
+        case ModelTypeBase:
+
+            break;
+
+        case ModelTypeKinematic:
+            
+            _shapeData.createCylinder ( 0.5, lenght(), 5 );
+
+            break;
+    }
+
 }

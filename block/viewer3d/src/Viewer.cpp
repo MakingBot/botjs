@@ -58,7 +58,7 @@ void Viewer::onBlockPropertiesChange()
             _vbo.reset();
 
             //! Update the rendering tree
-            _renderingTree = QSharedPointer<RenderNode>( new RenderNode(physic_object, *this) );
+            _renderingTree = QSharedPointer<RenderNode>( new RenderNode(physic_object, this) );
 
             _vbo.write();
 
@@ -188,7 +188,6 @@ void Viewer::paintGL()
 
 
 
-
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -204,6 +203,8 @@ void Viewer::paintGL()
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
+
+
 
 
 
@@ -229,6 +230,9 @@ void Viewer::paintGL()
         glVertex3f(0, 0, 6);
     glEnd();
     glDisable( GL_LINE_SMOOTH );
+
+
+
 }
 
 /* ============================================================================

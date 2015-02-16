@@ -150,6 +150,9 @@ public:
 
         // Log
         beglog() << "Change translation parameter: " << _translation << endlog();
+
+
+        emit blockPhysicStructureChanged();
         
         // Update transformation
         updateKinematic();
@@ -226,6 +229,9 @@ signals:
     void spreadKinematic();
 
 public slots:
+
+
+    void updateShapeData();
 
 
     //! To update the transform matrix with the translation and rotation matrix

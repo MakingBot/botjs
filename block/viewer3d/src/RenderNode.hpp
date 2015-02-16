@@ -36,7 +36,10 @@ public:
     //!
     //! Default constructor
     //!
-    RenderNode( QSharedPointer<PhysicBlock> ref, Viewer& viewer );
+    RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer );
+
+
+    ~RenderNode();
 
     //!
     //! Ask for node drawing
@@ -60,10 +63,10 @@ protected:
     // => External reference
 
     //! Reference on the viewer
-    Viewer&                                 _viewer;
+    Viewer*                                 _viewer;
 
     //! Object block reference
-    QWeakPointer<PhysicBlock>               _ref;
+    QSharedPointer<PhysicBlock>             _physicObject;
 
 };
 
