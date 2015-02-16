@@ -20,12 +20,12 @@
 #include <QDir>
 #include <QFile>
 #include <QStack>
-#include <BotBlock.hpp>
-#include <BotEngine.hpp>
-#include <QCoreApplication>
-#include <CoreBlock.hpp>
-
 #include <iostream>
+
+#include <Type.hpp>
+#include <BotEngine.hpp>
+#include <CoreBlock.hpp>
+#include <QCoreApplication>
 
 //! Define the type of the creation function
 typedef QSharedPointer<BotBlock> (*CreateBlock)(const QString&);
@@ -162,6 +162,9 @@ void BotEngine::createCoreBlock()
     
     // Link it to the js engine
     go().setProperty(_coreBlock->getBlockName(), js_val);
+
+    // Add Type helper
+    go().setProperty("Type", _jsEngine->newQObject(new Type()));
 }
 
 /* ============================================================================

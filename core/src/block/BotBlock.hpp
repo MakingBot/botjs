@@ -58,59 +58,9 @@ public:
     //! JavaScript engine used by the application
     static BotEngine JsEngine;
 
-    //!
-    //! Function that create and configure a safe block pointer
-    //! The shared has to be stored by the parent block, else this block will be deleted
-    //!
-    template<typename BLOCK_TYPE>
-    static QSharedPointer<BotBlock> CreateBlock(const QString& name, QObject* parent = 0)
-    {
-        // Create the block
-        BLOCK_TYPE* block = new BLOCK_TYPE(name, parent);
 
-        // Create the shared pointer
-        QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
-        
-        // Save it as a weak pointer in this
-        shared_ptr->_wThis = shared_ptr.toWeakRef();
 
-        // Return shared in order that parent can save it
-        return shared_ptr;
-    }
 
-    //!
-    //! Convert this specialized block pointer to a BotBlock pointer
-    //! Specialized means that BLOCK_TYPE is a derived class of BotBlock
-    //!
-    template<typename BLOCK_TYPE>
-    BotBlock* toBlockPointer()
-    {
-        return toBlockSharedPointer<BLOCK_TYPE>().data();
-    }
-
-    //! to a specialized block shared pointer
-    template<typename BLOCK_TYPE>
-    QSharedPointer<BotBlock> toBlockSharedPointer()
-    {
-        return qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( getBlockSharedFromThis() );
-    }
-
-    //!
-    //! Convert this BotBlock pointer to a specialized block pointer
-    //! Specialized means that BLOCK_TYPE is a derived class of BotBlock
-    //!
-    template<typename BLOCK_TYPE>
-    BLOCK_TYPE* toSpecializedPointer()
-    {
-        return toSpecializedSharedPointer<BLOCK_TYPE>().data();
-    }
-
-    //! to a specialized block shared pointer
-    template<typename BLOCK_TYPE>
-    QSharedPointer<BLOCK_TYPE> toSpecializedSharedPointer()
-    {
-        return qSharedPointerObjectCast<BLOCK_TYPE, BotBlock>( getBlockSharedFromThis() );
-    }
 
     //!
     //! Each role is associated to a color
@@ -144,8 +94,29 @@ public:
         }
     }
 
-    // === === === BLOCK === === ===
+    // ========================================================================
+    // => Initialization
 
+    //!
+    //! Function that create and configure a safe block pointer
+    //! The shared has to be stored by the parent block, else this block will be deleted
+    //!
+    template<typename BLOCK_TYPE>
+    static QSharedPointer<BotBlock> CreateBlock(const QString& name, QObject* parent = 0)
+    {
+        // Create the block
+        BLOCK_TYPE* block = new BLOCK_TYPE(name, parent);
+
+        // Create the shared pointer
+        QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
+        
+        // Save it as a weak pointer in this
+        shared_ptr->_wThis = shared_ptr.toWeakRef();
+
+        // Return shared in order that parent can save it
+        return shared_ptr;
+    }
+    
     //!
     //! Default constructor
     //!
@@ -167,23 +138,77 @@ public:
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
     }
 
+    // ========================================================================
+    // => Basic block information
+
     //! Block version getter
-    virtual float getBlockVersion() const = 0;
+    virtual float     getBlockVersion   () const = 0;
 
     //! Block role getter
-    virtual BlockRole getBlockRole() const = 0;
+    virtual BlockRole getBlockRole      () const = 0;
 
     //! Block type name getter
-    virtual QString getBlockTypeName() const = 0;
+    virtual QString   getBlockTypeName  () const = 0;
 
     //! Block name getter
-    const QString getBlockName() const { return _bname; }
+    const   QString   getBlockName      () const { return _bname; }
 
+    // ========================================================================
+    // => Pointer convertion
+
+    //!
     //! Shared pointer on this object
-    QWeakPointer<BotBlock> getBlockWeakFromThis() { return _wThis; }
-    
+    //!
+    QWeakPointer<BotBlock>   getBlockWeakFromThis           ()
+    {
+        return _wThis;
+    }
+
+    //!
     //! Shared pointer on this object
-    QSharedPointer<BotBlock> getBlockSharedFromThis() { return _wThis.toStrongRef(); }
+    //!
+    QSharedPointer<BotBlock> getBlockSharedFromThis         ()
+    {
+        return _wThis.toStrongRef();
+    }
+
+    //!
+    //! Convert this specialized block pointer to a BotBlock pointer
+    //! Specialized means that B_TYPE is a derived class of BotBlock
+    //!
+    template<typename B_TYPE>
+    BotBlock*                toBlockPointer                 ()
+    {
+        return toBlockSharedPointer<B_TYPE>().data();
+    }
+
+    //!
+    //! to a specialized block shared pointer
+    //!
+    template<typename B_TYPE>
+    QSharedPointer<BotBlock> toBlockSharedPointer           ()
+    {
+        return qSharedPointerObjectCast<BotBlock, B_TYPE>( getBlockSharedFromThis() );
+    }
+
+    //!
+    //! Convert this BotBlock pointer to a specialized block pointer
+    //! Specialized means that B_TYPE is a derived class of BotBlock
+    //!
+    template<typename B_TYPE>
+    B_TYPE*                  toSpecializedPointer           ()
+    {
+        return toSpecializedSharedPointer<B_TYPE>().data();
+    }
+
+    //!
+    //! to a specialized block shared pointer
+    //!
+    template<typename B_TYPE>
+    QSharedPointer<B_TYPE>   toSpecializedSharedPointer     ()
+    {
+        return qSharedPointerObjectCast<B_TYPE, BotBlock>( getBlockSharedFromThis() );
+    }
 
     // === === === LOG BUFFER === === ===
 

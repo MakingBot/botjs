@@ -7,6 +7,7 @@ INCLUDE(../cmake/botjs_config.cmake)
 INCLUDE_DIRECTORIES(
     src/app
     src/block
+    src/type
     )
 
 # Headers
@@ -22,6 +23,7 @@ SET(PROJECT_HEADER_FILES
     src/block/PhysicBlock.hpp
 
     src/type/QRealList.hpp
+    src/type/Type.hpp
     )
 
 # Sources
