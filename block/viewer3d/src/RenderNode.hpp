@@ -50,12 +50,6 @@ protected:
 
     VboSector _sector;
 
-    //! Buffer parameters for the current object
-    ObjBufferConfig                         _objConfig;
-
-    // // Node parent
-    // RenderNode*                             _nodeParent;
-
     // Node childs
     QList<QSharedPointer<RenderNode> >      _nodeChilds;
 

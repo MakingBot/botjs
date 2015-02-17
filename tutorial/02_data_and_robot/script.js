@@ -12,23 +12,32 @@ var body     = proteo.create("kinasm", "body"    );
 
 
 var jointOrigine = body.create  ("joint" , "jointOrigine");
+jointOrigine.logTalking = true;
 
 var link1     = body.create  ("link"  , "link1"    );
 link1.logTalking = true;
 
 
-link1.translation = Type.vector3D([1,1,1]);
+link1.translation = Type.vector3D([0,0,4]);
 
-var jointMiddle = body.create  ("joint" , "jointMiddle");
+// var jointMiddle = body.create  ("joint" , "jointMiddle");
+
+// var link2     = body.create  ("link"  , "link2"    );
+
+// link2.translation = Type.vector3D([0,1,0]);
+// link2.logTalking = true;
+
 
 /*
 var link2     = body.create  ("link"  , "link2"    );
-
-var jointEnd = body.create  ("joint" , "jointEnd");
 */
+// var jointEnd = body.create  ("joint" , "jointEnd");
+
 
 jointOrigine.connect(link1);
-link1.connect(jointMiddle);
+
+
+// link1.connect(jointMiddle);
 // jointMiddle.connect(link2);
 // link2.connect(jointEnd);
 
@@ -41,13 +50,13 @@ viewer3d.logTalking = true;
 
 agent007.connect(viewer3d);
 
-//viewer3d.connect(jointOrigine);
-viewer3d.connect(link1);
+viewer3d.connect(jointOrigine);
+//viewer3d.connect(link1);
 
 
 
 // Display spies
-agent007.show();
+//agent007.show();
 agent008.show();
 
 // Start shell

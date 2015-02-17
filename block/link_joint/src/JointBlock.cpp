@@ -29,6 +29,8 @@ EXPORT_BLOCK(JointBlock)
  * */
 void JointBlock::updateKinematic()
 {
+
+    /*
     // To update a joint it must have a base link which has a base joint
     if(_baseLink)
     {
@@ -50,7 +52,7 @@ void JointBlock::updateKinematic()
             beglog() << "Position updated to " << _pos << endlog();
 
             // Alert chain elements
-            emit spreadKinematic();
+//            emit spreadKinematic();
 
             // Alert BotJs
             emit blockiPropertyValuesChanged();
@@ -80,6 +82,7 @@ void JointBlock::updateKinematic()
         // Alert chain elements
         emit spreadKinematic();
     }
+    */
 
     // Alert BotJs
     emit blockiPropertyValuesChanged();
@@ -136,6 +139,11 @@ bool JointBlock::connect(BotBlock* block, bool master)
         
         // Set the new output joint
         QWeakPointer<LinkBlock> weak_link = shared_link.toWeakRef();
+
+        if( !weak_link )
+        {
+            beglog() << "NULLLLLLLLL#" << endlog();   
+        }
 
         // 
         _outputLinks << weak_link;
@@ -202,7 +210,10 @@ void JointBlock::updateShapeData()
             break;
 
         case ModelTypeKinematic:
-            _shapeData.createSphere( 2, 2 );
+            _shapeData.createSphere( 0.05, 2 );
+
+            //_shapeData.createCuboid( 2, 0.1, 0.1 );
+            //_shapeData.createCone( 0.1, 0.3, 5 );
             break;
     }
 

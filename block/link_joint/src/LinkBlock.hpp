@@ -18,9 +18,8 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QVector3D>
 #include <QMatrix4x4>
-#include <QVariantList>
-#include <QRealList.hpp>
 #include <PhysicBlock.hpp>
 
 class JointBlock;
@@ -28,6 +27,8 @@ class JointBlock;
 //!
 //! Fixe transformation between 2 joints
 //! The link between 2 motors of a robot arm for example
+//!
+//! \author [XR]MakingBot ( http://makingbot.fr )
 //!
 class LinkBlock : public PhysicBlock
 {
@@ -40,8 +41,7 @@ class LinkBlock : public PhysicBlock
     Q_PROPERTY(QVector3D    direction   READ direction      WRITE setDirection   )
     Q_PROPERTY(QVector3D    translation READ translation    WRITE setTranslation )
 
-    Q_PROPERTY(QList<qreal>  rotation    READ rotation    WRITE setRotation     MEMBER _rotation   )
-    Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
+   Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
 
     Q_PROPERTY(QString       nameBase    READ baseName                                             )
     Q_PROPERTY(QString       nameEnd     READ endName                                              )
@@ -57,7 +57,6 @@ public:
         appendBlockIProperty("direction"  , IProperty(IProperty::IPTypeVector3D, false ));
         appendBlockIProperty("translation", IProperty(IProperty::IPTypeVector3D, false ));
 
-        appendBlockIProperty("rotation"   , IProperty(IProperty::IPTypeRealList, true ));
         appendBlockIProperty("transform"  , IProperty(IProperty::IPTypeMatrix44, false));
 
         appendBlockIProperty("nameBase"   , IProperty(IProperty::IPTypeString, false));
@@ -111,6 +110,7 @@ public:
     virtual qreal getShapeLenght() { return lenght(); }
 
 
+
     // ========================================================================
     // => Property lenght
 
@@ -161,24 +161,6 @@ public:
 
 
 
-
-
-    //! Link rotation getter
-    const QList<qreal>& rotation() { return _rotation; }
-   
-    //! Link rotation setter
-    void setRotation(const QList<qreal>& rotation)
-    {
-        // Set the new rotation
-        _rotation = rotation;
-
-        // Log
-        beglog() << "Change rotation parameter: " << _rotation << endlog();
-        
-        // Update transformation
-        updateKinematic();
-    }
-   
 
 
     //! Transform matrix getter
@@ -249,7 +231,9 @@ public slots:
 
 protected:
     
-    //! Position of the outputJoint in the baseJoint basis
+    //! Link translation
+    //! Position of the out joint in the in Joint basis
+    //!
     QVector3D _translation;
 
     //! Link rotation
@@ -259,17 +243,11 @@ protected:
     //! _rotation = { 0, 90, 45 } means rotate 0°  around x axis
     //!                                 rotate 90° around y axis
     //!                                 rotate 45° around z axis
-    QRealList _rotation;
+    QVector3D _rotation;
     
 
 
-    //! Transform matrix
-    //! It is computed from translation and rotation
-    QMatrix4x4  _transform;
 
-    QMatrix4x4 _preTransform;
-
-    QMatrix4x4 _postTransform;
     
     //! Joint base
     QWeakPointer<JointBlock> _baseJoint;

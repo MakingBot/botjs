@@ -70,7 +70,7 @@ QMatrix4x4 LinkBlock::getPreTransform()
  * */
 QMatrix4x4 LinkBlock::getPostTransform()
 {
-    return QMatrix4x4();
+    return _postTransform;
 }
 
 /* ============================================================================
@@ -104,46 +104,30 @@ void LinkBlock::updateKinematic()
               vec = QVector3D::crossProduct( QVector3D(0,0,1), projyz );
     angleyz *= sign( vec.x() );
 
-    // Apply rotations
+    // Apply transformations
     _preTransform.setToIdentity();
     _preTransform.rotate( ((anglexz * 180)/M_PI), QVector3D(0, 1, 0) );
     _preTransform.rotate( ((angleyz * 180)/M_PI), QVector3D(1, 0, 0) );
+    _preTransform.translate( QVector3D(0,0,1) * ( lenght()/2.0f ) );
+    
+    // Compute post transformation
+    _postTransform.setToIdentity();
+    _postTransform.translate( QVector3D(0,0,1) * ( lenght()/ 1.5  ) );
 
-
-
-
-
-
-    // Start with the identity matrix
-    QMatrix4x4 new_transform;
-
-    // Translate
-    new_transform.translate( translation() );
-    new_transform.rotate( _rotation[0], QVector3D(1, 0, 0) );
-    new_transform.rotate( _rotation[1], QVector3D(0, 1, 0) );
-    new_transform.rotate( _rotation[2], QVector3D(0, 0, 1) );
-
-
-    //_preTransform.rotate( 45, QVector3D(1, 0, 0) );
-
+    // End rotation
+    // _postTransform.rotate( _rotation[0], QVector3D(1,0,0) );
+    // _postTransform.rotate( _rotation[1], QVector3D(0,1,0) );
+    // _postTransform.rotate( _rotation[2], QVector3D(0,0,1) );
 
 
     // Set the new transformation
-    _transform = new_transform;
+    _transform = _postTransform * _preTransform ;
 
-    // Alert chain elements
-    emit spreadKinematic();
+    // Log
+    beglog() << "Link updated, translation : " << _translation  /* " rotation : " << _rotation */ << endlog();
 
     // Alert BotJs
     emit blockiPropertyValuesChanged();
-
-    if( _outputJoint )
-    {
-        QSharedPointer<JointBlock> shared_endjoint = _outputJoint.toStrongRef();
-
-        shared_endjoint->updateKinematic();
-    }
-
 }
 
 /* ============================================================================
@@ -184,13 +168,13 @@ bool LinkBlock::connect(BotBlock* block, bool master)
         QSharedPointer<JointBlock> shared_end = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
 
         // Connect signals
-        QObject::connect( this, SIGNAL(spreadKinematic()), shared_end.data(), SLOT(updateKinematic()) );
+     //   QObject::connect( this, SIGNAL(spreadKinematic()), shared_end.data(), SLOT(updateKinematic()) );
 
         // Set the new end joint
         _outputJoint = shared_end.toWeakRef();
 
-        // Alert chain elements
-        emit spreadKinematic();
+        // // Alert chain elements
+        // emit spreadKinematic();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
@@ -251,6 +235,8 @@ void LinkBlock::updateShapeData()
     _shapeData.reset();
 
 
+    //_shapeData.createCuboid( 1, 0.1, 0.1 );
+
     switch( _modelType )
     {
         case ModelTypeBase:
@@ -258,8 +244,9 @@ void LinkBlock::updateShapeData()
             break;
 
         case ModelTypeKinematic:
+            // _shapeData.createSphere( 0.10, 2 );
+            _shapeData.createCylinder ( 0.20, lenght(), 10 );
             
-            _shapeData.createCylinder ( 0.5, lenght(), 5 );
 
             break;
     }

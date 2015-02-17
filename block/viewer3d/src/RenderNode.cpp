@@ -50,17 +50,27 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer )
     std::cout << _sector.iindex << "   " << _sector.isize << std::endl;
 
 
-
-
-    /*
-
     QList<QSharedPointer<PhysicBlock> > slaves = ref->getPhysicSlaves();
     foreach(QSharedPointer<PhysicBlock> slave, slaves)
     {
-        _nodeChilds << QSharedPointer<RenderNode>( new RenderNode(slave, _viewer) );
+
+        if(slave)
+        {
+            RenderNode* node = new RenderNode(slave, _viewer);
+            std::cout << "liena ok == " << slave->getBlockName().toStdString() << std::endl;
+            _nodeChilds << QSharedPointer<RenderNode>( node );
+       
+        }
+        else
+        {
+            std::cout << "nnununuunununullll" << std::endl;
+        }
+
+        
+
+       // 
     }
 
-    */
 }
 
 /* ============================================================================
@@ -74,6 +84,12 @@ RenderNode::~RenderNode()
     
 }
 
+
+
+
+#define BUFFER_OFFSET(bytes) ((GLuint*) NULL + (bytes)) 
+
+
 /* ============================================================================
  *
  * */
@@ -81,7 +97,6 @@ void RenderNode::draw()
 {
     
 //    if(!_ref) { }
-
 
 
     glPushMatrix();
@@ -94,16 +109,17 @@ void RenderNode::draw()
     // std::cout << _physicObject->getPreTransform()(0,2) << "  " << _physicObject->getPreTransform()(1,2) << "  " << _physicObject->getPreTransform()(2,2) << "  " << _physicObject->getPreTransform()(3,2)  << std::endl;
     // std::cout << _physicObject->getPreTransform()(0,3) << "  " << _physicObject->getPreTransform()(1,3) << "  " << _physicObject->getPreTransform()(2,3) << "  " << _physicObject->getPreTransform()(3,3)  << std::endl;
 
-
     // Draw the shape triangles
-    glDrawElements(GL_TRIANGLES, _sector.isize, GL_UNSIGNED_INT, GLUB_BUFFER_OFFSET(_sector.iindex) );
+    glDrawElements(GL_TRIANGLES, _sector.isize, GL_UNSIGNED_INT, (GLvoid*)( _sector.iindex*sizeof(GLuint) ) );
+   //     GLUB_BUFFER_OFFSET(_sector.iindex) );
 
+    glMultMatrixf( _physicObject->getPostTransform().constData() );
 
-    // // Draw child nodes
-    // foreach(QSharedPointer<RenderNode> node, _nodeChilds)
-    // {
-    //     node->draw();
-    // }
+    // Draw child nodes
+    foreach(QSharedPointer<RenderNode> node, _nodeChilds)
+    {
+        node->draw();
+    }
 
 
     glPopMatrix();

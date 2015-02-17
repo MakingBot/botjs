@@ -19,11 +19,12 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <iostream>
+
 #include <QGLBuffer>
 #include <ShapeData.hpp>
 
 class Viewer;
-
 
 //!
 //! Provide parameter that define a vbo sector
@@ -39,29 +40,6 @@ public:
 
     //! Number of indice to compose the object
     unsigned int isize;
-};
-
-
-//!
-//! Provide parameter structure to draw a previous stored vbo object
-//!
-class ObjBufferConfig
-{
-public:
-    //! Default constructor
-    ObjBufferConfig() : iindex(0), isize(0), vindex(0), vsize(0) { }
-
-    //! Index of the first object indice in the VBO 
-    unsigned int iindex;
-
-    //! Number of indice to compose the object
-    unsigned int isize;
-
-    //! Index of the first object vertex in the VBO 
-    unsigned int vindex;
-
-    //! Number of vertice to compose the object
-    unsigned int vsize;
 };
 
 //!
@@ -111,10 +89,9 @@ public:
     //!
     void reset()
     {
-        
-
-        _vertexArray.clear();
         _indiceArray.clear();
+        _vertexArray.clear();
+        _normalArray.clear();
     }
 
     //!
@@ -132,41 +109,36 @@ public:
         _vertexBuffer.write(0, _vertexArray.constData(), _vertexArray.size() * sizeof(QVector3D));
         _vertexBuffer.release();
 
-
         _normalBuffer.bind();
         _normalBuffer.write(0, _normalArray.constData(), _normalArray.size() * sizeof(QVector3D));
         _normalBuffer.release();        
     }
 
-    //!
-    //! Initialize object
-    //!
-    void ini(ObjBufferConfig& obj);
 
-
-
-    void createBase( ObjBufferConfig& obj );
-
-    //!
-    //! Function to translation vertex of an object
-    //!
-    void translate( QVector3D translation, ObjBufferConfig& obj );
-
-    //!
-    //! Function to rotate vertex of an object
-    //!
-    void rotate( QVector3D axe, qreal angle, ObjBufferConfig& obj );
 
 
 
     VboSector append(const ShapeData& data)
     {
+        // Get sector indices before merge arrays
+        const unsigned int vertex_array_size = _vertexArray.size();
         VboSector sector(_indiceArray.size(), data.indiceArray().size());
         
+        // Append arrays
         _indiceArray << data.indiceArray();
         _vertexArray << data.vertexArray();
         _normalArray << data.normalArray();
 
+        // Adjust indice in the vbo
+        for( unsigned int i=sector.iindex ; i<sector.isize ; i++ )
+        {
+            _indiceArray[i] += vertex_array_size;
+        }
+
+        std::cout << sector.iindex << "   " << sector.isize << " == " << _indiceArray.size() <<  std::endl;
+
+
+        // Return the sector
         return sector;
     }
 

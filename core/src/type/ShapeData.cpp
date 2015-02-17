@@ -261,26 +261,26 @@ void ShapeData::createCuboid( qreal rx, qreal ry, qreal rz )
     // Append indices to compose faces
 
     // Front
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_C, vindex + CUBE_D} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_B, vindex + CUBE_C} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_C, vindex + CUBE_D } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_A, vindex + CUBE_B, vindex + CUBE_C } );
 
     // Back
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_G, vindex + CUBE_H} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_F, vindex + CUBE_G} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_G, vindex + CUBE_H } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_E, vindex + CUBE_F, vindex + CUBE_G } );
 
     // Top
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_H, vindex + CUBE_G} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_C, vindex + CUBE_H} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_H, vindex + CUBE_G } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_D, vindex + CUBE_C, vindex + CUBE_H } );
 
     // Bottom
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_B, vindex + CUBE_A} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_E, vindex + CUBE_B} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_B, vindex + CUBE_A } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_E, vindex + CUBE_B } );
 
     // Left
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_H, vindex + CUBE_C} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_E, vindex + CUBE_H} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_H, vindex + CUBE_C } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_B, vindex + CUBE_E, vindex + CUBE_H } );
 
     // Right
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_D, vindex + CUBE_G} );
-    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_A, vindex + CUBE_D} );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_D, vindex + CUBE_G } );
+    _indiceArray << QVector<unsigned int>( { vindex + CUBE_F, vindex + CUBE_A, vindex + CUBE_D } );
 }

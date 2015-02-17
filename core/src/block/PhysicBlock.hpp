@@ -87,10 +87,6 @@ public:
     //!
     virtual ShapeType getShapeType(ModelType model) { return ShapeTypeNone; }
 
-    //!
-    //! Interface to provide connected physic object blocks
-    //!
-    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
 
 
     virtual QMatrix4x4 getPreTransform() { return QMatrix4x4(); }
@@ -98,6 +94,10 @@ public:
     virtual QMatrix4x4 getPostTransform() { return QMatrix4x4(); }
 
 
+    //!
+    //! Interface to provide connected physic object blocks
+    //!
+    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
 
 
 
@@ -119,10 +119,19 @@ signals:
 protected:
 
     //! Current model type
-    ModelType _modelType;
+    ModelType   _modelType;
 
     //! Shape data
-    ShapeData _shapeData;
+    ShapeData   _shapeData;
+
+    //! Global transformation
+    QMatrix4x4  _transform;
+
+    //! Transformation to bring the model view in drawing position
+    QMatrix4x4  _preTransform;
+
+    //! Transformation to bring the model view in
+    QMatrix4x4  _postTransform;
 
 };
 

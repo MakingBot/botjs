@@ -60,16 +60,7 @@ VertexBufferObject::VertexBufferObject(Viewer& viewer)
 
 }
 
-/* ============================================================================
- *
- * */
-void VertexBufferObject::ini(ObjBufferConfig& obj)
-{
-    obj.iindex = _indiceArray.size();
-    obj.isize  = 0;
-    obj.vindex = _vertexArray.size();
-    obj.vsize  = 0;
-}
+
 
 
 
@@ -77,48 +68,7 @@ void VertexBufferObject::ini(ObjBufferConfig& obj)
 
 /* ============================================================================
  *
- * */
-// void VertexBufferObject::createArrow( qreal radius, qreal height, GLuint slices, ObjBufferConfig& obj )
-// {
-//     const qreal r_cylinder = radius * (3.0f/4.0f);
-//     const qreal h_cylinder = height * (4.0f/5.0f);
-//     const qreal h_cone     = height - h_cylinder;
-
-//     createCylinder( r_cylinder, h_cylinder, slices, obj );
-//     translate     ( QVector3D(0, 0, -(h_cylinder/2)-(h_cone/2) ), obj );
-//     createCone( radius, h_cone, slices, obj );
-//     translate     ( QVector3D(0, 0, +(h_cylinder)+(h_cone/2) ), obj );
-// }
-
-/* ============================================================================
- *
- * */
-void VertexBufferObject::createBase( ObjBufferConfig& obj )
-{
-    qreal radius = 0.25;
-    qreal height = 3;
-    GLuint slices= 10;
-
-
-    // Y
-    //createArrow( radius, height, slices, obj );
-
-    //rotate( QVector3D(1,0,0), -(BUFFER_PI/2), obj );
-
-    // X
-    //createArrow( radius, height, slices, obj );
-
-    // rotate( QVector3D(0,1,0), BUFFER_PI/2, obj );
-
-    // // Z
-    // createArrow( radius, height, slices, obj );
-
-}
-
-
-/* ============================================================================
- *
- * */
+ * *
 void VertexBufferObject::translate( QVector3D translation, ObjBufferConfig& obj )
 {
     for(unsigned int v=obj.vindex ; v<obj.vsize ; v++)
@@ -129,7 +79,7 @@ void VertexBufferObject::translate( QVector3D translation, ObjBufferConfig& obj 
 
 /* ============================================================================
  *
- * */
+ * *
 void VertexBufferObject::rotate( QVector3D axe, qreal angle, ObjBufferConfig& obj )
 {
     const qreal a   = axe.x() ;
@@ -168,3 +118,4 @@ void VertexBufferObject::rotate( QVector3D axe, qreal angle, ObjBufferConfig& ob
         _vertexArray[v]= res.toVector3D();   
     }
 }
+//*/
