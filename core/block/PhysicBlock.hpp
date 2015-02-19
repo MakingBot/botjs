@@ -99,7 +99,7 @@ public:
     //!
     virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
 
-
+virtual int colorize() { return 0; }
 
 public slots:
 

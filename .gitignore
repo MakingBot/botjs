@@ -27,4 +27,8 @@
 *.out
 *.app
 
+# Eclipse
 build
+workspace
+*.project
+

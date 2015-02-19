@@ -97,6 +97,10 @@ public:
         }
     }
 
+
+    virtual int  colorize() { return 1; }
+
+
     //! FROM PhysicBlock
     virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves();
 

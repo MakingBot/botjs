@@ -18,9 +18,9 @@ var link1     = body.create  ("link"  , "link1"    );
 link1.logTalking = true;
 
 
-link1.translation = Type.vector3D([0,0,4]);
+link1.translation = Type.vector3D([1,1,1]);
 
-// var jointMiddle = body.create  ("joint" , "jointMiddle");
+var jointMiddle = body.create  ("joint" , "jointMiddle");
 
 // var link2     = body.create  ("link"  , "link2"    );
 
@@ -37,7 +37,7 @@ var link2     = body.create  ("link"  , "link2"    );
 jointOrigine.connect(link1);
 
 
-// link1.connect(jointMiddle);
+ link1.connect(jointMiddle);
 // jointMiddle.connect(link2);
 // link2.connect(jointEnd);
 
@@ -50,8 +50,8 @@ viewer3d.logTalking = true;
 
 agent007.connect(viewer3d);
 
-viewer3d.connect(jointOrigine);
-//viewer3d.connect(link1);
+//viewer3d.connect(jointOrigine);
+viewer3d.connect(link1);
 
 
 

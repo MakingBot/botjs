@@ -46,10 +46,6 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer )
 
 
 
-
-    std::cout << _sector.iindex << "   " << _sector.isize << std::endl;
-
-
     QList<QSharedPointer<PhysicBlock> > slaves = ref->getPhysicSlaves();
     foreach(QSharedPointer<PhysicBlock> slave, slaves)
     {
@@ -108,6 +104,16 @@ void RenderNode::draw()
     // std::cout << _physicObject->getPreTransform()(0,1) << "  " << _physicObject->getPreTransform()(1,1) << "  " << _physicObject->getPreTransform()(2,1) << "  " << _physicObject->getPreTransform()(3,1)  << std::endl;
     // std::cout << _physicObject->getPreTransform()(0,2) << "  " << _physicObject->getPreTransform()(1,2) << "  " << _physicObject->getPreTransform()(2,2) << "  " << _physicObject->getPreTransform()(3,2)  << std::endl;
     // std::cout << _physicObject->getPreTransform()(0,3) << "  " << _physicObject->getPreTransform()(1,3) << "  " << _physicObject->getPreTransform()(2,3) << "  " << _physicObject->getPreTransform()(3,3)  << std::endl;
+
+    if( _physicObject->colorize() )
+    {
+        glColor3f(1.0f, 1.0f, 0.0f);
+    }
+    else
+    {
+        glColor3f(1.0f, 0.0f, 1.0f);
+    }
+    
 
     // Draw the shape triangles
     glDrawElements(GL_TRIANGLES, _sector.isize, GL_UNSIGNED_INT, (GLvoid*)( _sector.iindex*sizeof(GLuint) ) );

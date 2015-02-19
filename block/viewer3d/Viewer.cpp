@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include <QTime>
+
 //! Maximum vertice in the obj
 #define MAX_VERTEX_USED 10000
 
@@ -47,6 +49,10 @@ void Viewer::onBlockPropertiesChange()
     QSharedPointer<Viewer3DBlock> viewerBlock = getSharedparentBlock();
     if(viewerBlock)
     {
+        // Start timer
+        QTime timer;
+        timer.start();
+
         // Background color
         glClearColor(viewerBlock->bgColor().x(), viewerBlock->bgColor().y(), viewerBlock->bgColor().z(), 1.0f);
 
@@ -65,9 +71,10 @@ void Viewer::onBlockPropertiesChange()
             // Log
             viewerBlock->beglog() << "Update render tree" << viewerBlock->endlog();
         }
-  
-        // Log
-        viewerBlock->beglog() << "New properties have been taken into account" << viewerBlock->endlog();
+
+        // Stop timer and log
+        int elapsed = timer.elapsed();
+        viewerBlock->beglog() << "New properties have been taken into account in " << elapsed << "ms" << viewerBlock->endlog();
     }
     else
     {

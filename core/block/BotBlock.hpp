@@ -154,7 +154,7 @@ public:
     const   QString   getBlockName      () const { return _bname; }
 
     // ========================================================================
-    // => Pointer convertion
+    // => Pointer conversion
 
     //!
     //! Shared pointer on this object
@@ -362,7 +362,7 @@ public slots:
             }
         }
         // Other block ask for a connection
-        // Default behaviour : accept
+        // Default behavior : accept
         _connections << block->getBlockWeakFromThis();
 
         // Alert BotJs
@@ -374,7 +374,7 @@ public slots:
     }
 
     //!
-    //! Ask for deconnection
+    //! Ask for reconnection
     //!
     virtual void disconnect(BotBlock* block, bool master=true)
     {
