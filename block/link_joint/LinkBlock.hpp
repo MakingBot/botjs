@@ -35,16 +35,15 @@ class LinkBlock : public PhysicBlock
     Q_OBJECT
 
     // ========================================================================
-    // => Properties
+    // => Property declaration
 
-    Q_PROPERTY(qreal        lenght      READ lenght         WRITE setLenght      )
+    Q_PROPERTY(qreal        length      READ length         WRITE setLength      )
     Q_PROPERTY(QVector3D    direction   READ direction      WRITE setDirection   )
     Q_PROPERTY(QVector3D    translation READ translation    WRITE setTranslation )
 
-   Q_PROPERTY(QMatrix4x4    transform   READ transform                                            )
+/*
 
-    Q_PROPERTY(QString       nameBase    READ baseName                                             )
-    Q_PROPERTY(QString       nameEnd     READ endName                                              )
+*/
 
 public:
     //!
@@ -53,14 +52,17 @@ public:
     explicit LinkBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
         : PhysicBlock(name, parent), _rotation({0,0,0})
     {
-        appendBlockIProperty("lenght"     , IProperty(IProperty::IPTypeReal    , true  ));
+        appendBlockIProperty("length"     , IProperty(IProperty::IPTypeReal    , true  ));
         appendBlockIProperty("direction"  , IProperty(IProperty::IPTypeVector3D, false ));
         appendBlockIProperty("translation", IProperty(IProperty::IPTypeVector3D, false ));
 
         appendBlockIProperty("transform"  , IProperty(IProperty::IPTypeMatrix44, false));
 
-        appendBlockIProperty("nameBase"   , IProperty(IProperty::IPTypeString, false));
-        appendBlockIProperty("nameEnd"    , IProperty(IProperty::IPTypeString, false));
+        // appendBlockIProperty("nameBase"   , IProperty(IProperty::IPTypeString, false));
+        // appendBlockIProperty("nameEnd"    , IProperty(IProperty::IPTypeString, false));
+
+        // First update
+        updateLink();
     }
 
     // ========================================================================
@@ -76,58 +78,24 @@ public:
     virtual int getBlockNumberOfConnections() const
     {
         int nb = BotBlock::getBlockNumberOfConnections();
-        if( _baseJoint   ) { nb++; }
-        if( _outputJoint ) { nb++; }
+        if( _injoint  ) { nb++; }
+        if( _outjoint ) { nb++; }
         return nb;
     }
 
     // ========================================================================
-    // => PhysicBlock redefinition
+    // => Property length
 
-    //! FROM PhysicBlock
-    ShapeType getShapeType(ModelType model)
+    //! Length getter
+    qreal length() { return _translation.length(); }
+
+    //! Length setter
+    void setLength(qreal length)
     {
-        switch(model)
-        {
-            case ModelTypeKinematic: 
-                return PhysicBlock::ShapeTypeArrow;
-                break;
-
-            default: return ShapeTypeNone; break;
-        }
-    }
-
-
-    virtual int  colorize() { return 1; }
-
-
-    //! FROM PhysicBlock
-    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves();
-
-    //! FROM PhysicBlock
-    virtual QMatrix4x4 getPreTransform();
-
-    //! FROM PhysicBlock
-    virtual QMatrix4x4 getPostTransform();
-
-
-    virtual qreal getShapeLenght() { return lenght(); }
-
-
-
-    // ========================================================================
-    // => Property lenght
-
-    //! Lenght getter
-    qreal lenght() { return _translation.length(); }
-
-    //! Lenght setter
-    void setLenght(qreal lenght)
-    {
-        if( lenght >= 0 )
+        if( length >= 0 )
         {
             if( direction() == QVector3D(0,0,0) ) { _translation = QVector3D(0,0,1); }
-            setTranslation( direction() * lenght );
+            setTranslation( direction() * length );
         }
     }
 
@@ -138,7 +106,11 @@ public:
     QVector3D direction() { return _translation.normalized(); }
 
     //! Direction setter
-    void setDirection(const QVector3D& direction) { setTranslation( direction * lenght() ); }
+    void setDirection(const QVector3D& direction)
+    {
+        if( length() == 0 ) { _translation = QVector3D(0,0,1); }
+        setTranslation( direction * length() );
+    }
 
     // ========================================================================
     // => Property translation
@@ -152,77 +124,45 @@ public:
         // Set the new translation
         _translation = translation;
 
-        // Log
-        beglog() << "Change translation parameter: " << _translation << endlog();
-
-
-        emit blockPhysicStructureChanged();
-        
-        // Update transformation
-        updateKinematic();
+        // Full update
+        updateLink();
     }
 
+    // ========================================================================
+    // => Property in joint
 
+    //! In joint pointer getter
+    JointBlock* inJoint() { return _injoint.data(); }
 
+    //! In joint weak pointer getter
+    QWeakPointer<JointBlock> weakInJoint() { return _injoint; }
 
-
-
-    //! Transform matrix getter
-    const QMatrix4x4& transform() const { return _transform; }
-    
-    //! Transform matrix setter
-    void setTransform(const QMatrix4x4& matrix)
-    {
-        // Set the new transform
-        _transform = matrix;
-
-        // Alert chain elements
-        emit spreadKinematic();
-
-        // Alert BotJs
-        emit blockiPropertyValuesChanged();
-    }
-
+    //! In joint shared pointer getter
+    QSharedPointer<JointBlock> sharedInJoint() { return _injoint.toStrongRef(); }
 
     //! Check if the link has a base
-    bool hasBase() { if(_baseJoint) { return true; } else { return false; } }
-
-    //! Joint base
-    JointBlock* base() { return _baseJoint.data(); }
-
-    //! Joint base weak pointer getter
-    QWeakPointer<JointBlock> weakBase() { return _baseJoint; }
- 
-    //! Joint base weak pointer getter
-    QSharedPointer<JointBlock> sharedBase() { return _baseJoint.toStrongRef(); }
-
-    //! Getter for the base name
-    QString baseName();
+    bool hasInJoint() { if(_injoint) { return true; } else { return false; } }
 
 
-    //! Joint output getter
-    QWeakPointer<JointBlock> weakOutput() { return _outputJoint; }
+    // ========================================================================
+    // => Property out joint
 
-    //! Joint base weak pointer getter
-    QSharedPointer<JointBlock> sharedOutput() { return _outputJoint.toStrongRef(); }
+    //! Joint output getter    QWeakPointer<JointBlock> weakOutput() { return _outjoint; }
 
-    //! Getter for the base name
-    QString endName();
+    //! Joint base weak pointer getter    QSharedPointer<JointBlock> sharedOutput() { return _outjoint.toStrongRef(); }
+
 
 signals:
 
-    //! Emitted when transform is modified
-    void spreadKinematic();
-
 public slots:
-
-
-    void updateShapeData();
-
 
     //! To update the transform matrix with the translation and rotation matrix
     //! after a parameter change
-    void updateKinematic();
+    //!
+    void updateLink();
+
+    // ========================================================================
+    // => BotBlock redefinition: connection system
 
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master=true);
@@ -233,10 +173,26 @@ public slots:
     //! FROM BotBlock
     virtual void disconnectAll();
 
+    // ========================================================================
+    // => PhysicBlock redefinition: updaters
+
+    //! FROM PhysicBlock
+    virtual void updatePhysicShapeData      ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPosition       ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicTransform      ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPreTransform   ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPostTransform  ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicSlaves         ();
+
 protected:
-    
+
     //! Link translation
-    //! Position of the out joint in the in Joint basis
+    //! Position of the out joint in the in joint basis
     //!
     QVector3D _translation;
 
@@ -248,17 +204,18 @@ protected:
     //!                                 rotate 90° around y axis
     //!                                 rotate 45° around z axis
     QVector3D _rotation;
-    
 
+    //! In Joint
+    //! Joint that is at the beginning of the link
+    //!
+    QWeakPointer<JointBlock> _injoint;
 
-
-    
-    //! Joint base
-    QWeakPointer<JointBlock> _baseJoint;
-
-    //! Joint output
-    QWeakPointer<JointBlock> _outputJoint;
+    //! Out Joint
+    //! Joint that is at the end of the link
+    //!
+    QWeakPointer<JointBlock> _outjoint;
 
 };
 
 #endif // LINKBLOCK_HPP
+

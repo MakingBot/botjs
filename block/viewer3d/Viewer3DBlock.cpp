@@ -28,21 +28,22 @@ EXPORT_BLOCK(Viewer3DBlock)
  *
  * */
 Viewer3DBlock::Viewer3DBlock(const QString& name, QObject *parent)
-    : BotBlock(name, parent), _visible(false), _bgColor(240,240,240)
+    : GuiBlock(name, parent), _bgColor(240,240,240)
 {
-    appendBlockIProperty("visible"            , IProperty(IProperty::IPTypeBool, true ));
-
     // MODEL
-    QMap<QString, int> model_enum;
-    model_enum["Base"     ] = PhysicBlock::ModelTypeBase     ;
-    model_enum["Kinematic"] = PhysicBlock::ModelTypeKinematic;
-    appendBlockIProperty("model" , IProperty(IProperty::IPTypeEnum, true, model_enum));
+    // QMap<QString, int> model_enum;
+    // model_enum["Base"     ] = PhysicBlock::ModelTypeBase     ;
+    // model_enum["Kinematic"] = PhysicBlock::ModelTypeKinematic;
+    // appendBlockIProperty("model" , IProperty(IProperty::IPTypeEnum, true, model_enum));
 
     // VBO Used Size
-    appendBlockIProperty("vboUsedSize"        , IProperty(IProperty::IPTypeInt , false));
+    // appendBlockIProperty("vboUsedSize"        , IProperty(IProperty::IPTypeInt , false));
     
-    // 
-    appendBlockIProperty("nbOfRenderedObject" , IProperty(IProperty::IPTypeInt , false));
+    // // 
+    // appendBlockIProperty("nbOfRenderedObject" , IProperty(IProperty::IPTypeInt , false));
+
+    // Widget creation
+    _widget = qSharedPointerObjectCast<QWidget, Viewer>( QSharedPointer<Viewer>(new Viewer(this)) );
 }
 
 
@@ -68,6 +69,7 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
     // if this ask for the connection
     if(master)
     {
+        /*
         // Ask for connection return
         if( ! block->connect(this, false) )
         {
@@ -86,6 +88,7 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
         // Alert BotJs
         emit blockfPropertyValuesChanged();
         return true;
+        */
     }
     else
     {

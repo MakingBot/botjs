@@ -13,16 +13,16 @@
 /* ============================================================================
  *
  * */
-Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
-    : QGLWidget(parent)
+Viewer::Viewer(Viewer3DBlock* parent_block, QWidget* parent_widget)
+    : QGLWidget(parent_widget)
     , _up(0,1,0), _at(0,0,0), _eye(0,3,3)
     , _yaw(0)   , _pitch(0) , _zoom(5)
     , _parentBlock(parent_block)
     , _vbo(*this)
 {
     // Connect the viewer with the evolution of the parent block 
-    connect( getSharedparentBlock().data(), SIGNAL(blockiPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
-    connect( getSharedparentBlock().data(), SIGNAL(blockfPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
+    connect( _parentBlock, SIGNAL(blockiPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
+    connect( _parentBlock, SIGNAL(blockfPropertyValuesChanged()), this, SLOT(onBlockPropertiesChange()) );
     
     // First update
     onBlockPropertiesChange();
@@ -32,10 +32,9 @@ Viewer::Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent)
  *
  * */
 PhysicBlock::ModelType Viewer::model()
-{ 
-    QSharedPointer<Viewer3DBlock> block = getSharedparentBlock();
-    if(block) { return block->model(); }
-    else      { return PhysicBlock::ModelTypeBase; }
+{
+    if(_parentBlock){ return _parentBlock->model(); }
+    else            { return PhysicBlock::ModelTypeBase; }
 }
     
 /* ============================================================================
@@ -46,18 +45,19 @@ void Viewer::onBlockPropertiesChange()
     // Get opengl context
     makeCurrent();
 
-    QSharedPointer<Viewer3DBlock> viewerBlock = getSharedparentBlock();
-    if(viewerBlock)
+    if(_parentBlock)
     {
+        // Background color
+        glClearColor(_parentBlock->bgColor().x(), _parentBlock->bgColor().y(), _parentBlock->bgColor().z(), 1.0f);
+
+        /*
         // Start timer
         QTime timer;
         timer.start();
 
-        // Background color
-        glClearColor(viewerBlock->bgColor().x(), viewerBlock->bgColor().y(), viewerBlock->bgColor().z(), 1.0f);
-
+        
         // Check if there is an object to render
-        QSharedPointer<PhysicBlock> physic_object = viewerBlock->sharedObject();
+        QSharedPointer<PhysicBlock> physic_object = _parentBlock->sharedObject();
         if(physic_object)
         {
 
@@ -69,12 +69,13 @@ void Viewer::onBlockPropertiesChange()
             _vbo.write();
 
             // Log
-            viewerBlock->beglog() << "Update render tree" << viewerBlock->endlog();
+            _parentBlock->beglog() << "Update render tree" << _parentBlock->endlog();
         }
 
         // Stop timer and log
         int elapsed = timer.elapsed();
-        viewerBlock->beglog() << "New properties have been taken into account in " << elapsed << "ms" << viewerBlock->endlog();
+        _parentBlock->beglog() << "New properties have been taken into account in " << elapsed << "ms" << _parentBlock->endlog();
+        */
     }
     else
     {
@@ -199,12 +200,12 @@ void Viewer::paintGL()
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 
-    _vbo.bind();
+    // _vbo.bind();
 
-    // Draw the object
-    _renderingTree->draw();
+    // // Draw the object
+    // _renderingTree->draw();
 
-    _vbo.release();
+    // _vbo.release();
 
 
 
@@ -408,14 +409,10 @@ void Viewer::closeEvent(QCloseEvent* event)
 {
     if(_parentBlock)
     {
-        //
-        QSharedPointer<Viewer3DBlock> pblock = _parentBlock.toStrongRef();
+        // Hide the widget
+    	_parentBlock->hide();
         
-        //
-        pblock->hide();
-        
-        //
+        // Ignore the event
         event->ignore();
     }
 }
-

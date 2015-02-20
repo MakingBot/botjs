@@ -21,6 +21,7 @@
 
 #include <QtGlobal>
 #include <Viewer.hpp>
+#include <GuiBlock.hpp>
 #include <PhysicBlock.hpp>
 
 class RobotBlock;
@@ -30,15 +31,14 @@ class RobotBlock;
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class Viewer3DBlock : public BotBlock
+class Viewer3DBlock : public GuiBlock
 {
     Q_OBJECT
-    Q_PROPERTY(bool visible            READ visible            WRITE setVisible            MEMBER _visible           )
 
-    Q_PROPERTY(int  vboUsedSize        READ vboUsedSize        WRITE setVboUsedSize        MEMBER _vboUsedSize        )
-    Q_PROPERTY(int  nbOfRenderedObject READ nbOfRenderedObject WRITE setNbOfRenderedObject MEMBER _nbOfRenderedObject )
+    // Q_PROPERTY(int  vboUsedSize        READ vboUsedSize        WRITE setVboUsedSize        MEMBER _vboUsedSize        )
+    // Q_PROPERTY(int  nbOfRenderedObject READ nbOfRenderedObject WRITE setNbOfRenderedObject MEMBER _nbOfRenderedObject )
 
-    Q_PROPERTY(PhysicBlock::ModelType model READ model WRITE setModel MEMBER _model)
+    //Q_PROPERTY(PhysicBlock::ModelType model READ model WRITE setModel MEMBER _model)
 
 public:
     //!
@@ -58,14 +58,6 @@ public:
     //! FROM BotBlock
     virtual QString getBlockTypeName() const { return QString("viewer3d"); }
 
-    // ========================================================================
-    // => visible member
-
-    //! Widget visibility getter
-    bool visible() { return _visible; }
-    
-    //! Widget visibility setter
-    void setVisible(bool visible) { if(visible) show(); else hide(); }
 
     // ========================================================================
     // => vbo used size
@@ -113,20 +105,6 @@ public:
     QSharedPointer<PhysicBlock> sharedObject()
     { if(_object) return _object.toStrongRef(); else return QSharedPointer<PhysicBlock>(0); }
 
-    // ========================================================================
-    // => widget management
-
-    //!
-    //! Create the widget if it is not
-    //!
-    void createWidgetIfRequired()
-    {
-        if(!_widget)
-        {
-            _widget = QSharedPointer<Viewer>( new Viewer( qSharedPointerObjectCast<Viewer3DBlock, BotBlock>(this->getBlockSharedFromThis()) ) );
-        }
-    }
-
 signals:
 
 
@@ -144,33 +122,11 @@ public slots:
     //! FROM BotBlock
     virtual void disconnectAll();
 
-    // ========================================================================
-    // => visible property
-
-    //! Widget visibility setter
-    virtual void show()
-    {
-        createWidgetIfRequired();
-        _widget->show();
-        _visible = true;
-        emit blockiPropertyValuesChanged();
-    }
-
-    //! Widget visibility setter
-    virtual void hide()
-    {
-        _widget->hide();
-        _visible = false;
-        emit blockiPropertyValuesChanged();
-    }
-
 protected:
 
     // ========================================================================
     // => properties
 
-    //! Widget visibility
-    bool _visible;
 
     //! The size used by buffers in octet
     int _vboUsedSize;
@@ -186,12 +142,6 @@ protected:
 
     //! Object that must be rendered
     QWeakPointer<PhysicBlock> _object;
-
-    // ========================================================================
-    // => widget management
-
-    //! Pointer on the viewer widget
-    QSharedPointer<Viewer> _widget;
 
 };
 

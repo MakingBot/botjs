@@ -22,16 +22,7 @@ public:
     //!
     //! Default constructor
     //!
-    explicit Viewer(QWeakPointer<Viewer3DBlock> parent_block, QWidget *parent = 0);
-
-    //!
-    //! Pointer on the parent block
-    //!
-    QSharedPointer<Viewer3DBlock> getSharedparentBlock()
-    {
-        if(_parentBlock) { return _parentBlock.toStrongRef();       }
-        else             { return QSharedPointer<Viewer3DBlock>(0); }
-    }
+    explicit Viewer(Viewer3DBlock* parent_block, QWidget* parent_widget = 0);
 
     //!
     //! Vertex buffer object getter
@@ -82,7 +73,7 @@ protected:
     QPoint                      _oldMousePos;
 
     //! The parent block
-    QWeakPointer<Viewer3DBlock> _parentBlock;
+    Viewer3DBlock*              _parentBlock;
 
     // ========================================================================
     // => VBO configuration

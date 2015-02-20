@@ -4,7 +4,7 @@
 INSTALL_PATH="$HOME/opt/botjs"
 
 # Parallel compilation
-CPU_NUMBER=4
+CPU_NUMBER=16
 
 # Release or Debug
 BUILD_TYPE="Debug"

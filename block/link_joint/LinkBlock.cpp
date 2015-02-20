@@ -26,105 +26,16 @@
  * */
 EXPORT_BLOCK(LinkBlock)
 
-
 /* ============================================================================
  *
  * */
-QString LinkBlock::baseName()
+void LinkBlock::updateLink()
 {
-    QSharedPointer<JointBlock> base = sharedBase();
-    if( base ) { return base->getBlockName();}
-    else       { return QString("Undefined");}
-}
-
-/* ============================================================================
- *
- * */
-QList<QSharedPointer<PhysicBlock> > LinkBlock::getPhysicSlaves()
-{
-
-    QList<QSharedPointer<PhysicBlock> > slaves;
-
-
-    QSharedPointer<JointBlock> shared_joint = _outputJoint.toStrongRef();
-
-    QSharedPointer<PhysicBlock> shared_physic = qSharedPointerObjectCast<PhysicBlock, JointBlock>(shared_joint);
-
-    slaves << shared_physic;
-    
-
-    return slaves;
-
-}
-
-/* ============================================================================
- *
- * */
-QMatrix4x4 LinkBlock::getPreTransform()
-{
-    return _preTransform;
-}
-
-/* ============================================================================
- *
- * */
-QMatrix4x4 LinkBlock::getPostTransform()
-{
-    return _postTransform;
-}
-
-/* ============================================================================
- *
- * */
-QString LinkBlock::endName()
-{
-    QSharedPointer<JointBlock> end = sharedOutput();
-    if( end )  { return end->getBlockName(); }
-    else       { return QString("Undefined");}
-}
-
-/* ============================================================================
- *
- * */
-void LinkBlock::updateKinematic()
-{
-    auto sign = [](float val) { if(val>=0) return 1; else return -1; };
-
-    // Angle xz
-    QVector3D projxz = _translation;
-    projxz.setY(0);
-    qreal anglexz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projxz ) / projxz.length() );
-    QVector3D vec = QVector3D::crossProduct( QVector3D(0,0,1), projxz );
-    anglexz *= sign( vec.y() );
-
-    // Angle yz
-    QVector3D projyz = _translation;
-    projyz.setX(0);
-    qreal angleyz = qAcos( QVector3D::dotProduct( QVector3D(0,0,1), projyz ) / projyz.length() );
-              vec = QVector3D::crossProduct( QVector3D(0,0,1), projyz );
-    angleyz *= sign( vec.x() );
-
-    // Apply transformations
-    _preTransform.setToIdentity();
-    _preTransform.rotate( ((anglexz * 180)/M_PI), QVector3D(0, 1, 0) );
-    _preTransform.rotate( ((angleyz * 180)/M_PI), QVector3D(1, 0, 0) );
-    _preTransform.translate( QVector3D(0,0,1) * ( lenght()/2.0f ) );
-    
-    // Compute post transformation
-    _postTransform.setToIdentity();
-    _postTransform.translate( QVector3D(0,0,1) * ( lenght()/ 1.5  ) );
-
-    // End rotation
-    // _postTransform.rotate( _rotation[0], QVector3D(1,0,0) );
-    // _postTransform.rotate( _rotation[1], QVector3D(0,1,0) );
-    // _postTransform.rotate( _rotation[2], QVector3D(0,0,1) );
-
-
-    // Set the new transformation
-    _transform = _postTransform * _preTransform ;
-
-    // Log
-    beglog() << "Link updated, translation : " << _translation  /* " rotation : " << _rotation */ << endlog();
+    // Update transformation
+    updatePhysicPreTransform   ();
+    updatePhysicPostTransform  ();
+    updatePhysicTransform      ();
+    updatePhysicShapeData      ();
 
     // Alert BotJs
     emit blockiPropertyValuesChanged();
@@ -145,66 +56,55 @@ bool LinkBlock::connect(BotBlock* block, bool master)
     {
         return BotBlock::connect(block, master);
     }
-    
+
     // Else it is a joint block
-    // if the link ask for the connection
+
     if(master)
     {
+        // In the case this link ask for the connection
+
         // Ask for connection
         if( ! block->connect(this, false) )
         {
-            // If the other block rejected the connection and log it
             beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
             return false;
         }
 
-        // If output already exist
-        if(_outputJoint)
-        {
-            this->disconnect(_outputJoint.data());
-        }
+        // If connection exists disconnect
+        if(_outjoint) this->disconnect(_outjoint.data());
 
-        // Recover the shared pointer of the connection block
-        QSharedPointer<JointBlock> shared_end = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
+        // Set
+        _outjoint = block->toSpecializedSharedPointer<JointBlock>().toWeakRef();
 
-        // Connect signals
-     //   QObject::connect( this, SIGNAL(spreadKinematic()), shared_end.data(), SLOT(updateKinematic()) );
+        // Log and return
+        beglog() << "Connection to the joint #" << block->getBlockFathersChain() << "#" << endlog();
 
-        // Set the new end joint
-        _outputJoint = shared_end.toWeakRef();
-
-        // // Alert chain elements
-        // emit spreadKinematic();
+        // Update physic slaves
+        this->updatePhysicSlaves();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
 
-        // Log and return
-        beglog() << "Connection to the joint #" << block->getBlockFathersChain() << "#" << endlog();
         return true;
     }
     else
     {
-        // If output already exist
-        if(_baseJoint)
-        {
-            this->disconnect(_baseJoint.data());
-        }
+        // In this case a joint ask for a connection
 
-        // Create the shared pointer
-        QSharedPointer<JointBlock> sh_out = qSharedPointerObjectCast<JointBlock, BotBlock>( block->getBlockSharedFromThis() );
-        
-        // Set the new output joint
-        _baseJoint = sh_out.toWeakRef();
+        // If connection exists disconnect
+        if(_injoint) this->disconnect(_injoint.data());
+
+        // Set
+        _injoint = block->toSpecializedSharedPointer<JointBlock>().toWeakRef();
+
+        // Log
+        beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
-        // Log and return
-        beglog() << "Connection from the joint #" << block->getBlockFathersChain() << "# accepted" << endlog();
-        return true;
 
+        return true;
     }
-    
 }
 
 /* ============================================================================
@@ -212,8 +112,50 @@ bool LinkBlock::connect(BotBlock* block, bool master)
  * */
 void LinkBlock::disconnect(BotBlock* block, bool master)
 {
-    // TODO
-    BotBlock::disconnect(block, master);
+    // Check if the block is a joint block
+    JointBlock* joint = qobject_cast<JointBlock*>(block);
+    if(!joint)
+    {
+        BotBlock::disconnect(block, master);
+        return;
+    }
+
+    bool flagdone = false;
+    if(master)
+    {
+        block->disconnect(this, false);
+    }
+
+    // Check if the block is in joint
+    if( _injoint )
+    {
+        QSharedPointer<JointBlock> injoint = _injoint.toStrongRef();
+        if( injoint.data() == joint )
+        {
+            _injoint.clear();
+            flagdone = true;
+        }
+    }
+    // Check if the block is out joint
+    else if( _outjoint )
+    {
+        QSharedPointer<JointBlock> outjoint = _outjoint.toStrongRef();
+        if( outjoint.data() == joint )
+        {
+            _outjoint.clear();
+            flagdone = true;
+        }
+    }
+
+    // Terminal actions
+    if(flagdone)
+    {
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+
+        // Log
+        beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
+    }
 }
 
 /* ============================================================================
@@ -221,15 +163,25 @@ void LinkBlock::disconnect(BotBlock* block, bool master)
  * */
 void LinkBlock::disconnectAll()
 {
-    // TODO
-    BotBlock::disconnectAll();
-}
+	// Check if the block is in joint
+	if( _injoint )
+	{
+		_injoint.clear();
+	}
 
+	// Check if the block is out joint
+	if( _outjoint )
+	{
+		_outjoint.clear();
+	}
+
+	BotBlock::disconnectAll();
+}
 
 /* ============================================================================
  *
  * */
-void LinkBlock::updateShapeData()
+void LinkBlock::updatePhysicShapeData      ()
 {
     // Reset the shape data
     _shapeData.reset();
@@ -245,10 +197,114 @@ void LinkBlock::updateShapeData()
 
         case ModelTypeKinematic:
             // _shapeData.createSphere( 0.10, 2 );
-            _shapeData.createCylinder ( 0.20, lenght(), 10 );
+            _shapeData.createCylinder ( 0.20, length(), 10 );
             
 
             break;
     }
+}
 
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updatePhysicPosition       ()
+{
+    // If there is no in joint the position is the origine
+    if( ! _injoint )
+    {
+        _position = QVector4D(0,0,0,1);
+        return;
+    }
+
+    // The position is function of the in joint
+    QSharedPointer<JointBlock> joint = _injoint.toStrongRef();
+    _position = joint->getPhysicTransform() * joint->getPhysicPosition();
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updatePhysicTransform      ()
+{
+    // Compute global transform
+    _transform = _postTransform * _preTransform ;
+
+    // Log
+    beglog() << "Physic transform updated" << endlog();
+
+    // Update out joint
+    if( _outjoint )
+    {
+        QSharedPointer<JointBlock> out = _outjoint.toStrongRef();
+        out->updateJoint();
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updatePhysicPreTransform   ()
+{
+    auto sign = [](float val) { if(val>=0) return 1; else return -1; };
+
+    const float degpi = 180/M_PI;
+    const QVector3D vecX(1,0,0);
+    const QVector3D vecY(0,1,0);
+    const QVector3D vecZ(0,0,1);
+
+    // Angle xz
+    QVector3D projxz = _translation;
+    projxz.setY(0);
+    qreal anglexz = qAcos( QVector3D::dotProduct( vecZ, projxz ) / projxz.length() );
+    QVector3D vec = QVector3D::crossProduct( vecZ, projxz );
+    anglexz *= sign( vec.y() );
+
+    // Angle yz
+    QVector3D projyz = _translation;
+    projyz.setX(0);
+    qreal angleyz = qAcos( QVector3D::dotProduct( vecZ, projyz ) / projyz.length() );
+              vec = QVector3D::crossProduct( vecZ, projyz );
+    angleyz *= sign( vec.x() );
+
+    // Apply transformations
+    _preTransform.setToIdentity();
+    _preTransform.rotate( anglexz*degpi, vecY );
+    _preTransform.rotate( angleyz*degpi, vecX );
+    _preTransform.translate( vecZ * ( length()/2.0f ) );
+
+    // Log
+    beglog() << "Physic pre-transform updated" << endlog();
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updatePhysicPostTransform  ()
+{
+    // Compute post transformation
+    _postTransform.setToIdentity();
+    _postTransform.translate( QVector3D(0,0,1) * ( length()/ 1.5 ) );
+
+    // End rotation
+    // _postTransform.rotate( _rotation[0], QVector3D(1,0,0) );
+    // _postTransform.rotate( _rotation[1], QVector3D(0,1,0) );
+    // _postTransform.rotate( _rotation[2], QVector3D(0,0,1) );
+
+    // Log
+    beglog() << "Physic post-transform updated" << endlog();
+}
+
+/* ============================================================================
+ *
+ * */
+void LinkBlock::updatePhysicSlaves         ()
+{
+    // Clear old list
+    _physicSlaves.clear();
+
+    // Cast and append
+    _physicSlaves << qSharedPointerObjectCast<PhysicBlock, JointBlock> ( _outjoint );
+
+    // Log
+    beglog() << "Physic slaves list updated " << _physicSlaves.size() << " elements" << endlog();
 }

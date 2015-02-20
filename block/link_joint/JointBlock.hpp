@@ -40,7 +40,6 @@ class JointBlock : public PhysicBlock
     
     Q_PROPERTY(JointType type     READ type     WRITE changeType    MEMBER _type    )
     Q_PROPERTY(QVector4D axe      READ axe                          MEMBER _axe     )
-    Q_PROPERTY(QVector4D position READ pos                          MEMBER _pos     )
 
 public:
     //! Type of available joint
@@ -59,11 +58,9 @@ public:
         type_enum["Prismatic"] = JointPrismatic;
         appendBlockIProperty("type" , IProperty(IProperty::IPTypeEnum, true, type_enum));
 
-        // POSITION
-        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
-        
+
         // 
-        updateKinematic();
+        updateJoint();
     }
     
     // ========================================================================
@@ -82,29 +79,10 @@ public:
     virtual int getNumberOfConn() const
     {
         int conn = BotBlock::getBlockNumberOfConnections();
-        if(_baseLink) { conn++; }
-        conn += _outputLinks.size();
+        if(_inlink) { conn++; }
+        conn += _outlinks.size();
         return conn;
     }
-
-    // ========================================================================
-    // => PhysicBlock redefinition
-
-    //! FROM PhysicBlock
-    ShapeType getShapeType(ModelType model)
-    {
-        switch(model)
-        {
-            case ModelTypeKinematic: 
-                return PhysicBlock::ShapeTypeSphere;
-                break;
-
-            default: return ShapeTypeNone; break;
-        }
-    }
-
-    //! FROM PhysicBlock
-    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves();
 
     // ========================================================================
     // => Property value
@@ -114,13 +92,19 @@ public:
     
     //! Current value setter
     void setValue(qreal val) { _value = val; }
+
+    // ========================================================================
+    // => Property min value
     
     //! Min value getter
     qreal minValue() { return _minValue; }
     
     //! Min value setter
     void setMinValue(qreal val) { _minValue = val; }
-    
+
+    // ========================================================================
+    // => Property maw value
+
     //! Max value getter
     qreal maxValue() { return _maxValue; }
 
@@ -129,6 +113,9 @@ public:
 
     //! Min Max value setter
     void setMinMaxValue(qreal min, qreal max) { _minValue = min; _maxValue = max; }
+
+    // ========================================================================
+    // => Property type
 
     //!
     void setTypeByName(const QString& type_name)
@@ -216,26 +203,21 @@ public:
     //! Axe getter
     const QVector4D& axe() const { return _axe; }
 
-    //! Pos getter
-    const QVector4D& pos() const { return _pos; }
-
-    //! Result transform matrix getter
-    const QMatrix4x4& transform() const { return _tranform; }
-
 signals:
-
-    //! Emitted when transform is modified
-    void spreadKinematic();
 
 public slots:
 
-
-    void updateShapeData();
-
-
     //! Update transform properties
-    void updateKinematic();
-    
+    //!
+    void updateJoint();
+
+    //! Update axe
+    //!
+    void updateAxe();
+
+    // ========================================================================
+    // => BotBlock redefinition
+
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master=true);
 
@@ -244,6 +226,22 @@ public slots:
 
     //! FROM BotBlock
     virtual void disconnectAll();
+
+    // ========================================================================
+    // => PhysicBlock redefinition: updaters
+
+    //! FROM PhysicBlock
+    virtual void updatePhysicShapeData      ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPosition       ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicTransform      ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPreTransform   ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicPostTransform  ();
+    //! FROM PhysicBlock
+    virtual void updatePhysicSlaves         ();
 
 protected:
     //! Current value
@@ -259,21 +257,15 @@ protected:
     JointType _type;
 
     //! Joint axe (0,0,1,0) by default
-    QVector4D _axe;
-
-    //! Joint pos (0,0,0,1) by default
-    QVector4D _pos;
-
-    //! Result transform matrix
-    QMatrix4x4 _tranform;
+    QVector4D  _axe;
 
     //! Connection object
     //! Link that provide initial transformation to the joint
-    QWeakPointer<LinkBlock> _baseLink;
+    QWeakPointer<LinkBlock> _inlink;
 
     //! Connection object
     //! Links that are transformed by this joint (only 1 for revolute and prismatic)
-    QList<QWeakPointer<LinkBlock> > _outputLinks;
+    QList<QWeakPointer<LinkBlock> > _outlinks;
 };
 
 #endif // JOINTBLOCK_HPP

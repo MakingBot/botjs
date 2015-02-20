@@ -19,9 +19,9 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <BotBlock.hpp>
-
 #include <QMatrix4x4>
+#include <QQuaternion>
+#include <BotBlock.hpp>
 #include <ShapeData.hpp>
 
 //!
@@ -33,27 +33,28 @@
 class PhysicBlock : public BotBlock
 {
     Q_OBJECT
-    Q_ENUMS(ShapeType)
     Q_ENUMS(ModelType)
-    
+
+    Q_PROPERTY(QVector4D position READ getPhysicPosition )
+
 public:
 
     // ========================================================================
     // => Global
 
-    //! Define shape types
-    enum ShapeType { ShapeTypeNone, ShapeTypeBox, ShapeTypeSphere, ShapeTypeCylender, ShapeTypeArrow };
-
     //! Define model types
     enum ModelType { ModelTypeBase, ModelTypeKinematic };
-  
+
     //!
     //! Default constructor
     //!
     explicit PhysicBlock(const QString& name = QString(), QObject *parent = 0)
         : BotBlock   (name, parent)
         , _modelType (ModelTypeKinematic)
-    { }
+    {
+        // POSITION
+        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
+    }
 
     // ========================================================================
     // => BotBlock redefinition
@@ -65,56 +66,76 @@ public:
     // => Basic getter and setter
 
     //!
-    //! Model type getter
-    //!
-    virtual ModelType modelType() { return _modelType; }
-
-    //!
     //! Model type setter
     //!
-    virtual void setModelType(ModelType model) {  _modelType = model; }
+    virtual void setModelType(ModelType model)              {  _modelType = model; }
+
+    //!
+    //! Model type getter
+    //!
+    virtual ModelType modelType()                           const { return _modelType; }
 
     //!
     //! Shape data getter 
     //!
-    virtual const ShapeData& getPhysicShapeData() { return _shapeData; }
-
-    // ========================================================================
-    // => Interface definition
+    virtual const ShapeData& getPhysicShapeData()           const { return _shapeData; }
 
     //!
-    //! Interface to get the shape of the object in function of the model
+    //! Physic position getter
     //!
-    virtual ShapeType getShapeType(ModelType model) { return ShapeTypeNone; }
+    virtual const QVector4D& getPhysicPosition()            const { return _position; }
 
+    //!
+    //! Physic transform getter
+    //!
+    virtual const QMatrix4x4& getPhysicTransform()          const { return _transform; }
 
+    //!
+    //! Physic pre transform getter
+    //!
+    virtual const QMatrix4x4& getPhysicPreTransform()       const { return _preTransform; }
 
-    virtual QMatrix4x4 getPreTransform() { return QMatrix4x4(); }
-
-    virtual QMatrix4x4 getPostTransform() { return QMatrix4x4(); }
-
+    //!
+    //! Physic post transform getter
+    //!
+    virtual const QMatrix4x4& getPhysicPostTransform()      const { return _postTransform; }
 
     //!
     //! Interface to provide connected physic object blocks
     //!
-    virtual QList<QSharedPointer<PhysicBlock> > getPhysicSlaves() { return QList<QSharedPointer<PhysicBlock> >(); }
+    virtual const QList<QSharedPointer<PhysicBlock> >& getPhysicSlaves() const { return _physicSlaves; }
 
-virtual int colorize() { return 0; }
+
+    virtual int colorize() { return 0; }
 
 public slots:
 
-    //!
-    //! Update shape data with class parameters
-    //!
-    virtual void updateShapeData() {  }
+    // ========================================================================
+    // => Updaters
+
+    virtual void updatePhysicShapeData      () { }
+    virtual void updatePhysicPosition       () { }
+    virtual void updatePhysicTransform      () { }
+    virtual void updatePhysicPreTransform   () { }
+    virtual void updatePhysicPostTransform  () { }
+    virtual void updatePhysicSlaves         () { }
 
 signals:
 
+    //! Signal parameter changed
+    //! When parameters have changed but the structure remains the same
     //!
     void blockPhysicParameterChanged();
 
+    //! Signal shape structure changed
+    //! When a modification implies a new structure computation
     //!
-    void blockPhysicStructureChanged();
+    void blockPhysicShapeStructureChanged();
+
+    //! Signal connection structure changed
+    //! When a modification implies a new block organisation
+    //!
+    void blockPhysicConnectionStructureChanged();
 
 protected:
 
@@ -123,6 +144,10 @@ protected:
 
     //! Shape data
     ShapeData   _shapeData;
+
+    //! Object global position
+    //! (0,0,0,1) by default
+    QVector4D   _position;
 
     //! Global transformation
     QMatrix4x4  _transform;
@@ -133,6 +158,11 @@ protected:
     //! Transformation to bring the model view in
     QMatrix4x4  _postTransform;
 
+    //! Physic objects that are impacted by the change of this one
+    QList<QSharedPointer<PhysicBlock> > _physicSlaves;
+
 };
 
 #endif // PHYSICBLOCK_HPP
+
+

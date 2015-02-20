@@ -30,7 +30,7 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer )
     :  _viewer(viewer), _physicObject(ref)
 {
 
-    _physicObject->updateShapeData();
+    _physicObject->updatePhysicShapeData();
 
 
 
@@ -98,7 +98,7 @@ void RenderNode::draw()
     glPushMatrix();
 
 
-    glMultMatrixf( _physicObject->getPreTransform().constData() );
+    glMultMatrixf( _physicObject->getPhysicPreTransform().constData() );
 
     // std::cout << _physicObject->getPreTransform()(0,0) << "  " << _physicObject->getPreTransform()(1,0) << "  " << _physicObject->getPreTransform()(2,0) << "  " << _physicObject->getPreTransform()(3,0)  << std::endl;
     // std::cout << _physicObject->getPreTransform()(0,1) << "  " << _physicObject->getPreTransform()(1,1) << "  " << _physicObject->getPreTransform()(2,1) << "  " << _physicObject->getPreTransform()(3,1)  << std::endl;
@@ -119,7 +119,7 @@ void RenderNode::draw()
     glDrawElements(GL_TRIANGLES, _sector.isize, GL_UNSIGNED_INT, (GLvoid*)( _sector.iindex*sizeof(GLuint) ) );
    //     GLUB_BUFFER_OFFSET(_sector.iindex) );
 
-    glMultMatrixf( _physicObject->getPostTransform().constData() );
+    glMultMatrixf( _physicObject->getPhysicPostTransform().constData() );
 
     // Draw child nodes
     foreach(QSharedPointer<RenderNode> node, _nodeChilds)

@@ -17,6 +17,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <JointBlock.hpp>
+
 #include <LinkBlock.hpp>
 
 /* ============================================================================
@@ -27,15 +28,15 @@ EXPORT_BLOCK(JointBlock)
 /* ============================================================================
  *
  * */
-void JointBlock::updateKinematic()
+void JointBlock::updateJoint()
 {
 
     /*
     // To update a joint it must have a base link which has a base joint
-    if(_baseLink)
+    if(_inlink)
     {
         // Get base link
-        QSharedPointer<LinkBlock> baseLink   = _baseLink.toStrongRef();
+        QSharedPointer<LinkBlock> baseLink   = _inlink.toStrongRef();
 
         // Get the base joint of the base link
         QSharedPointer<JointBlock> baseJoint = baseLink->sharedBase();
@@ -91,20 +92,14 @@ void JointBlock::updateKinematic()
 /* ============================================================================
  *
  * */
-QList<QSharedPointer<PhysicBlock> > JointBlock::getPhysicSlaves()
+void JointBlock::updateAxe()
 {
-    QList<QSharedPointer<PhysicBlock> > slaves;
-    
-    foreach( QWeakPointer<LinkBlock> link, _outputLinks )
-    {
-        QSharedPointer<LinkBlock> shared_link = link.toStrongRef();
+    // If there is no in link the position is the origine
+    if( ! _inlink ) return;
 
-        QSharedPointer<PhysicBlock> shared_physic = qSharedPointerObjectCast<PhysicBlock, LinkBlock>(shared_link);
-
-        slaves << shared_physic;
-    }
-
-    return slaves;
+    // The position is function of the in link
+    QSharedPointer<LinkBlock> link = _inlink.toStrongRef();
+    _axe = link->getPhysicTransform() * QVector4D(1,0,0,0);
 }
 
 /* ============================================================================
@@ -134,47 +129,33 @@ bool JointBlock::connect(BotBlock* block, bool master)
             return false;
         }
 
-        // Create the shared pointer
-        QSharedPointer<LinkBlock> shared_link = qSharedPointerObjectCast<LinkBlock, BotBlock>( block->getBlockSharedFromThis() );
-        
-        // Set the new output joint
-        QWeakPointer<LinkBlock> weak_link = shared_link.toWeakRef();
-
-        if( !weak_link )
-        {
-            beglog() << "NULLLLLLLLL#" << endlog();   
-        }
-
-        // 
-        _outputLinks << weak_link;
+        // Append the link in the out link list
+        _outlinks << block->toSpecializedSharedPointer<LinkBlock>().toWeakRef();
 
         // Log and return
         beglog() << "Connection to the link #" << block->getBlockFathersChain() << "#" << endlog();
-        return true;
-    }
-    else
-    {
-
-        // If output already exist
-        if(_baseLink)
-        {
-            // this->disconnect(_baseLink.data());
-        }
-
-        // Create the shared pointer
-        QSharedPointer<LinkBlock> shared_based = qSharedPointerObjectCast<LinkBlock, BotBlock>( block->getBlockSharedFromThis() );
-        
-        // Set the new output joint
-        _baseLink = shared_based.toWeakRef();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
 
-        // Log and return
-        beglog() << "Connection from the link #" << block->getBlockFathersChain() << "# accepted" << endlog();
         return true;
     }
+    else
+    {
+        // If connection exists disconnect
+        if(_inlink) this->disconnect(_inlink.data());
 
+        // Set
+        _inlink = block->toSpecializedSharedPointer<LinkBlock>().toWeakRef();
+
+        // Log and return
+        beglog() << "Connection from the link #" << block->getBlockFathersChain() << "# accepted" << endlog();
+
+        // Alert BotJs
+        emit blockfPropertyValuesChanged();
+
+        return true;
+    }
 }
 
 /* ============================================================================
@@ -193,11 +174,10 @@ void JointBlock::disconnectAll()
 
 }
 
-
 /* ============================================================================
  *
  * */
-void JointBlock::updateShapeData()
+void JointBlock::updatePhysicShapeData      ()
 {
     // Reset the shape data
     _shapeData.reset();
@@ -219,4 +199,78 @@ void JointBlock::updateShapeData()
 
 }
 
+/* ============================================================================
+ *
+ * */
+void JointBlock::updatePhysicPosition       ()
+{
+    // If there is no in link the position is the origine
+    if( ! _inlink )
+    {
+        _position = QVector4D(0,0,0,1);
+        return;
+    }
 
+    // The position is function of the in link
+    QSharedPointer<LinkBlock> link = _inlink.toStrongRef();
+    _position = link->getPhysicTransform() * link->getPhysicPosition();
+}
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updatePhysicTransform      ()
+{
+    // Compute global transform
+    _transform = _postTransform ;
+
+}
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updatePhysicPreTransform   ()
+{
+    // Reset matrix
+    _preTransform.setToIdentity();
+}
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updatePhysicPostTransform  ()
+{
+    // Reset matrix
+    _postTransform.setToIdentity();
+
+    // Compute in function of the joint type
+    switch( _type )
+    {
+        case JointFixe:
+            break;
+
+        case JointRevolute:
+            break;
+
+        case JointPrismatic:
+            break;
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void JointBlock::updatePhysicSlaves         ()
+{
+    // Clear old list
+    _physicSlaves.clear();
+
+    // Insert out links
+    foreach( QWeakPointer<LinkBlock> link, _outlinks )
+    {
+    	_physicSlaves << qSharedPointerObjectCast<PhysicBlock, LinkBlock> ( link );
+    }
+
+    // Log
+    beglog() << "Physic slaves list updated " << _physicSlaves.size() << " elements" << endlog();
+}
