@@ -172,24 +172,24 @@ public:
         return _wThis.toStrongRef();
     }
 
-    //!
-    //! Convert this specialized block pointer to a BotBlock pointer
-    //! Specialized means that B_TYPE is a derived class of BotBlock
-    //!
-    template<typename B_TYPE>
-    BotBlock*                toBlockPointer                 ()
-    {
-        return toBlockSharedPointer<B_TYPE>().data();
-    }
-
-    //!
-    //! to a specialized block shared pointer
-    //!
-    template<typename B_TYPE>
-    QSharedPointer<BotBlock> toBlockSharedPointer           ()
-    {
-        return qSharedPointerObjectCast<BotBlock, B_TYPE>( getBlockSharedFromThis() );
-    }
+//    //!
+//    //! Convert this specialized block pointer to a BotBlock pointer
+//    //! Specialized means that B_TYPE is a derived class of BotBlock
+//    //!
+//    template<typename B_TYPE>
+//    BotBlock*                toBlockPointer                 ()
+//    {
+//        return toBlockSharedPointer<B_TYPE>().data();
+//    }
+//
+//    //!
+//    //! to a specialized block shared pointer
+//    //!
+//    template<typename B_TYPE>
+//    QSharedPointer<BotBlock> toBlockSharedPointer           ()
+//    {
+//        return qSharedPointerObjectCast<BotBlock, B_TYPE>( getBlockSharedFromThis() );
+//    }
 
     //!
     //! Convert this BotBlock pointer to a specialized block pointer
@@ -283,7 +283,7 @@ public:
     }
     
     //! Return the pointer on the block defined by the fathers chain 
-    BotBlock* getBlockFromFathersChain(const QString& chain)
+    static BotBlock* getBlockFromFathersChain(const QString& chain)
     {
         // Split the chain
         QStringList chainstr = chain.split(".");
@@ -305,6 +305,31 @@ public:
             if(son) { ptr = son; }
         }
         return ptr;
+    }
+
+    //!
+    virtual void selectBlockSons(QList<QSharedPointer<BotBlock> >& sons, const QStringList& types)
+    {
+    	sons.clear();
+    	foreach(QSharedPointer<BotBlock> son, sons)
+		{
+    		if( types.indexOf( son->getBlockTypeName() ) != -1 )
+    		{
+    			sons << son;
+    		}
+		}
+    }
+
+    virtual QStringList selectBlockSonChains( const QStringList& types )
+    {
+        QStringList chains;
+        QList<QSharedPointer<BotBlock> > sons;
+        selectBlockSons(sons, types);
+        foreach(QSharedPointer<BotBlock> son, sons)
+        {
+            chains << son->getBlockFathersChain();
+        }
+        return chains;
     }
 
     //! Block sons getter
@@ -443,7 +468,7 @@ public slots:
 
 signals:
 
-    //! Emit when fixe property values has been modified
+    //! Emit when fix property values has been modified
     void blockfPropertyValuesChanged();
     
     //! Emit when interactive property values has been modified
@@ -457,7 +482,7 @@ protected:
     // === === === BLOCK === === ===
     
     //! Block name
-    //! Block variable name in the javascript global object
+    //! Block variable name in the JavaScript global object
     const QString _bname;
 
     //! Smart pointer on this block
@@ -470,7 +495,7 @@ protected:
 
     // === === === I-PROPERTIES === === ===
 
-    //! Interactives properties
+    //! Interactive properties
     QMap<QString, IProperty> _iProperties;
 
     // === === === CONNECTIONS === === ===

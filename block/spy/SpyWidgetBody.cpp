@@ -81,7 +81,7 @@ void SpyWidgetBody::updateStructure()
                 if(property.value().isWritable())
                 {
                     widget = new QComboBox();
-                    ((QComboBox*)widget)->addItems( {"TRUE", "FALSE"} );
+                    ((QComboBox*)widget)->addItems( QStringList( {"TRUE", "FALSE"} ) );
                     connect( (QComboBox*)widget, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onComboBoxBool(const QString&)) );
                 }
                 else
@@ -123,7 +123,7 @@ void SpyWidgetBody::updateStructure()
             case IProperty::IPTypeSonBlock:
                 widget = new QComboBox();
                 ((QComboBox*)widget)->addItem ( "NONE" );
-                ((QComboBox*)widget)->addItems( spied->getBlockSonsChains() );
+                ((QComboBox*)widget)->addItems( spied->selectBlockSonChains( property.value().compatList() ) );
                 break;
 
             case IProperty::IPTypeBrotherBlock:
@@ -148,7 +148,7 @@ void SpyWidgetBody::updateStructure()
 
             case IProperty::IPTypeVector4D:
                 widget = new ViewerQVectornD(4);
-                connect( (ViewerQVectornD*)widget, SIGNAL(modelEdited(const QVector4D&)), this, SLOT(onVector3DEdit(const QVector4D&)) );
+                connect( (ViewerQVectornD*)widget, SIGNAL(modelEdited(const QVector4D&)), this, SLOT(onVector4DEdit(const QVector4D&)) );
                 if(property.value().isWritable())
                 {
                     
@@ -244,6 +244,11 @@ void SpyWidgetBody::updateValues()
 
                 case IProperty::IPTypeEnum: 
                     ((QComboBox*)widget.value())->setCurrentIndex( ((QComboBox*)widget.value())->findText( property.enumName( spied->property(widget.key().toStdString().c_str()).toInt() ) ) );  
+                    break;
+
+                case IProperty::IPTypeSonBlock:
+                	std::cout << spied->property(widget.key().toStdString().c_str()).toString().toStdString() << std::endl;
+                    ((QComboBox*)widget.value())->setCurrentIndex( ((QComboBox*)widget.value())->findText( spied->property(widget.key().toStdString().c_str()).toString() ) );
                     break;
 
                 case IProperty::IPTypeRealList:

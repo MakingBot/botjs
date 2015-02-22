@@ -6,6 +6,11 @@ core.create("spy", "agent");
 
 // Create the robot
 var proteo = core.create("robot", "proteo");
+proteo.logTalking = true;
+
+// Create the leg as a child of the robot
+var leg = proteo.create("kinasm", "leg");
+
 
 
 
