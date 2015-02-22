@@ -111,19 +111,18 @@ public:
 
 public slots:
 
-    //!
-    //! Append a body to the robot
-    //!
-    void appendBody(BotBlock* block)
-    {
-        
-    }
 
     //! FROM BotBlock
     virtual bool connect(BotBlock* block, bool master = true);
 
     //! FROM BotBlock
     virtual BotBlock* create(const QString& btypename, const QString& varname);
+
+    // ========================================================================
+    // => PhysicBlock redefinition: updater
+
+    //! FROM PhysicBlock
+    virtual void updatePhysicSlaves         ();
 
 protected:
 

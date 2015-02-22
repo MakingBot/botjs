@@ -69,7 +69,7 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
     // if this ask for the connection
     if(master)
     {
-        /*
+
         // Ask for connection return
         if( ! block->connect(this, false) )
         {
@@ -88,7 +88,7 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
         // Alert BotJs
         emit blockfPropertyValuesChanged();
         return true;
-        */
+
     }
     else
     {

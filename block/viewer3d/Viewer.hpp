@@ -41,6 +41,8 @@ public slots:
     void onBlockPropertiesChange();
 
 
+    void updateRenderingTreeStructure();
+
     void onRenderNodeChange();
 
 protected:

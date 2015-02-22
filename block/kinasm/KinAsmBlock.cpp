@@ -22,3 +22,50 @@
  *
  * */
 EXPORT_BLOCK(KinAsmBlock)
+
+
+
+/* ============================================================================
+ *
+ * */
+BotBlock* KinAsmBlock::create(const QString& btypename, const QString& varname)
+{
+	BotBlock* block = BotBlock::create(btypename, varname);
+
+	//
+	if( btypename.compare("joint") != 0 )
+	{
+		return block;
+	}
+
+	// Set the body as a son
+	QSharedPointer<JointBlock> joint = block->toSpecializedSharedPointer<JointBlock>();
+	if(!_root)
+	{
+		beglog() << "Create joint block #" << block->getBlockName() << "# and set it as base" << endlog();
+
+		setRootSharedPtr(joint);
+	}
+
+	// return
+	return block;
+}
+
+/* ============================================================================
+ *
+ * */
+void KinAsmBlock::updatePhysicSlaves()
+{
+    // Clear old list
+    _physicSlaves.clear();
+
+    if( _root )
+    {
+        // Cast and append
+        _physicSlaves << qSharedPointerObjectCast<PhysicBlock, JointBlock> ( _root );
+    }
+
+    // Log
+    beglog() << "Physic slaves list updated " << _physicSlaves.size() << " elements" << endlog();
+}
+

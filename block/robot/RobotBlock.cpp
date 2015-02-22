@@ -94,6 +94,27 @@ BotBlock* RobotBlock::create(const QString& btypename, const QString& varname)
     	beglog() << "Create kinasm block #" << block->getBlockName() << "# and append it as bodies" << endlog();
     }
 
+    _sons << block->getBlockSharedFromThis();
+
     // return
     return block.data();
 }
+
+/* ============================================================================
+ *
+ * */
+void RobotBlock::updatePhysicSlaves()
+{
+    // Clear old list
+    _physicSlaves.clear();
+
+    if( _base )
+    {
+        // Cast and append
+        _physicSlaves << qSharedPointerObjectCast<PhysicBlock, KinAsmBlock> ( _base );
+    }
+
+    // Log
+    beglog() << "Physic slaves list updated " << _physicSlaves.size() << " elements" << endlog();
+}
+

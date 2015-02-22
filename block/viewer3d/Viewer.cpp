@@ -50,7 +50,6 @@ void Viewer::onBlockPropertiesChange()
         // Background color
         glClearColor(_parentBlock->bgColor().x(), _parentBlock->bgColor().y(), _parentBlock->bgColor().z(), 1.0f);
 
-        /*
         // Start timer
         QTime timer;
         timer.start();
@@ -75,7 +74,7 @@ void Viewer::onBlockPropertiesChange()
         // Stop timer and log
         int elapsed = timer.elapsed();
         _parentBlock->beglog() << "New properties have been taken into account in " << elapsed << "ms" << _parentBlock->endlog();
-        */
+
     }
     else
     {
@@ -89,6 +88,15 @@ void Viewer::onBlockPropertiesChange()
     
     // Update view
     updateGL();
+}
+
+
+/* ============================================================================
+ *
+ * */
+void Viewer::updateRenderingTreeStructure()
+{
+
 }
 
 /* ============================================================================

@@ -76,7 +76,7 @@ void VertexBufferObject::translate( QVector3D translation, ObjBufferConfig& obj 
         _vertexArray[v] += translation;
     }
 }
-
+*/
 /* ============================================================================
  *
  * *

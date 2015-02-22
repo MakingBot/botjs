@@ -18,23 +18,23 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <BotBlock.hpp>
 
 #include <QRealList.hpp>
 #include <JointBlock.hpp>
+#include <PhysicBlock.hpp>
 
 //!
 //! A body assembly
 //!
-class KinAsmBlock : public BotBlock
+class KinAsmBlock : public PhysicBlock
 {
     Q_OBJECT
+	Q_ENUMS(AsmStruct)
 
     Q_PROPERTY(AsmStruct structure   READ structure        WRITE setStructure     MEMBER _structure   )
+    Q_PROPERTY(QString   root        READ rootToChain        WRITE setRootFromChain       )
 
-    Q_PROPERTY(BotBlock* root        READ getBlockPtrRoot  WRITE setBlockPtrRoot                      )
-
-    Q_PROPERTY(QRealList jointConfig READ jointConfig      WRITE setJointConfig   MEMBER _jointConfig )
+//    Q_PROPERTY(QRealList jointConfig READ jointConfig      WRITE setJointConfig   MEMBER _jointConfig )
 
 
 public:
@@ -45,13 +45,16 @@ public:
     //! Default constructor
     //!
     explicit KinAsmBlock(const QString& name = QString("kinasm"), QObject *parent = 0)
-        : BotBlock(name, parent)
+        : PhysicBlock(name, parent), _structure(AsmChain)
     {
         // TYPE 
         QMap<QString, int> struct_enum;
         struct_enum["Tree" ] = AsmTree ;
         struct_enum["Chain"] = AsmChain;
         appendBlockIProperty("structure" , IProperty(IProperty::IPTypeEnum, true, struct_enum));
+
+        // ROOT
+        appendBlockIProperty("root" , IProperty(IProperty::IPTypeSonBlock, QStringList( {"joint"} ) ));
     }
 
     //! FROM BotBlock
@@ -80,8 +83,34 @@ public:
 
     // === MEMBER ROOT ===
 
+
+
+    void setRootSharedPtr(QSharedPointer<JointBlock> root)
+    {
+    	// Set property
+    	_root = root;
+
+    	// Update slaves
+    	updatePhysicSlaves();
+
+    	// Alert BotJs
+    	emit blockiPropertyValuesChanged();
+    }
+
+
     //! Provide the BotBlock pointer of the root joint
     BotBlock* getBlockPtrRoot() { return qobject_cast<BotBlock*>( _root.data() ); }
+
+    QString rootToChain() { if(_root) return _root->getBlockFathersChain(); else return QString("NONE"); }
+
+    void setRootFromChain(QString& chain)
+    {
+    	BotBlock* chainptr = BotBlock::getBlockFromFathersChain(chain);
+    	if(chainptr)
+    	{
+    		_root = chainptr->toSpecializedSharedPointer<JointBlock>();
+    	}
+    }
 
     //! Set the BotBlock pointer of the root joint
     void setBlockPtrRoot(BotBlock* block)
@@ -106,6 +135,17 @@ public:
     void setJointConfig(const QRealList& li) { _jointConfig = li; }
 
 
+public slots:
+
+	//! FROM BotBlock
+	virtual BotBlock* create(const QString& btypename, const QString& varname);
+
+	// ========================================================================
+	// => PhysicBlock redefinition: updaters
+
+	//! FROM PhysicBlock
+	virtual void updatePhysicSlaves();
+
 protected:
 
     //! Assembly structure
@@ -116,7 +156,6 @@ protected:
 
     //! Assembly connectors, ends of the structure
     QList<QSharedPointer<JointBlock> > _connectors;
-
 
     //! Joint Configuration
     QRealList _jointConfig;
