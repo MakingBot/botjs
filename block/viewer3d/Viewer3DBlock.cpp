@@ -79,7 +79,7 @@ bool Viewer3DBlock::connect(BotBlock* block, bool master)
         }
 
         // Set
-        QSharedPointer<PhysicBlock> shared_physic_object = qSharedPointerObjectCast<PhysicBlock, BotBlock>( block->getBlockSharedFromThis() );        
+        QSharedPointer<PhysicBlock> shared_physic_object = qSharedPointerObjectCast<PhysicBlock, BotBlock>( block->toBlockSharedPointer() );        
         _object = shared_physic_object.toWeakRef();
 
         // Log

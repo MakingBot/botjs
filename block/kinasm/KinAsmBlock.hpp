@@ -58,13 +58,13 @@ public:
     }
 
     //! FROM BotBlock
-    virtual float getBlockVersion() const { return 1.0; }
+    virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual BlockRole getBlockRole() const { return BlockData; }
+    virtual BlockRole blockRole() const { return BlockData; }
 
     //! FROM BotBlock
-    virtual QString getBlockTypeName() const { return QString("kinasm"); }
+    virtual QString blockTypeName() const { return QString("kinasm"); }
 
     // === MEMBER STRUCTURE ===
 

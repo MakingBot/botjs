@@ -32,18 +32,18 @@ void RobotBlock::selectBlockSons(QList<QSharedPointer<BotBlock> >& sons, const Q
 
 	if(_base)
 	{
-		if( types.indexOf( _base->getBlockTypeName() ) != -1 )
+		if( types.indexOf( _base->blockTypeName() ) != -1 )
 		{
-			sons << _base->getBlockSharedFromThis();
+			sons << _base->toBlockSharedPointer();
 			std::cout << "plus one" << std::endl;
 		}
 	}
 
 	foreach(QSharedPointer<KinAsmBlock> body, _bodies)
 	{
-		if( types.indexOf( body->getBlockTypeName() ) != -1 )
+		if( types.indexOf( body->blockTypeName() ) != -1 )
 		{
-			sons << body->getBlockSharedFromThis();
+			sons << body->toBlockSharedPointer();
 		}
 	}
 }
@@ -86,15 +86,15 @@ BotBlock* RobotBlock::create(const QString& btypename, const QString& varname)
     if(!_base)
     {
     	_base = son;
-    	beglog() << "Create kinasm block #" << block->getBlockName() << "# and set it as base" << endlog();
+    	beglog() << "Create kinasm block #" << block->blockName() << "# and set it as base" << endlog();
     }
     else
     {
     	_bodies << son;
-    	beglog() << "Create kinasm block #" << block->getBlockName() << "# and append it as bodies" << endlog();
+    	beglog() << "Create kinasm block #" << block->blockName() << "# and append it as bodies" << endlog();
     }
 
-    _sons << block->getBlockSharedFromThis();
+    _sons << block->toBlockSharedPointer();
 
     // return
     return block.data();

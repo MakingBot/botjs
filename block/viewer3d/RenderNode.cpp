@@ -53,7 +53,7 @@ RenderNode::RenderNode( QSharedPointer<PhysicBlock> ref, Viewer* viewer )
         if(slave)
         {
             RenderNode* node = new RenderNode(slave, _viewer);
-            std::cout << "liena ok == " << slave->getBlockName().toStdString() << std::endl;
+            std::cout << "liena ok == " << slave->blockName().toStdString() << std::endl;
             _nodeChilds << QSharedPointer<RenderNode>( node );
        
         }

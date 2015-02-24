@@ -39,13 +39,13 @@ public:
     explicit SpyBlock(const QString& name = QString("spy"), QObject *parent = 0);
 
     //! FROM BotBlock
-    virtual float getBlockVersion() const { return 1.0; }
+    virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual BlockRole getBlockRole() const { return BotBlock::BlockSpy; }
+    virtual BlockRole blockRole() const { return BotBlock::BlockSpy; }
 
     //! FROM BotBlock
-    virtual QString getBlockTypeName() const { return QString("spy"); }
+    virtual QString blockTypeName() const { return QString("spy"); }
 
     //! FROM BotBlock
     virtual int getBlockNumberOfConnections() const
@@ -60,7 +60,7 @@ public:
     void createWidgetIfRequired()
     {
         if(!_widget) {
-            _widget = QSharedPointer<SpyWidget>( new SpyWidget( qSharedPointerObjectCast<SpyBlock, BotBlock>(this->getBlockSharedFromThis()) ) );
+            _widget = QSharedPointer<SpyWidget>( new SpyWidget( qSharedPointerObjectCast<SpyBlock, BotBlock>(this->toBlockSharedPointer()) ) );
         }
     }
 
@@ -98,7 +98,7 @@ public:
     const QString getSpiedBlockName()
     {
         QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
-        if(spied) { return spied->getBlockName(); } return QString();
+        if(spied) { return spied->blockName(); } return QString();
     }
 
 signals:

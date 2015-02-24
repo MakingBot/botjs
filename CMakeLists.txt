@@ -7,169 +7,169 @@ INCLUDE(core/script.cmake)
 
 # === SHELL ===
 
-# Includes
-INCLUDE_DIRECTORIES( block/shell )
+# # Includes
+# INCLUDE_DIRECTORIES( block/shell )
 
-# Headers
-SET(PROJECT_HEADER_FILES
-    block/shell/ShellBlock.hpp
-    block/shell/ShellThread.hpp
-    )
+# # Headers
+# SET(PROJECT_HEADER_FILES
+#     block/shell/ShellBlock.hpp
+#     block/shell/ShellThread.hpp
+#     )
 
-# Sources
-SET(PROJECT_SOURCE_FILES
-    block/shell/ShellBlock.cpp
-    block/shell/ShellThread.cpp
-    )
+# # Sources
+# SET(PROJECT_SOURCE_FILES
+#     block/shell/ShellBlock.cpp
+#     block/shell/ShellThread.cpp
+#     )
 
-# Qt Modules
-SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+# # Qt Modules
+# SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
 
-# Block link
-# SET(PROJECT_DEPENDENT_BLOCKS )
+# # Block link
+# # SET(PROJECT_DEPENDENT_BLOCKS )
 
-# Generation
-BOTJS_GENERATE_BLOCK(
-    shell
-    PROJECT_HEADER_FILES
-    PROJECT_SOURCE_FILES
-    PROJECT_USED_QT_MODULE
-    PROJECT_DEPENDENT_BLOCKS
-    )
+# # Generation
+# BOTJS_GENERATE_BLOCK(
+#     shell
+#     PROJECT_HEADER_FILES
+#     PROJECT_SOURCE_FILES
+#     PROJECT_USED_QT_MODULE
+#     PROJECT_DEPENDENT_BLOCKS
+#     )
 
-# === SPY ===
+# # === SPY ===
 
-# Includes
-INCLUDE_DIRECTORIES( block/spy )
+# # Includes
+# INCLUDE_DIRECTORIES( block/spy )
 
-# Headers
-SET(PROJECT_HEADER_FILES
-    block/spy/SpyBlock.hpp
-    block/spy/SpyWidget.hpp
-    block/spy/SpyWidgetBody.hpp
-    block/spy/SpyWidgetHeader.hpp
-    block/spy/SpyWidgetFooter.hpp
+# # Headers
+# SET(PROJECT_HEADER_FILES
+#     block/spy/SpyBlock.hpp
+#     block/spy/SpyWidget.hpp
+#     block/spy/SpyWidgetBody.hpp
+#     block/spy/SpyWidgetHeader.hpp
+#     block/spy/SpyWidgetFooter.hpp
 
-    block/spy/DoubleLabel.hpp
-    block/spy/ViewerQVectornD.hpp
-    block/spy/ViewerRealList.hpp
-    block/spy/ViewerQMatrix4x4.hpp
-    )
+#     block/spy/DoubleLabel.hpp
+#     block/spy/ViewerQVectornD.hpp
+#     block/spy/ViewerRealList.hpp
+#     block/spy/ViewerQMatrix4x4.hpp
+#     )
 
-# Sources
-SET(PROJECT_SOURCE_FILES
-    block/spy/SpyBlock.cpp
-    block/spy/SpyWidget.cpp
-    block/spy/SpyWidgetBody.cpp
-    block/spy/SpyWidgetHeader.cpp
-    block/spy/SpyWidgetFooter.cpp
+# # Sources
+# SET(PROJECT_SOURCE_FILES
+#     block/spy/SpyBlock.cpp
+#     block/spy/SpyWidget.cpp
+#     block/spy/SpyWidgetBody.cpp
+#     block/spy/SpyWidgetHeader.cpp
+#     block/spy/SpyWidgetFooter.cpp
 
-    block/spy/ViewerQVectornD.cpp
-    block/spy/ViewerRealList.cpp
-    block/spy/ViewerQMatrix4x4.cpp
-    )
+#     block/spy/ViewerQVectornD.cpp
+#     block/spy/ViewerRealList.cpp
+#     block/spy/ViewerQMatrix4x4.cpp
+#     )
 
-# Qt Modules
-SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+# # Qt Modules
+# SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
 
-# Block link
-# SET(PROJECT_DEPENDENT_BLOCKS )
+# # Block link
+# # SET(PROJECT_DEPENDENT_BLOCKS )
 
-# Generation
-BOTJS_GENERATE_BLOCK(
-    spy
-    PROJECT_HEADER_FILES
-    PROJECT_SOURCE_FILES
-    PROJECT_USED_QT_MODULE
-    PROJECT_DEPENDENT_BLOCKS
-    )
+# # Generation
+# BOTJS_GENERATE_BLOCK(
+#     spy
+#     PROJECT_HEADER_FILES
+#     PROJECT_SOURCE_FILES
+#     PROJECT_USED_QT_MODULE
+#     PROJECT_DEPENDENT_BLOCKS
+#     )
 
-# === VIEWER 3D ===
+# # === VIEWER 3D ===
 
-# Includes
-INCLUDE_DIRECTORIES( block/viewer3d )
+# # Includes
+# INCLUDE_DIRECTORIES( block/viewer3d )
 
-# Headers
-SET(PROJECT_HEADER_FILES
-    block/viewer3d/Glub.hpp
-    block/viewer3d/Viewer.hpp
-    block/viewer3d/Viewer3DBlock.hpp
-    block/viewer3d/VertexBufferObject.hpp
+# # Headers
+# SET(PROJECT_HEADER_FILES
+#     block/viewer3d/Glub.hpp
+#     block/viewer3d/Viewer.hpp
+#     block/viewer3d/Viewer3DBlock.hpp
+#     block/viewer3d/VertexBufferObject.hpp
     
-    block/viewer3d/RenderNode.hpp
-    )
+#     block/viewer3d/RenderNode.hpp
+#     )
 
-# Sources
-SET(PROJECT_SOURCE_FILES
-    block/viewer3d/Glub.cpp
-    block/viewer3d/Viewer.cpp
-    block/viewer3d/Viewer3DBlock.cpp
-    block/viewer3d/VertexBufferObject.cpp
+# # Sources
+# SET(PROJECT_SOURCE_FILES
+#     block/viewer3d/Glub.cpp
+#     block/viewer3d/Viewer.cpp
+#     block/viewer3d/Viewer3DBlock.cpp
+#     block/viewer3d/VertexBufferObject.cpp
 
-    block/viewer3d/RenderNode.cpp
-    )
+#     block/viewer3d/RenderNode.cpp
+#     )
 
-# Qt Modules
-SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+# # Qt Modules
+# SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
 
-# Includes
-INCLUDE_DIRECTORIES( /usr/include/GL )
+# # Includes
+# INCLUDE_DIRECTORIES( /usr/include/GL )
 
-# Block link
-#SET(PROJECT_DEPENDENT_BLOCKS robot)
+# # Block link
+# #SET(PROJECT_DEPENDENT_BLOCKS robot)
 
-# Generation
-BOTJS_GENERATE_BLOCK(
-    viewer3d
-    PROJECT_HEADER_FILES
-    PROJECT_SOURCE_FILES
-    PROJECT_USED_QT_MODULE
-    PROJECT_DEPENDENT_BLOCKS
-    )
+# # Generation
+# BOTJS_GENERATE_BLOCK(
+#     viewer3d
+#     PROJECT_HEADER_FILES
+#     PROJECT_SOURCE_FILES
+#     PROJECT_USED_QT_MODULE
+#     PROJECT_DEPENDENT_BLOCKS
+#     )
 
-# Link libraries
-QT5_USE_MODULES( viewer3d OpenGL )
-TARGET_LINK_LIBRARIES(viewer3d GLU )
-
-
-
-# === LINK ===
-INCLUDE(block/link/script.cmake)
-
-# === JOINT ===
-INCLUDE(block/joint/script.cmake)
-
-
-# === KINASM ===
-
-INCLUDE_DIRECTORIES( block/kinasm )
-
-# Headers
-SET(PROJECT_HEADER_FILES
-    block/kinasm/KinAsmBlock.hpp
-    )
-
-# Sources
-SET(PROJECT_SOURCE_FILES
-    block/kinasm/KinAsmBlock.cpp
-    )
-
-# Qt Modules
-SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
-
-# Block link
-SET(PROJECT_DEPENDENT_BLOCKS joint link)
-
-# Generation
-BOTJS_GENERATE_BLOCK(
-    kinasm
-    PROJECT_HEADER_FILES
-    PROJECT_SOURCE_FILES
-    PROJECT_USED_QT_MODULE
-    PROJECT_DEPENDENT_BLOCKS
-    )
+# # Link libraries
+# QT5_USE_MODULES( viewer3d OpenGL )
+# TARGET_LINK_LIBRARIES(viewer3d GLU )
 
 
 
-# === ROBOT ===
-INCLUDE(block/robot/script.cmake)
+# # === LINK ===
+# INCLUDE(block/link/script.cmake)
+
+# # === JOINT ===
+# INCLUDE(block/joint/script.cmake)
+
+
+# # === KINASM ===
+
+# INCLUDE_DIRECTORIES( block/kinasm )
+
+# # Headers
+# SET(PROJECT_HEADER_FILES
+#     block/kinasm/KinAsmBlock.hpp
+#     )
+
+# # Sources
+# SET(PROJECT_SOURCE_FILES
+#     block/kinasm/KinAsmBlock.cpp
+#     )
+
+# # Qt Modules
+# SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+
+# # Block link
+# SET(PROJECT_DEPENDENT_BLOCKS joint link)
+
+# # Generation
+# BOTJS_GENERATE_BLOCK(
+#     kinasm
+#     PROJECT_HEADER_FILES
+#     PROJECT_SOURCE_FILES
+#     PROJECT_USED_QT_MODULE
+#     PROJECT_DEPENDENT_BLOCKS
+#     )
+
+
+
+# # === ROBOT ===
+# INCLUDE(block/robot/script.cmake)

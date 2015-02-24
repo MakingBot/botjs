@@ -97,7 +97,7 @@ QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibr
         QString error = QString("- No 'CreateBlock' function found in the block '") + btypename + QString("': ") + lib->errorString();
 
         // Error
-        throw std::runtime_error(error.toStdString());
+        //throw std::runtime_error(error.toStdString());
     }
 
     // Check pointer
@@ -161,7 +161,7 @@ void BotEngine::createCoreBlock()
     QJSValue js_val = _jsEngine->newQObject(_coreBlock.data());
     
     // Link it to the js engine
-    go().setProperty(_coreBlock->getBlockName(), js_val);
+    go().setProperty(_coreBlock->blockName(), js_val);
 
     // Add Type helper
     go().setProperty("Type", _jsEngine->newQObject(new Type()));
@@ -196,13 +196,13 @@ QStringList BotEngine::getAllFatherChains()
         QSharedPointer<BotBlock> block = blocks.pop();
 
         // Get its father chain
-        chains << block->getBlockFathersChain();
+        //chains << block->getBlockFathersChain();
 
         //! Add every son
-        foreach(QSharedPointer<BotBlock> son, block->getBlockSons())
-        {
-            blocks.push(son);
-        }
+//        foreach(QSharedPointer<BotBlock> son, block->getBlockSons())
+//        {
+//            blocks.push(son);
+//        }
     }
     // Return
     return chains;

@@ -67,13 +67,13 @@ public:
     // => BotBlock redefinition
 
     //! FROM BotBlock
-    virtual float getBlockVersion() const { return 1.0; }
+    virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual QString getBlockTypeName() const { return QString("joint"); }
+    virtual QString blockTypeName() const { return QString("joint"); }
 
     //! FROM BotBlock
-    virtual int getBlockNumberOfSons() const { return BotBlock::getBlockNumberOfSons(); }
+    virtual int blockSonNb() const { return BotBlock::blockSonNb(); }
 
     //! FROM BotBlock
     virtual int getNumberOfConn() const

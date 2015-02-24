@@ -44,7 +44,7 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     }
 
     // Window configuration
-    setWindowTitle("SpyBlock: " + getSharedSpyBlock()->getBlockName());
+    setWindowTitle("SpyBlock: " + getSharedSpyBlock()->blockName());
 
     // Create layout
     new QGridLayout(this);

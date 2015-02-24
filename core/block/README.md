@@ -7,10 +7,10 @@ BotBlock is the master interface for all components of BotJs.
 
 Basic information is a group of elements that provide basic block identification. Those parameters are constant and use the Qt metaobject system.
 
-- The version: Decimal number that indicate the evolution state of the block.
-- The role: String that define what type of job the block perform.
-- The type name: The block class name.
-- The name: The name of the variable choosen by the user to identify the block.
+- **The version:** Decimal number that indicate the evolution state of the block.
+- **The role:** String that define what type of job the block perform.
+- **The type name:** The block class name.
+- **The name:** The name of the variable choosen by the user to identify the block.
 
 ## Block pointer management
 
@@ -29,6 +29,12 @@ A father block hold a shared pointer on every block it has created, those blocks
 The father of all blocks is the core block. Therefore BotJs has a pyramidal architecture and every block can be identified by its unique block chain.
 
 Sons are stored as a map to make more effecient block chain manipulation.
+
+- **ID Chain:**
+- **ID Number:**
+
+![father_and_sons](doc/father_and_sons.png "father_and_sons")
+
 
 ## Connection
 

@@ -81,24 +81,24 @@ void SpyWidgetHeader::updateValues()
     QSharedPointer<BotBlock> block = getSharedSpyBlock()->getSharedSpiedBlock();
     if(block)
     {
-        _labelName.setText(block->getBlockName());
+        _labelName.setText(block->blockName());
         _labelName.setStyleSheet(
-        "background-color:" + BotBlock::BlockRoleToColor(block->getBlockRole()) + " ;"\
+        "background-color:" + BotBlock::BlockRoleToColor(block->blockRole()) + " ;"\
         "color: #FFFFFF;"\
         "font: 34px Roboto;"\
         "padding: 10px;"\
         );
 
-        _labelTypName.setValue(block->getBlockTypeName());
-        _labelVersion.setValue(QString::number(block->getBlockVersion()));
-        _labelRolName.setValue(BotBlock::BlockRoleToString(block->getBlockRole()));
-        _labelSonsNub.setValue(QString::number(block->getBlockNumberOfSons()));
+        _labelTypName.setValue(block->blockTypeName());
+        _labelVersion.setValue(QString::number(block->blockVersion()));
+        _labelRolName.setValue(BotBlock::BlockRoleToString(block->blockRole()));
+        _labelSonsNub.setValue(QString::number(block->blockSonNb()));
         _labelConnNub.setValue(QString::number(block->getBlockNumberOfConnections()));
         
-        QWeakPointer<BotBlock> father = block->getBlockFather();
+        QWeakPointer<BotBlock> father = block->blockFatherWeakPointer();
         if(father)
         {
-            _labelFather.setValue(father.toStrongRef()->getBlockName());  
+            _labelFather.setValue(father.toStrongRef()->blockName());  
         }
         else
         {

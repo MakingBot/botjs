@@ -37,12 +37,12 @@ class BotBlock : public QObject
     Q_OBJECT
     Q_ENUMS(BlockRole)
     
-    Q_PROPERTY(QString      blockName               READ getBlockName           MEMBER _bname   CONSTANT    )
-    Q_PROPERTY(float        blockVersion            READ getBlockVersion                                    )
-    Q_PROPERTY(QString      blockTypename           READ getBlockTypeName                                   )
-    Q_PROPERTY(BlockRole    blockRole               READ getBlockRole                                       )
+    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT    )
+    Q_PROPERTY(float        blockVersion            READ blockVersion                                    )
+    Q_PROPERTY(QString      blockTypename           READ blockTypeName                                   )
+    Q_PROPERTY(BlockRole    blockRole               READ blockRole                                       )
 
-    Q_PROPERTY(int          blockNbSons             READ getBlockNumberOfSons                               )
+    Q_PROPERTY(int          blockNbSons             READ blockSonNb                               )
     Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                        )
 
     Q_PROPERTY(bool         logEnable               READ isBlockLogEnable       WRITE setBlockLogEnable     )
@@ -50,14 +50,293 @@ class BotBlock : public QObject
 
 public:
 
-    // === === === GLOBAL === === ===
-
-    //! Define block different roles
+	//!
+    //! Define different block roles
+	//!
     enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi } ;
+
+    // ========================================================================
+    // => Block basic information
+
+    //!
+    //! Block version getter
+    //!
+    virtual float     blockVersion   () const = 0;
+
+    //!
+    //! Block role getter
+    //!
+    virtual BlockRole blockRole      () const = 0;
+
+    //!
+    //! Block type name getter
+    //!
+    virtual QString   blockTypeName  () const = 0;
+
+    //!
+    //! Block name getter
+    //!
+    const   QString   blockName      () const { return _bname; }
+
+    // ========================================================================
+    // => Block pointer management
+
+    //!
+    //! Function that create and configure a safe block pointer
+    //! The shared has to be stored by the father block, else this block will be deleted
+    //!
+    template<typename BLOCK_TYPE>
+    static QSharedPointer<BotBlock> CreateBlock(const QString& name, QObject* parent = 0)
+    {
+        // Create the block
+        BLOCK_TYPE* block = new BLOCK_TYPE(name, parent);
+
+        // Create the shared pointer
+        QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
+
+        // Save it as a weak pointer in this
+        shared_ptr->_wThis = shared_ptr.toWeakRef();
+
+        // Return shared in order that parent can save it
+        return shared_ptr;
+    }
+
+    //!
+    //! Default constructor
+    //!
+    explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
+        : QObject(parent)
+        , _bname(name)
+    	, _idNumber(BlockCounter++)
+        , _log(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
+    { }
+
+    //!
+    //! Initialize block, each block has it own init process
+    //!
+    virtual void blockInit()
+    {
+        // Set the log buffer id with the id chain
+        _log.setId( blockIdChain() );
+
+        // Register type BotBlock*
+        if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
+    }
+
+    //!
+    //! Return a weak pointer on this block
+    //!
+    QWeakPointer<BotBlock>   toBlockWeakPointer           	()
+    {
+        return _wThis;
+    }
+
+    //!
+    //! Return a shared pointer on this block
+    //!
+    QSharedPointer<BotBlock> toBlockSharedPointer         	()
+    {
+        return _wThis.toStrongRef();
+    }
+
+    //!
+    //! Convert this BotBlock pointer to a specialized block pointer
+    //! Specialized means that B_TYPE is a derived class of BotBlock
+    //!
+    template<typename B_TYPE>
+    B_TYPE*                  toSpecializedPointer           ()
+    {
+        return toSpecializedSharedPointer<B_TYPE>().data();
+    }
+
+    //!
+    //! Convert this BotBlock pointer to a specialized block shared pointer
+    //! Specialized means that B_TYPE is a derived class of BotBlock
+    //!
+    template<typename B_TYPE>
+    QSharedPointer<B_TYPE>   toSpecializedSharedPointer     ()
+    {
+        return qSharedPointerObjectCast<B_TYPE, BotBlock>( toBlockSharedPointer() );
+    }
+
+    // ========================================================================
+    // => Block father and block sons
+
+    //!
+    //! Block father weak pointer getter
+    //!
+    QWeakPointer<BotBlock> blockFatherWeakPointer()
+    {
+    	return _father;
+    }
+
+    //!
+	//! Block father shared pointer getter
+	//!
+	QWeakPointer<BotBlock> blockFatherSharedPointer()
+	{
+		return _father.toStrongRef();
+	}
+
+    //!
+    //! Block father setter from a block pointer
+    //!
+    void setBlockFather(BotBlock* father)
+    {
+    	_father = father->toBlockWeakPointer();
+    }
+
+    //!
+    //! Block father setter from a block weak pointer
+    //!
+    void setBlockFather(QWeakPointer<BotBlock> father)
+    {
+    	_father = father;
+    }
+
+    //!
+    //! Block son getter by name
+    //!
+    QSharedPointer<BotBlock> blockSonSharedPointer(const QString& name)
+    {
+    	if( _sons.find(name) != _sons.end() )
+    	{
+    		return _sons[name];
+    	}
+        return QSharedPointer<BotBlock>(0);
+    }
+
+    //! Block sons getter
+    const QMap<QString, QSharedPointer<BotBlock> >& blockSons() const
+    {
+    	return _sons;
+    }
+
+    //!
+    //! Append a son to this block
+    //!
+    virtual void appendBlockSon(QSharedPointer<BotBlock> son)
+    {
+    	const QString name = son->blockName();
+    	if( _sons.find(name) == _sons.end() )
+		{
+    		_sons[name] = son;
+		}
+    }
+
+    //!
+    //! Block sons number getter
+    //!
+    int blockSonNb() const
+    {
+    	return _sons.size();
+    }
+
+    //!
+    //! Easy way to get this information
+    //!
+    bool blockHasSons() const
+    {
+    	if( blockSonNb() > 0 )
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+
+    // ========================================================================
+    // => Block identification
+
+    //!
+    //! ID Chain getter
+    //!
+	const QString& blockIdChain() const
+	{
+		return _idChain;
+	}
+
+	//!
+	//! Update ID Chain
+	//!
+    void updateIdChain()
+    {
+    	// Clear the chain
+    	_idChain.clear();
+
+    	// Initialize
+    	_idChain = blockName();
+
+    	// Get the father
+        QSharedPointer<BotBlock> next = blockFatherSharedPointer();
+        while(next)
+        {
+        	// Prepare parent piece of chain
+        	QString chain = next->blockName() + '.';
+        	_idChain.insert(0, chain);
+
+        	// Get next parent
+        	next = blockFatherSharedPointer();
+        }
+    }
+
+    //!
+    //! Return the pointer on the block defined by the id chain
+    //!
+    static QSharedPointer<BotBlock> IdChainToBlockPointer(const QString& chain)
+    {
+        // Split the chain
+        QStringList chainstr = chain.split(".");
+
+        // Chain must have block
+        if(chainstr.isEmpty()) { }
+
+        // The chain must start with the core block
+        if(chainstr.first().compare("core") != 0) { }
+        chainstr.removeFirst();
+
+        // Pointer on core
+        QSharedPointer<BotBlock> ptr = BotBlock::JsEngine.getCoreBlock();
+
+        // Find the end pointer
+        foreach(QString str, chainstr)
+        {
+        	QSharedPointer<BotBlock> son = ptr->blockSonSharedPointer(str);
+            if(son) { ptr = son; }
+        }
+        return ptr;
+    }
+
+    //!
+    //! ID Number getter
+    //!
+    quint32 blockIdNumber() const
+    {
+    	return _idNumber;
+    }
+
+    //!
+    //! ID Number setter
+    //!
+	void setBlockIdNumber(quint32 id)
+	{
+		_idNumber = id;
+	}
+
+
+    // ========================================================================
+    // => Block static members
 
     //! JavaScript engine used by the application
     static BotEngine JsEngine;
 
+    //! Number of block created since the beginning of the session
+    static quint32 BlockCounter;
+
+    //! Map to get a direct access to every block created
+    static QMap<quint32, QSharedPointer<BotBlock> > BlockMap;
 
 
 
@@ -94,121 +373,13 @@ public:
         }
     }
 
-    // ========================================================================
-    // => Initialization
 
-    //!
-    //! Function that create and configure a safe block pointer
-    //! The shared has to be stored by the parent block, else this block will be deleted
-    //!
-    template<typename BLOCK_TYPE>
-    static QSharedPointer<BotBlock> CreateBlock(const QString& name, QObject* parent = 0)
-    {
-        // Create the block
-        BLOCK_TYPE* block = new BLOCK_TYPE(name, parent);
 
-        // Create the shared pointer
-        QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
-        
-        // Save it as a weak pointer in this
-        shared_ptr->_wThis = shared_ptr.toWeakRef();
-
-        // Return shared in order that parent can save it
-        return shared_ptr;
-    }
     
-    //!
-    //! Default constructor
-    //!
-    explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
-        : QObject(parent)
-        , _bname(name)
-        , _log(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
-    { }
 
-    //!
-    //! Initialize block, each block has it own init process
-    //!
-    virtual void blockInit()
-    {
-        // Set log buffer id
-        _log.setId(getBlockFathersChain());
 
-        // Register type BotBlock*
-        if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
-    }
 
-    // ========================================================================
-    // => Basic block information
 
-    //! Block version getter
-    virtual float     getBlockVersion   () const = 0;
-
-    //! Block role getter
-    virtual BlockRole getBlockRole      () const = 0;
-
-    //! Block type name getter
-    virtual QString   getBlockTypeName  () const = 0;
-
-    //! Block name getter
-    const   QString   getBlockName      () const { return _bname; }
-
-    // ========================================================================
-    // => Pointer conversion
-
-    //!
-    //! Shared pointer on this object
-    //!
-    QWeakPointer<BotBlock>   getBlockWeakFromThis           ()
-    {
-        return _wThis;
-    }
-
-    //!
-    //! Shared pointer on this object
-    //!
-    QSharedPointer<BotBlock> getBlockSharedFromThis         ()
-    {
-        return _wThis.toStrongRef();
-    }
-
-//    //!
-//    //! Convert this specialized block pointer to a BotBlock pointer
-//    //! Specialized means that B_TYPE is a derived class of BotBlock
-//    //!
-//    template<typename B_TYPE>
-//    BotBlock*                toBlockPointer                 ()
-//    {
-//        return toBlockSharedPointer<B_TYPE>().data();
-//    }
-//
-//    //!
-//    //! to a specialized block shared pointer
-//    //!
-//    template<typename B_TYPE>
-//    QSharedPointer<BotBlock> toBlockSharedPointer           ()
-//    {
-//        return qSharedPointerObjectCast<BotBlock, B_TYPE>( getBlockSharedFromThis() );
-//    }
-
-    //!
-    //! Convert this BotBlock pointer to a specialized block pointer
-    //! Specialized means that B_TYPE is a derived class of BotBlock
-    //!
-    template<typename B_TYPE>
-    B_TYPE*                  toSpecializedPointer           ()
-    {
-        return toSpecializedSharedPointer<B_TYPE>().data();
-    }
-
-    //!
-    //! to a specialized block shared pointer
-    //!
-    template<typename B_TYPE>
-    QSharedPointer<B_TYPE>   toSpecializedSharedPointer     ()
-    {
-        return qSharedPointerObjectCast<B_TYPE, BotBlock>( getBlockSharedFromThis() );
-    }
 
     // === === === LOG BUFFER === === ===
 
@@ -257,55 +428,8 @@ public:
 
     // === === === FATHER AND SONS === === ===
 
-    //! Block father getter
-    QWeakPointer<BotBlock> getBlockFather() { return _father; }
 
-    //! Block father setter
-    void setBlockFather(BotBlock* father) { _father = father->getBlockWeakFromThis(); }
 
-    //! Block father setter
-    void setBlockFather(QWeakPointer<BotBlock> father) { _father = father; }
-
-    //! Block fathers chain
-    //! the chain from core block until this block separated by '.'
-    QString getBlockFathersChain()
-    {
-        QString ret;
-        QWeakPointer<BotBlock> fw = getBlockFather();
-        if( fw )
-        {
-            QSharedPointer<BotBlock> fs = fw.toStrongRef();
-            ret += fs->getBlockFathersChain();
-            ret += ".";
-        }
-        ret += getBlockName();
-        return ret;
-    }
-    
-    //! Return the pointer on the block defined by the fathers chain 
-    static BotBlock* getBlockFromFathersChain(const QString& chain)
-    {
-        // Split the chain
-        QStringList chainstr = chain.split(".");
-        
-        // Chain must have block
-        if(chainstr.isEmpty()) { }
-        
-        // The chain must start with the core block
-        if(chainstr.first().compare("core") != 0) { }
-        chainstr.removeFirst();
-        
-        // Pointer on core
-        BotBlock* ptr = BotBlock::JsEngine.getCoreBlock().data();
-        
-        // Find the end pointer
-        foreach(QString str, chainstr)
-        {
-            BotBlock* son = ptr->getBlockSon(str);
-            if(son) { ptr = son; }
-        }
-        return ptr;
-    }
 
     //!
     virtual void selectBlockSons(QList<QSharedPointer<BotBlock> >& sons, const QStringList& types)
@@ -313,57 +437,41 @@ public:
     	sons.clear();
     	foreach(QSharedPointer<BotBlock> son, sons)
 		{
-    		if( types.indexOf( son->getBlockTypeName() ) != -1 )
+    		if( types.indexOf( son->blockTypeName() ) != -1 )
     		{
     			sons << son;
     		}
 		}
     }
 
+
     virtual QStringList selectBlockSonChains( const QStringList& types )
     {
+
         QStringList chains;
+        /*
         QList<QSharedPointer<BotBlock> > sons;
         selectBlockSons(sons, types);
         foreach(QSharedPointer<BotBlock> son, sons)
         {
             chains << son->getBlockFathersChain();
         }
+        */
         return chains;
     }
 
-    //! Block sons getter
-    virtual const QList<QSharedPointer<BotBlock> >& getBlockSons() const { return _sons; }
 
     //! Provide the fathers chains of each sons of this block
     QStringList getBlockSonsChains()
     {
         QStringList chains;
-        foreach(QSharedPointer<BotBlock> son, _sons)        
-        {
-            chains << son->getBlockFathersChain();
-        }
+//        foreach(QSharedPointer<BotBlock> son, _sons)
+//        {
+//            chains << son->getBlockFathersChain();
+//        }
         return chains;
     }
 
-    //! Block son getter by name
-    virtual BotBlock* getBlockSon(const QString& name)
-    {
-        foreach(QSharedPointer<BotBlock> son, _sons)
-        {
-            if(son->getBlockName().compare(name) == 0) { return son.data(); }
-        }
-        return 0;
-    }
-
-    //! Append a son to this block
-    virtual void appendBlockSon(QSharedPointer<BotBlock> son) { if( _sons.indexOf(son) == -1 ) { _sons << son; } }
-
-    //! Block sons number getter
-    virtual int getBlockNumberOfSons() const { return _sons.size(); }
-
-    //! Easy way to get this information
-    virtual bool hasSons() const { if(getBlockNumberOfSons()>0) { return true; } else { return false; } }
 
 public slots:
 
@@ -382,19 +490,19 @@ public slots:
             if(!block->connect(this, false))
             {
                 // Log and return
-                beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
+                //beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
                 return false;
             }
         }
         // Other block ask for a connection
         // Default behavior : accept
-        _connections << block->getBlockWeakFromThis();
+        _connections << block->toBlockWeakPointer();
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
 
         // Log and return
-        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
+        //beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
         return true;
     }
 
@@ -414,13 +522,13 @@ public slots:
         }
 
         // Delete pointer from connection
-        _connections.removeAll(block->getBlockWeakFromThis());
+        _connections.removeAll(block->toBlockWeakPointer());
 
         // Alert BotJs
         emit blockfPropertyValuesChanged();
 
         // Log
-        beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
+       //beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
     }
 
     //!
@@ -460,7 +568,7 @@ public slots:
         this->appendBlockSon(block);
 
         // Log
-        beglog() << "Create block #" << block->getBlockName() << "#" << endlog();
+        beglog() << "Create block #" << block->blockName() << "#" << endlog();
      
         // return
         return block.data();
@@ -479,14 +587,44 @@ signals:
 
 protected:
 
-    // === === === BLOCK === === ===
-    
+    // ========================================================================
+    // => Block basic information
+
     //! Block name
     //! Block variable name in the JavaScript global object
     const QString _bname;
 
+    // ========================================================================
+    // => Block pointer management
+
     //! Smart pointer on this block
     QWeakPointer<BotBlock> _wThis;
+
+    // ========================================================================
+    // => Block father and block sons
+
+    //! Father
+    //! Father that have the ownership of this object
+    QWeakPointer<BotBlock> _father;
+
+    //! Sons
+    //! When the father is killed, sons are automatically killed (funny isn't it?)
+    QMap<QString, QSharedPointer<BotBlock> > _sons;
+
+    // ========================================================================
+    // => Block identification
+
+    //! ID Chain
+    //! The id chain is a unique string id to define this block pointer
+    //! It is composed of every father of this block separated with a dot
+    QString _idChain;
+
+    //! ID Number
+    //! When a block is created, it get a unique global ID number
+    quint32 _idNumber;
+
+
+
 
     // === === === LOG BUFFER === === ===
     
@@ -503,15 +641,7 @@ protected:
     //! Connections
     QList<QWeakPointer<BotBlock> > _connections;
 
-    // === === === FATHER AND SONS === === ===
 
-    //! Father
-    //! Father that have the ownership of this object
-    QWeakPointer<BotBlock> _father;
-    
-    //! Sons
-    //! When the father is killed, sons are automatically killed (funny isn't it?)
-    QList<QSharedPointer<BotBlock> > _sons;
     
 };
 

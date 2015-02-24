@@ -42,7 +42,7 @@ BotBlock* KinAsmBlock::create(const QString& btypename, const QString& varname)
 	QSharedPointer<JointBlock> joint = block->toSpecializedSharedPointer<JointBlock>();
 	if(!_root)
 	{
-		beglog() << "Create joint block #" << block->getBlockName() << "# and set it as base" << endlog();
+		beglog() << "Create joint block #" << block->blockName() << "# and set it as base" << endlog();
 
 		setRootSharedPtr(joint);
 	}

@@ -60,7 +60,7 @@ public:
     // => BotBlock redefinition
 
     //! FROM BotBlock
-    virtual BlockRole getBlockRole() const { return BotBlock::BlockData; }
+    virtual BlockRole blockRole() const { return BotBlock::BlockData; }
 
     // ========================================================================
     // => Basic getter and setter

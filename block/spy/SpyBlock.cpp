@@ -64,7 +64,7 @@ bool SpyBlock::connect(BotBlock* block, bool master)
         createWidgetIfRequired();
 
         // Track the new spied block
-        _spiedBlock = block->getBlockWeakFromThis();
+        _spiedBlock = block->toBlockWeakPointer();
 
         // Alert the view
         emit spiedBlockChanged();
