@@ -27,6 +27,15 @@
 #include <LogBuffer.hpp>
 
 //!
+//! Log macro
+//!
+#define BLOCK_LOG(msg)  			\
+if(blockLog() || blockTalk())  		\
+{ 									\
+	_logBuffer << msg << LogEnder();  \
+}
+
+//!
 //! The BotBlock is the main component of the BotJs modular architecture. 
 //! BotBlock is the master interface of all blocks.
 //!
@@ -37,16 +46,16 @@ class BotBlock : public QObject
     Q_OBJECT
     Q_ENUMS(BlockRole)
     
-    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT    )
-    Q_PROPERTY(float        blockVersion            READ blockVersion                                    )
-    Q_PROPERTY(QString      blockTypename           READ blockTypeName                                   )
-    Q_PROPERTY(BlockRole    blockRole               READ blockRole                                       )
+    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT    	)
+    Q_PROPERTY(float        blockVersion            READ blockVersion                                    	)
+    Q_PROPERTY(QString      blockTypename           READ blockTypeName                                   	)
+    Q_PROPERTY(BlockRole    blockRole               READ blockRole                                       	)
 
-    Q_PROPERTY(int          blockNbSons             READ blockSonNb                               )
-    Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                        )
+    Q_PROPERTY(int          blockNbSons             READ blockNbSons                               			)
+   // Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                        )
 
-    Q_PROPERTY(bool         logEnable               READ isBlockLogEnable       WRITE setBlockLogEnable     )
-    Q_PROPERTY(bool         logTalking              READ isBlockLogTalking      WRITE setBlockLogTalking    )
+    Q_PROPERTY(bool         log               		READ blockLog       	WRITE setBlockLog     			)
+    Q_PROPERTY(bool         talk              		READ blockTalk      	WRITE setBlockTalk    			)
 
 public:
 
@@ -108,7 +117,7 @@ public:
         : QObject(parent)
         , _bname(name)
     	, _idNumber(BlockCounter++)
-        , _log(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
+        , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
     { }
 
     //!
@@ -117,7 +126,7 @@ public:
     virtual void blockInit()
     {
         // Set the log buffer id with the id chain
-        _log.setId( blockIdChain() );
+    	_logBuffer.setId( blockIdChain() );
 
         // Register type BotBlock*
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
@@ -183,7 +192,7 @@ public:
     //!
     void setBlockFather(BotBlock* father)
     {
-    	_father = father->toBlockWeakPointer();
+    	setBlockFather(father->toBlockWeakPointer());
     }
 
     //!
@@ -192,6 +201,7 @@ public:
     void setBlockFather(QWeakPointer<BotBlock> father)
     {
     	_father = father;
+    	updateIdChain();
     }
 
     //!
@@ -227,7 +237,7 @@ public:
     //!
     //! Block sons number getter
     //!
-    int blockSonNb() const
+    int blockNbSons() const
     {
     	return _sons.size();
     }
@@ -237,7 +247,7 @@ public:
     //!
     bool blockHasSons() const
     {
-    	if( blockSonNb() > 0 )
+    	if( blockNbSons() > 0 )
     	{
     		return true;
     	}
@@ -325,6 +335,52 @@ public:
 		_idNumber = id;
 	}
 
+    // ========================================================================
+    // => Block connections
+
+	//!
+    //! Connections number getter
+    //!
+	int blockNbConnections() const
+    {
+    	return _connections.size();
+    }
+
+    // ========================================================================
+    // => Block log and talk
+
+	//!
+    //! Log enable getter
+    //!
+    bool blockLog()
+    {
+    	return _logBuffer.logEnable();
+    }
+
+    //!
+    //! Log enable setter
+    //!
+    void setBlockLog(bool e)
+    {
+    	_logBuffer.setLogEnable(e);
+    }
+
+	//!
+    //! Talk enable getter
+    //!
+    bool blockTalk()
+    {
+    	return _logBuffer.talkEnable();
+    }
+
+    //!
+    //! Talk enable setter
+    //!
+    void setBlockTalk(bool e)
+    {
+    	_logBuffer.setTalkEnable(e);
+    }
+
 
     // ========================================================================
     // => Block static members
@@ -338,8 +394,11 @@ public:
     //! Map to get a direct access to every block created
     static QMap<quint32, QSharedPointer<BotBlock> > BlockMap;
 
+    //! Generate a Id number for the block
+    static void GenerateIdNumber(QSharedPointer<BotBlock> block);
 
-
+    //! To get a block with its Id number
+    static QSharedPointer<BotBlock> IdNumberToBlock(quint32 id);
 
     //!
     //! Each role is associated to a color
@@ -379,28 +438,6 @@ public:
 
 
 
-
-
-    // === === === LOG BUFFER === === ===
-
-    //! To start a log
-    LogBuffer& beglog() { return _log; }
-
-    //! To stop the log
-    LogEnder endlog() { return LogEnder(); }
-
-    //!  Enable setter
-    void setBlockLogEnable(bool en)  { _log.setStateEnable(en); }
-    
-    //! Talking setter
-    void setBlockLogTalking(bool en) { _log.setStateTalk(en); } 
-
-    //! Return true if this log buffer is enable and log into its file
-    bool isBlockLogEnable()  { return _log.isEnable(); } 
-
-    //! Return true if this log buffer is talking and log into the std cout
-    bool isBlockLogTalking() { return _log.isTalking(); }
-
     // === === === I-PROPERTIES === === ===
 
     //! Interactive properties getter
@@ -421,10 +458,6 @@ public:
         _iProperties.remove(pname);
     }
 
-    // === === === CONNECTIONS === === ===
-
-    //! Connections number getter
-    virtual int getBlockNumberOfConnections() const { return _connections.size(); }
 
     // === === === FATHER AND SONS === === ===
 
@@ -475,14 +508,48 @@ public:
 
 public slots:
 
+	// ========================================================================
+	// => Block pointer management
+
+	//!
+	//! Create a block as a child of this one
+	//!
+	virtual BotBlock* create(const QString& btypename, const QString& varname)
+	{
+		// Check if the name already exist
+		if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
+		{
+			BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
+			return 0;
+		}
+
+		// Create block from the JsEngine
+		QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
+
+		// Set this as the block parent
+		block->setBlockFather(this);
+
+		// Add block to this son
+		appendBlockSon(block);
+
+		// Log
+		BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");
+
+		// return
+		return block.data();
+	}
+
+	// ========================================================================
+	// => Block connections
+
     //!
     //! To connect the block to others
     //!
-    virtual bool connect(BotBlock* block, bool master=true)
+    bool connect(BotBlock* block, bool master=true)
     {
         // Basic checks
-        if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
-        if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
+        if(!block)        { BLOCK_LOG("Connection to null block failure"); return false; }
+        //if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
         
         // This block ask for a connection
         if(master)
@@ -496,10 +563,10 @@ public slots:
         }
         // Other block ask for a connection
         // Default behavior : accept
-        _connections << block->toBlockWeakPointer();
+       // _connections << block->toBlockWeakPointer();
 
         // Alert BotJs
-        emit blockfPropertyValuesChanged();
+        //emit blockfPropertyValuesChanged();
 
         // Log and return
         //beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
@@ -512,8 +579,8 @@ public slots:
     virtual void disconnect(BotBlock* block, bool master=true)
     {
         // Basic checks
-        if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
-        if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
+        //if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
+        //if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
         
         // This block ask for a disconnection
         if(master)
@@ -522,10 +589,10 @@ public slots:
         }
 
         // Delete pointer from connection
-        _connections.removeAll(block->toBlockWeakPointer());
+       // _connections.removeAll(block->toBlockWeakPointer());
 
         // Alert BotJs
-        emit blockfPropertyValuesChanged();
+        //emit blockfPropertyValuesChanged();
 
         // Log
        //beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
@@ -536,53 +603,36 @@ public slots:
     //!
     virtual void disconnectAll()
     {
-        foreach(QWeakPointer<BotBlock> co, _connections)
-        {
-            QSharedPointer<BotBlock> coshared = co.toStrongRef();
-            if(coshared)
-            {
-                this->disconnect(coshared.data());
-            }
-        }
-    }
-
-    //!
-    //! Create a block as a child of this one
-    //!
-    virtual BotBlock* create(const QString& btypename, const QString& varname)
-    {
-        // Check if the name already exist 
-        if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
-        {
-            beglog() << "Create block #" << btypename << "# failure: this name is already used" << endlog();
-            return 0;
-        }
-
-        // Create block from the JsEngine
-        QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
-
-        // Set this as the block parent
-        block->setBlockFather(this);
-        
-        // Add block to this son
-        this->appendBlockSon(block);
-
-        // Log
-        beglog() << "Create block #" << block->blockName() << "#" << endlog();
-     
-        // return
-        return block.data();
+//        foreach(QWeakPointer<BotBlock> co, _connections)
+//        {
+//            QSharedPointer<BotBlock> coshared = co.toStrongRef();
+//            if(coshared)
+//            {
+//                this->disconnect(coshared.data());
+//            }
+//        }
     }
 
 signals:
 
-    //! Emit when fix property values has been modified
-    void blockfPropertyValuesChanged();
-    
+	//! Signal
+	//! Emitted when father or sons changed
+	//!
+    void blockFamilyChanged();
+
+	//! Signal
+	//! Emitted when connections has been appended or deleted
+	//!
+    void blockConnectionsChanged();
+
+    //! Signal
     //! Emit when interactive property values has been modified
+    //!
     void blockiPropertyValuesChanged();
     
+    //! Signal
     //! Emit when interactive property structure has been modified
+    //!
     void blockiPropertyStructureChanged();
 
 protected:
@@ -623,29 +673,29 @@ protected:
     //! When a block is created, it get a unique global ID number
     quint32 _idNumber;
 
+    // ========================================================================
+    // => Block connections
 
+    //! Connections
+    QMap<QString, QWeakPointer<BotBlock> > _connections;
 
-
-    // === === === LOG BUFFER === === ===
+    // ========================================================================
+    // => Block log and talk
     
     //! Block log buffer
-    LogBuffer _log;
+    LogBuffer _logBuffer;
 
-    // === === === I-PROPERTIES === === ===
+    // ========================================================================
+    // => Block interactive properties
 
     //! Interactive properties
     QMap<QString, IProperty> _iProperties;
 
-    // === === === CONNECTIONS === === ===
-
-    //! Connections
-    QList<QWeakPointer<BotBlock> > _connections;
-
-
-    
 };
 
+//!
 //! Define that allow to define the interface of the shared lib
+//!
 #define EXPORT_BLOCK(__blocktype__) extern "C"              \
 {                                                           \
 Q_DECL_EXPORT QSharedPointer<BotBlock> CreateBlock(const QString& name)   \

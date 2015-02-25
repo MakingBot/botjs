@@ -31,7 +31,9 @@
 #include <QTextStream>
 #include <QSharedPointer>
 
-//! End tag for log
+//!
+//! End tag to terminate a log stream
+//!
 class LogEnder { public: LogEnder() {} };
 
 //!
@@ -44,14 +46,15 @@ class LogBuffer : public QObject
     Q_OBJECT
     
 public:
-    //! States of the log buffer
-    enum State { StateCreated = 0x0, StateInitialized = 0x1, StateEnabled = 0x2, StateTalking = 0x4 };
-    
     //!
     //! Default constructor
     //!
-    explicit LogBuffer(const QString& logfilepath, bool enable = false, bool verbose = false, QObject* parent = 0)
-        : QObject(parent), _newLog(true), _state(StateCreated), _coutstream(stdout)
+    explicit LogBuffer(const QString& logfilepath, QObject* parent = 0)
+        : QObject(parent)
+    	, _newLog(true)
+    	, _logEnable(false)
+		, _talkEnable(false)
+    	, _coutstream(stdout)
     {
         // Set the file path
         _logfile.setFileName(logfilepath);
@@ -63,72 +66,78 @@ public:
         }
 
         // Open stream on this file
-        _filestream = QSharedPointer<QTextStream>( new QTextStream(&_logfile) );
-        
-        // Set state flags
-        if     (verbose) { talk();         }
-        else if(enable)  { this->enable(); }
-        _state |= StateInitialized;    
+        _filestream.setDevice( &_logfile );
     }
     
-    //! Destructor
+    //!
+    //!
+    //!
     ~LogBuffer()
     {
         _logfile.close();
     }
 
+    //!
     //! Id setter
-    void setId(const QString& id) { _id = id; }
-
-    //! Stop logging
-    void disable() { _state &= ~StateEnabled; }
-
-    //! Start file logging
-    void enable()  { _state |=  StateEnabled;  }
-
-    //!  Enable setter
-    void setStateEnable(bool en) 
+    //!
+    void setId(const QString& id)
     {
-        if(en) { this->enable();  }
-        else   { disable();       }
-    }
-    
-    //! Start file and shell logging
-    void talk() { enable(); _state |= StateTalking; }
-
-    //! Stop shell logging
-    void stopTalking() { _state &= ~StateTalking; }
-
-    //! Talking setter
-    void setStateTalk(bool talk) 
-    {
-        if(talk){ this->talk();  }
-        else    { stopTalking(); }
+    	_id = id;
     }
 
-    //! Return true if this log buffer is enable and log into its file
-    bool isEnable()  { if( _state >= (StateInitialized+StateEnabled) ) { return true; } else { return false; } } 
+    //!
+    //! Log enable getter
+    //!
+    bool logEnable()
+    {
+    	return _logEnable;
+    }
 
-    //! Return true if this log buffer is talking and log into the std cout
-    bool isTalking() { if( _state >= (StateInitialized+StateEnabled+StateTalking) ) { return true; } else { return false; } }
+    //!
+    //! Log enable setter
+    //!
+    void setLogEnable(bool e)
+    {
+        if(e) { _logEnable = true;  }
+        else  { _logEnable = false; }
+    }
+
+    //!
+    //! Talk enable getter
+    //!
+    bool talkEnable()
+    {
+    	return _talkEnable;
+    }
+
+    //!
+    //! Talk enable setter
+    //!
+    void setTalkEnable(bool e)
+    {
+        if(e) { _talkEnable = true;  }
+        else  { _talkEnable = false; }
+    }
 
     //!
     //! General log function
     //!
     template<typename T> void streamlog( T val )
     {
-        if( _state >= (StateInitialized+StateEnabled) )
+        if( _logEnable )
         {
-            (*_filestream.data()) << val;
-            if( _state >= (StateInitialized+StateEnabled+StateTalking) )
-            {
-                if(_newLog)
-                {
-                    _coutstream << "[" << _id << "] ";    
-                }
-                _coutstream << val;
-            }
+        	_filestream << val;
         }
+
+        if( _talkEnable )
+        {
+            if(_newLog)
+            {
+                _coutstream << "[" << _id << "] ";
+            }
+            _coutstream << val;
+        }
+
         if(_newLog) { _newLog = false; }
     }
 
@@ -137,14 +146,16 @@ public:
     //!
     void endLog()
     {
-        if( _state >= (StateInitialized+StateEnabled) )
+        if( _logEnable )
         {
-            (*_filestream.data()) << endl;
-            if( _state >= (StateInitialized+StateEnabled+StateTalking) )
-            {
-                _coutstream << endl;
-            }
+        	_filestream << endl;
         }
+
+        if( _talkEnable )
+        {
+        	_coutstream << endl;
+        }
+
         if(!_newLog) { _newLog = true; }     
     }
 
@@ -206,7 +217,6 @@ public:
         return *this;
     }
 
-
 protected:
 
     // LogBuffer identifier
@@ -215,21 +225,24 @@ protected:
     //! True if no log is being written
     bool _newLog;
 
-    //! Represents the state of the log buffer
-    quint8 _state;
-    
-    //! Buffer mutex
+    //! Buffer lock
     QMutex _mutex;
+
+    //! True if the buffer can write logs into a file
+    bool _logEnable;
 
     //! Log file descriptor 
     QFile _logfile;
     
-    //! Stream to write in std::cout
+    //! Stream to write logs into a file
+    QTextStream _filestream;
+
+    //! True if the buffer can print logs on the shell
+    bool _talkEnable;
+
+    //! Stream to print logs on the shell
     QTextStream _coutstream;
-    
-    //! Stream to write in the log file
-    QSharedPointer<QTextStream> _filestream;
-    
+
 };
 
 #endif // LOGBUFFER_HPP

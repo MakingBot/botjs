@@ -21,3 +21,32 @@
 
 // Static declaration
 BotEngine BotBlock::JsEngine;
+
+// Static declaration
+quint32 BotBlock::BlockCounter;
+
+// Static declaration
+QMap<quint32, QSharedPointer<BotBlock> > BotBlock::BlockMap;
+
+/* ============================================================================
+ *
+ * */
+void BotBlock::GenerateIdNumber(QSharedPointer<BotBlock> block)
+{
+	// Set Id number
+	block->setBlockIdNumber(BlockCounter);
+
+	// Track pointer
+	BlockMap[BlockCounter] = block;
+
+	// Increment counter
+	BlockCounter++;
+}
+
+/* ============================================================================
+ *
+ * */
+QSharedPointer<BotBlock> BotBlock::IdNumberToBlock(quint32 id)
+{
+	return BlockMap[id];
+}
