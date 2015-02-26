@@ -257,6 +257,60 @@ public:
     	}
     }
 
+    //!
+    //! Return son block pointers that have the compatible type
+    //!
+    void blockSelectedSons(QList<QSharedPointer<BotBlock> >& sons, const QStringList& types)
+    {
+        // Clear the list
+        sons.clear();
+
+        QMapIterator<QString, QSharedPointer<BotBlock> > i(_sons);
+        while (i.hasNext())
+        {
+            i.next();
+            if( types.indexOf( i.value()->blockTypeName() ) != -1 )
+            {
+                sons << i.value();
+            }
+        }
+    }
+
+    //!
+    //! Return id chains of son blocks that have the compatible type
+    //!
+    void blockSelectedSonChains(QStringList& chains, const QStringList& types)
+    {
+        // Clear the list
+        chains.clear();
+
+        // Get selected sons
+        QList<QSharedPointer<BotBlock> > sons;
+        blockSelectedSons(sons, types);
+
+        // Fil the chain
+        foreach(QSharedPointer<BotBlock> son, sons)
+        {
+            chains << son->blockIdChain();
+        }
+    }
+
+    //!
+    //! Provide the id chains of each sons of this block
+    //!
+    void blockAllSonChains(QStringList& chains)
+    {
+        // Clear the list
+        chains.clear();
+        QMapIterator<QString, QSharedPointer<BotBlock> > i(_sons);
+        while (i.hasNext())
+        {
+            i.next();
+            chains << i.value()->blockIdChain();
+        }
+    }
+
+
     // ========================================================================
     // => Block identification
 
@@ -382,6 +436,44 @@ public:
     }
 
 
+
+    // ========================================================================
+    // => Block architecture parameters
+
+    //!
+    //! Block size getter
+    //!
+    const QSize& blockSize()
+    {
+        return _bsize;
+    }
+
+    //!
+    //! Block size setter
+    //!
+    void setBlockSize(const QSize& size)
+    {
+        _bsize = size;
+    }
+
+    //!
+    //! Block position getter
+    //!
+    const QPointF& blockPosition()
+    {
+        return _bposition;
+    }
+
+    //!
+    //! Block position setter
+    //!
+    void setBlockPosition(const QPointF& pos)
+    {
+        _bposition = pos;
+    }
+
+
+
     // ========================================================================
     // => Block static members
 
@@ -458,52 +550,6 @@ public:
         _iProperties.remove(pname);
     }
 
-
-    // === === === FATHER AND SONS === === ===
-
-
-
-
-    //!
-    virtual void selectBlockSons(QList<QSharedPointer<BotBlock> >& sons, const QStringList& types)
-    {
-    	sons.clear();
-    	foreach(QSharedPointer<BotBlock> son, sons)
-		{
-    		if( types.indexOf( son->blockTypeName() ) != -1 )
-    		{
-    			sons << son;
-    		}
-		}
-    }
-
-
-    virtual QStringList selectBlockSonChains( const QStringList& types )
-    {
-
-        QStringList chains;
-        /*
-        QList<QSharedPointer<BotBlock> > sons;
-        selectBlockSons(sons, types);
-        foreach(QSharedPointer<BotBlock> son, sons)
-        {
-            chains << son->getBlockFathersChain();
-        }
-        */
-        return chains;
-    }
-
-
-    //! Provide the fathers chains of each sons of this block
-    QStringList getBlockSonsChains()
-    {
-        QStringList chains;
-//        foreach(QSharedPointer<BotBlock> son, _sons)
-//        {
-//            chains << son->getBlockFathersChain();
-//        }
-        return chains;
-    }
 
 
 public slots:
@@ -691,17 +737,33 @@ protected:
     //! Interactive properties
     QMap<QString, IProperty> _iProperties;
 
+    // ========================================================================
+    // => Block architecture parameters
+
+    //! Size
+    //! Size of the block in the architecture map
+    QSize _bsize;
+
+    //! Position
+    //! Position of the block in the architecture map
+    //! This position is relative the father position
+    QPointF _bposition;
+
 };
 
 //!
 //! Define that allow to define the interface of the shared lib
 //!
+//!
+//! Define that allow to define the interface of the shared lib
+//!
 #define EXPORT_BLOCK(__blocktype__) extern "C"              \
 {                                                           \
-Q_DECL_EXPORT QSharedPointer<BotBlock> CreateBlock(const QString& name)   \
+QSharedPointer<BotBlock> CreateBlock(const QString& name)   \
 {                                                           \
     return BotBlock::CreateBlock<__blocktype__>(name);      \
 }                                                           \
 }
+
 
 #endif // BOTBLOCK_HPP
