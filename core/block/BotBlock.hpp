@@ -52,10 +52,10 @@ class BotBlock : public QObject
     Q_PROPERTY(BlockRole    blockRole               READ blockRole                                       	)
 
     Q_PROPERTY(int          blockNbSons             READ blockNbSons                               			)
-   // Q_PROPERTY(int          blockNbConn             READ getBlockNumberOfConnections                        )
+    Q_PROPERTY(int          blockNbConn             READ blockNbConnections                            )
 
-    Q_PROPERTY(bool         log               		READ blockLog       	WRITE setBlockLog     			)
-    Q_PROPERTY(bool         talk              		READ blockTalk      	WRITE setBlockTalk    			)
+    Q_PROPERTY(bool         blockLog            	READ blockLog       	WRITE setBlockLog     			)
+    Q_PROPERTY(bool         blockTalk           	READ blockTalk      	WRITE setBlockTalk    			)
 
 public:
 
@@ -95,10 +95,10 @@ public:
     //! The shared has to be stored by the father block, else this block will be deleted
     //!
     template<typename BLOCK_TYPE>
-    static QSharedPointer<BotBlock> CreateBlock(const QString& name, QObject* parent = 0)
+    static QSharedPointer<BotBlock> CreateBlock(const QString& name)
     {
         // Create the block
-        BLOCK_TYPE* block = new BLOCK_TYPE(name, parent);
+        BLOCK_TYPE* block = new BLOCK_TYPE(name);
 
         // Create the shared pointer
         QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
@@ -116,7 +116,7 @@ public:
     explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
         : QObject(parent)
         , _bname(name)
-    	, _idNumber(BlockCounter++)
+    	, _idNumber(0xFFFFFFFF)
         , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
     { }
 
@@ -174,25 +174,24 @@ public:
     //!
     //! Block father weak pointer getter
     //!
-    QWeakPointer<BotBlock> blockFatherWeakPointer()
+    QWeakPointer<BotBlock> blockFather()
     {
     	return _father;
     }
-
-    //!
-	//! Block father shared pointer getter
-	//!
-	QWeakPointer<BotBlock> blockFatherSharedPointer()
-	{
-		return _father.toStrongRef();
-	}
 
     //!
     //! Block father setter from a block pointer
     //!
     void setBlockFather(BotBlock* father)
     {
-    	setBlockFather(father->toBlockWeakPointer());
+    	if(father)
+    	{
+    		setBlockFather(father->toBlockWeakPointer());
+    	}
+    	else
+    	{
+    		setBlockFather(QSharedPointer<BotBlock>(0).toWeakRef());
+    	}
     }
 
     //!
@@ -239,6 +238,8 @@ public:
     //!
     int blockNbSons() const
     {
+    	std::cout << "sonnnnn !!!" << std::endl;
+
     	return _sons.size();
     }
 
@@ -333,17 +334,21 @@ public:
     	// Initialize
     	_idChain = blockName();
 
-    	// Get the father
-        QSharedPointer<BotBlock> next = blockFatherSharedPointer();
-        while(next)
-        {
-        	// Prepare parent piece of chain
-        	QString chain = next->blockName() + '.';
-        	_idChain.insert(0, chain);
+    	std::cout << _idChain.toStdString() << std::endl;
 
-        	// Get next parent
-        	next = blockFatherSharedPointer();
-        }
+//    	// Get the father
+//        QWeakPointer<BotBlock> next = blockFather();
+//        while(next)
+//        {
+//        	// Prepare parent piece of chain
+//        	QString chain = next.toStrongRef()->blockName() + '.';
+//        	_idChain.insert(0, chain);
+//
+//        	std::cout << _idChain.toStdString() << std::endl;
+//
+//        	// Get next parent
+//        	next = blockFather();
+//        }
     }
 
     //!
@@ -432,6 +437,8 @@ public:
     //!
     void setBlockTalk(bool e)
     {
+    	std::cout << "talk:: !!!" << std::endl;
+
     	_logBuffer.setTalkEnable(e);
     }
 
@@ -565,18 +572,26 @@ public slots:
 		// Check if the name already exist
 		if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
 		{
-			BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
+			// BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
 			return 0;
 		}
+
+    	std::cout << "un truc 1" << std::endl;
 
 		// Create block from the JsEngine
 		QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
 
+    	std::cout << "un truc 3" << std::endl;
+
+		// Add block to this sons
+		appendBlockSon(block);
+
+    	std::cout << "un truc 2" << std::endl;
+
 		// Set this as the block parent
 		block->setBlockFather(this);
 
-		// Add block to this son
-		appendBlockSon(block);
+    	std::cout << "un truc 4" << std::endl;
 
 		// Log
 		BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");

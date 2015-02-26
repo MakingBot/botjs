@@ -5,37 +5,45 @@ INCLUDE(cmake/botjs_config.cmake)
 # === CORE ===
 INCLUDE(core/script.cmake)
 
-# === SHELL ===
 
-# # Includes
-# INCLUDE_DIRECTORIES( block/shell )
 
-# # Headers
-# SET(PROJECT_HEADER_FILES
-#     block/shell/ShellBlock.hpp
-#     block/shell/ShellThread.hpp
-#     )
+# === COM-INTERFACE ===
 
-# # Sources
-# SET(PROJECT_SOURCE_FILES
-#     block/shell/ShellBlock.cpp
-#     block/shell/ShellThread.cpp
-#     )
 
-# # Qt Modules
-# SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+INCLUDE(block/cominterface/bjsserialarduino/script.cmake)
 
-# # Block link
-# # SET(PROJECT_DEPENDENT_BLOCKS )
 
-# # Generation
-# BOTJS_GENERATE_BLOCK(
-#     shell
-#     PROJECT_HEADER_FILES
-#     PROJECT_SOURCE_FILES
-#     PROJECT_USED_QT_MODULE
-#     PROJECT_DEPENDENT_BLOCKS
-#     )
+# === SHELL ===
+
+# Includes
+INCLUDE_DIRECTORIES( block/shell )
+
+# Headers
+SET(PROJECT_HEADER_FILES
+    block/shell/ShellBlock.hpp
+    block/shell/ShellThread.hpp
+    )
+
+# Sources
+SET(PROJECT_SOURCE_FILES
+    block/shell/ShellBlock.cpp
+    block/shell/ShellThread.cpp
+    )
+
+# Qt Modules
+SET(PROJECT_USED_QT_MODULE Qml Gui Core Widgets)
+
+# Block link
+# SET(PROJECT_DEPENDENT_BLOCKS )
+
+# Generation
+BOTJS_GENERATE_BLOCK(
+    shell
+    PROJECT_HEADER_FILES
+    PROJECT_SOURCE_FILES
+    PROJECT_USED_QT_MODULE
+    PROJECT_DEPENDENT_BLOCKS
+    )
 
 # # === SPY ===
 

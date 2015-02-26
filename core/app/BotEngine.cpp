@@ -94,10 +94,8 @@ QSharedPointer<BotBlock> BotEngine::resolveBlockLibCreation(QSharedPointer<QLibr
     else
     {
         // Build error string
-        QString error = QString("- No 'CreateBlock' function found in the block '") + btypename + QString("': ") + lib->errorString();
-
-        // Error
-        //throw std::runtime_error(error.toStdString());
+        QString error = QString("-- No 'CreateBlock' function found in the block '") + btypename + QString("': ") + lib->errorString();
+        std::cerr << error.toStdString() << std::endl;
     }
 
     // Check pointer
@@ -154,9 +152,12 @@ void BotEngine::createCoreBlock()
     // Create core block
     _coreBlock = BotBlock::CreateBlock<CoreBlock>("core");
    
-    // Init block
+    // Initialize block
     _coreBlock->blockInit();
     
+	// Set this as the block parent
+    _coreBlock->setBlockFather(0);
+
     // Create a qt js object
     QJSValue js_val = _jsEngine->newQObject(_coreBlock.data());
     

@@ -1,5 +1,5 @@
 # Includes
-INCLUDE_DIRECTORIES( core/app core/block core/type )
+INCLUDE_DIRECTORIES( core/app core/block core/type core/controller core/cominterface)
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -13,10 +13,15 @@ SET(PROJECT_HEADER_FILES
     core/block/LogBuffer.hpp
     core/block/PhysicBlock.hpp
 
-    
     core/type/QRealList.hpp
     core/type/Type.hpp
     core/type/ShapeData.hpp
+
+
+    core/controller/CtrlMail.hpp
+    core/controller/ControllerBlock.hpp
+
+    core/cominterface/ComInterfaceBlock.hpp
     )
 
 # Sources

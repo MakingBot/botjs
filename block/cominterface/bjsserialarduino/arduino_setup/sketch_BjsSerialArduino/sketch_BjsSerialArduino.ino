@@ -19,11 +19,11 @@
 //! Mail structure
 struct mail
 {
-  byte device;
+  word device;
   byte propid;
   byte mode;
+  
   byte data[4];
-  byte end;
 };
 
 #define READ  0
@@ -57,16 +57,46 @@ struct mail HcSr04Mail;
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 //!
+//! To fill data section of the mail
+//!
+void prepareMail(struct mail* mel, unsigned int value)
+{
+  int i;
+  for(i=0 ; i<sizeof(unsigned int) ; i++)
+  {
+    const int shift = (i*8);
+    unsigned int cast = ( value & (0xFF<<shift) ) >> shift; 
+    mel->data[i] = (byte)cast;
+  }
+}
+
+//!
+//! To send a mail through serial
+//!
+void sendMail(struct mail* mel)
+{
+  int i;
+  Serial.write(mel->device);
+  Serial.write(mel->propid);
+  Serial.write(mel->mode);
+  for(i=0 ; i<4 ; i++)
+  {
+    Serial.write(mel->data[i]);
+  }
+  Serial.write(";;;;", 4);
+}
+
+//!
 //! Setup function
 //!
 void setup()
 {
+  int i;
   Serial.begin(115200);
   
   HcSr04Mail.device = HC_SR04_DEVID;
   HcSr04Mail.propid = HC_SR04_PROPID;
   HcSr04Mail.mode   = WRITE;
-  int i;
   for(i=0 ; i<4 ; i++)
   {
     HcSr04Mail.data[i]= 0;
@@ -81,15 +111,11 @@ void loop()
   delay(DELAY_LOOP);
   
   
-  unsigned int ping_us = sonar.ping();
   
-  byte* buf[0];
+  unsigned int us_ping = (sonar.ping()/US_ROUNDTRIP_CM)*10;
+  prepareMail(&HcSr04Mail, us_ping);
+  sendMail(&HcSr04Mail);
   
-  Serial.write(HcSr04Mail.device);
-  
-//  Serial.print("Ping: ");
-//  Serial.print(uS / US_ROUNDTRIP_CM); // Convert ping time to distance and print result (0 = outside set distance range, no ping echo)
-//  Serial.println("cm");
 
 
 }

@@ -1,5 +1,5 @@
-#ifndef BOTBLOCK_HPP
-#define BOTBLOCK_HPP
+#ifndef COMINTERFACEBLOCK_HPP
+#define COMINTERFACEBLOCK_HPP
 //!
 //! \file ComInterfaceBlock.hpp
 //!
@@ -19,7 +19,9 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QQueue>
 #include <BotBlock.hpp>
+#include <CtrlMail.hpp>
 
 //!
 //! Convert controller mails into instruction messages for devices.
@@ -29,8 +31,16 @@
 //!
 class ComInterfaceBlock : public BotBlock
 {
+	Q_OBJECT
 
 public:
+    //!
+    //! Default constructor
+    //!
+    ComInterfaceBlock(const QString& name = QString("cominterface"))
+        : BotBlock(name)
+		, _frequency(20)
+    { }
 
     //!
     //! Perform actions required to synchronize data and device
@@ -44,19 +54,19 @@ protected:
     //! Controller status
     QString _status;
 
-    //! Refresh frequence in Hz
+    //! Refresh frequency in Hz
     //! Number of time by the second the controller is going to wake up to refresh data.
-    quint32 _frequence;
+    quint32 _frequency;
 
-    //! Tx Fifo
-    //! Fifo of message that have to be treated
+    //! Tx queue
+    //! Queue of messages that have to be treated
     QQueue<CtrlMail> _fifoTx;
 
     //! Pointer on controllers
     //! Each controller is associated to a device id
-    QMap<quint16, QWeakPointer<ControllerBlock> > _controllers;
+    // QMap<quint16, QWeakPointer<ControllerBlock> > _controllers;
 
 };
 
 
-
+#endif // COMINTERFACEBLOCK_HPP

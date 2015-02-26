@@ -87,11 +87,23 @@ public:
     //!
     QSharedPointer<QJSEngine> engine() { return _jsEngine; }
 
-    //! To create the big block
+    // ========================================================================
+    // => Block father and block sons
+
+    //!
+    //! To create the core block
+    //!
     void createCoreBlock();
 
+    //!
     //! Core block getter
-    QSharedPointer<BotBlock> getCoreBlock() { return _coreBlock; }
+    //!
+    QSharedPointer<BotBlock> getCoreBlock()
+    {
+    	return _coreBlock;
+    }
+
+
 
     //! Return the name of the available blocks
     QStringList availableBlockNames();
