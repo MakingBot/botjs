@@ -23,7 +23,9 @@ var iii = interface1.blockNbSons;
 
 arduino_interface.blockTalk = true;
 
-interface1.doli();
+interface1.autoconfig();
+interface1.start();
+
 
 // Create the viewer3D
 // core.create("viewer3d", "viewer3d");

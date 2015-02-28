@@ -22,6 +22,7 @@ SET(PROJECT_HEADER_FILES
     core/controller/ControllerBlock.hpp
 
     core/cominterface/ComInterfaceBlock.hpp
+    core/cominterface/ComInterfaceThread.hpp
     )
 
 # Sources
@@ -33,6 +34,8 @@ SET(PROJECT_SOURCE_FILES
 
     core/block/BotBlock.cpp
     core/type/ShapeData.cpp
+
+    core/cominterface/ComInterfaceThread.cpp
     )
 
 ADD_DEFINITIONS( -DBOTJS_CORE_DEBUG_PRINT )

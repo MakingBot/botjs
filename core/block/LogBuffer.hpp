@@ -67,10 +67,6 @@ public:
 
         // Open stream on this file
         _filestream.setDevice( &_logfile );
-
-
-    	_coutstream << "1!!" << endl;
-
     }
     
     //!
@@ -86,8 +82,6 @@ public:
     //!
     void setId(const QString& id)
     {
-    	_coutstream << "id::" << endl;
-
     	_id = id;
     }
 
@@ -104,9 +98,6 @@ public:
     //!
     void setLogEnable(bool e)
     {
-    	_coutstream << "log::" << endl;
-
-
         if(e) { _logEnable = true;  }
         else  { _logEnable = false; }
     }
@@ -124,8 +115,6 @@ public:
     //!
     void setTalkEnable(bool e)
     {
-    	_coutstream << "talk::" << endl;
-
         if(e) { _talkEnable = true;  }
         else  { _talkEnable = false; }
     }
@@ -135,8 +124,6 @@ public:
     //!
     template<typename T> void streamlog( T val )
     {
-    	_coutstream << "lalallala!!" << endl;
-
         if( _logEnable )
         {
         	_filestream << val;

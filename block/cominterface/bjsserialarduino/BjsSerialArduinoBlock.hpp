@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QSerialPort>
 #include <QSerialPortInfo>
 #include <ComInterfaceBlock.hpp>
 
@@ -32,16 +33,13 @@ class BjsSerialArduinoBlock : public ComInterfaceBlock
 	Q_OBJECT
 
 public:
+
     //!
     //! Default constructor
     //!
     explicit BjsSerialArduinoBlock(const QString& name = QString("bjsserialarduino"))
         : ComInterfaceBlock(name)
-    {
-
-
-
-    }
+    { }
 
     // ========================================================================
     // => BotBlock redefinition
@@ -55,27 +53,91 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("bjsserialarduino"); }
 
-
 public slots:
 
-	void doli()
+	//!
+	//! FROM ComInterfaceBlock
+	//!
+	virtual void sync()
 	{
-		BLOCK_LOG( "dodldododo" );
+		// To increment counter that check the real time
+		ComInterfaceBlock::sync();
 
-		QList<QSerialPortInfo> list = QSerialPortInfo::availablePorts();
+		int numRead = 0;
+		char buffer[50];
 
-		foreach(QSerialPortInfo info, list)
+//
+//			while( _serial.bytesAvailable() < 50 )
+//			{ }
+		numRead  = _serial.read(buffer, 50);
+
+		for(int i=0 ; i<numRead ; i++)
 		{
-			BLOCK_LOG( info.portName() );
+			BLOCK_LOG(buffer[i]);
 		}
 	}
 
+	//!
+	//! Scan serial ports to detect the good serial port
+	//!
+	void autoconfig()
+	{
+		// Get every available serial port
+		QList<QSerialPortInfo> availablePorts = QSerialPortInfo::availablePorts();
+
+		bool ok = false;
+		QSerialPortInfo info_arduino;
+
+		foreach(const QSerialPortInfo& info, availablePorts)
+		{
+			if(info.manufacturer().contains("Arduino"))
+			{
+				ok = true;
+				info_arduino = info;
+			}
+		}
+
+		// Try with the first one
+		if(ok)
+		{
+			BLOCK_LOG("Port arduino found");
+			config(info_arduino);
+		}
+		else
+		{
+			BLOCK_LOG("Port arduino not found");
+		}
+	}
+
+	//!
+	//! Configuration the interface with the port information
+	//!
+	void config(QSerialPortInfo port_info)
+	{
+		// Try to open the port
+		_serial.setPortName( port_info.portName() );
+		if(!_serial.open(QIODevice::ReadWrite))
+		{
+			BLOCK_LOG( _serial.errorString() );
+			return;
+		}
+
+		// Configuration
+		_serial.setBaudRate(QSerialPort::Baud115200);
+		_serial.setDataBits(QSerialPort::Data8);
+		_serial.setParity(QSerialPort::NoParity);
+		_serial.setStopBits(QSerialPort::OneStop);
+		_serial.setFlowControl(QSerialPort::NoFlowControl);
+
+		// Log
+		BLOCK_LOG("Port OK: " << _serial.portName() << " - ( Manufacturer:" << port_info.manufacturer() << ")");
+	}
 
 protected:
 
-//    QString _serialPort;
-
-//    QSerialPortInfo  QList<QSerialPortInfo>  availablePorts()
+	//! Serial port
+	//! The serial port configuration
+	QSerialPort _serial;
 
 };
 

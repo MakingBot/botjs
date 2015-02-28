@@ -22,6 +22,7 @@
 #include <QQueue>
 #include <BotBlock.hpp>
 #include <CtrlMail.hpp>
+#include <ComInterfaceThread.hpp>
 
 //!
 //! Convert controller mails into instruction messages for devices.
@@ -31,36 +32,118 @@
 //!
 class ComInterfaceBlock : public BotBlock
 {
-	Q_OBJECT
+    Q_OBJECT
+    Q_PROPERTY(quint32 frequency READ frequency WRITE setFrequency MEMBER _frequency)
 
 public:
     //!
     //! Default constructor
     //!
     ComInterfaceBlock(const QString& name = QString("cominterface"))
-        : BotBlock(name)
-		, _frequency(20)
-    { }
+        : BotBlock(name), _enable(false), _counter(0)
+        , _thread(new ComInterfaceThread(this))
+    {
+
+        setFrequency(2);
+    }
+
+    //!
+    //! Status getter
+    //!
+    const QString& status()
+    {
+        return _status;
+    }
+
+    //!
+    //! Status setter
+    //!
+    void setStatus(const QString& sts)
+    {
+        _status = sts;
+
+        // emit
+    }
+
+    // ========================================================================
+    // => Property frequency
+
+    //!
+    //! Frequency getter
+    //!
+    quint32 frequency()
+    {
+    	return _frequency;
+    }
+
+    //!
+    //! Define the thread work frequency
+    //!
+    void setFrequency(quint32 f)
+    {
+        _frequency = f;
+        quint32 msSleepTime = 1000/_frequency;
+        _thread->setSyncInterval(msSleepTime);
+    }
+
+
+
+public slots:
+
+	//!
+	//! Start the communication interface
+	//!
+	void start()
+	{
+		_thread->start(QThread::HighestPriority);
+	}
 
     //!
     //! Perform actions required to synchronize data and device
     //!
-    virtual void doWork()
-    { }
+    virtual void sync()
+    {
+        _counter++;
+    }
 
+    //!
+    //! Check every second if sync function id really called with the good frequency
+    //!
+    void checkRealTime()
+    {
+        const int seuil = 1;
+        if( _counter < (_frequency-seuil) || (_frequency+seuil) < _counter )
+        {
+            setStatus("RealTime Error");
+        }
+        else
+        {
+            setStatus("RealTime OK");
+        }
+        // Reset the counter
+        _counter = 0;
+    }
 
 protected:
 
+    bool _enable;
+
     //! Controller status
     QString _status;
+
+    quint32 _counter;
 
     //! Refresh frequency in Hz
     //! Number of time by the second the controller is going to wake up to refresh data.
     quint32 _frequency;
 
+
     //! Tx queue
     //! Queue of messages that have to be treated
     QQueue<CtrlMail> _fifoTx;
+
+    //! Thread
+    QSharedPointer<ComInterfaceThread> _thread;
 
     //! Pointer on controllers
     //! Each controller is associated to a device id

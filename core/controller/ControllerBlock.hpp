@@ -19,8 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
+#include <BotBlock.hpp>
 
 //!
 //! A controller must synchronize data and real component through a communication interface

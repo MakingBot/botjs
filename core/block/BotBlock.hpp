@@ -125,9 +125,6 @@ public:
     //!
     virtual void blockInit()
     {
-        // Set the log buffer id with the id chain
-    	_logBuffer.setId( blockIdChain() );
-
         // Register type BotBlock*
         if( ! QMetaType::isRegistered(QMetaType::type("BotBlock*")) ) { qRegisterMetaType<BotBlock*>("BotBlock*"); }
     }
@@ -238,8 +235,6 @@ public:
     //!
     int blockNbSons() const
     {
-    	std::cout << "sonnnnn !!!" << std::endl;
-
     	return _sons.size();
     }
 
@@ -334,21 +329,17 @@ public:
     	// Initialize
     	_idChain = blockName();
 
-    	std::cout << _idChain.toStdString() << std::endl;
+    	// Get the father
+        QWeakPointer<BotBlock> next = blockFather();
+        while(next)
+        {
+        	// Prepare parent piece of chain
+        	QString chain = next.toStrongRef()->blockName() + '.';
+        	_idChain.insert(0, chain);
 
-//    	// Get the father
-//        QWeakPointer<BotBlock> next = blockFather();
-//        while(next)
-//        {
-//        	// Prepare parent piece of chain
-//        	QString chain = next.toStrongRef()->blockName() + '.';
-//        	_idChain.insert(0, chain);
-//
-//        	std::cout << _idChain.toStdString() << std::endl;
-//
-//        	// Get next parent
-//        	next = blockFather();
-//        }
+        	// Get next parent
+        	next = next.toStrongRef()->blockFather();
+        }
     }
 
     //!
@@ -409,6 +400,14 @@ public:
     // => Block log and talk
 
 	//!
+	//! LogId setter
+	//!
+	void setLogId(const QString& id)
+	{
+		_logBuffer.setId(id);
+	}
+
+	//!
     //! Log enable getter
     //!
     bool blockLog()
@@ -437,8 +436,6 @@ public:
     //!
     void setBlockTalk(bool e)
     {
-    	std::cout << "talk:: !!!" << std::endl;
-
     	_logBuffer.setTalkEnable(e);
     }
 
@@ -572,26 +569,21 @@ public slots:
 		// Check if the name already exist
 		if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
 		{
-			// BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
+			BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
 			return 0;
 		}
-
-    	std::cout << "un truc 1" << std::endl;
 
 		// Create block from the JsEngine
 		QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
 
-    	std::cout << "un truc 3" << std::endl;
-
 		// Add block to this sons
 		appendBlockSon(block);
-
-    	std::cout << "un truc 2" << std::endl;
 
 		// Set this as the block parent
 		block->setBlockFather(this);
 
-    	std::cout << "un truc 4" << std::endl;
+        // Set the log buffer id with the id chain
+		block->setLogId( blockIdChain() );
 
 		// Log
 		BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");
