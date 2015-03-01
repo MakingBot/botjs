@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <CtrlMail.hpp>
 #include <ControllerSensorBlock.hpp>
 
 //!
@@ -51,7 +52,20 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("bjsushcsr04ctrl"); }
 
+    // ========================================================================
+    // => ControllerBlock redefinition
 
+    virtual void newMail(CtrlMail& mail)
+    {
+
+
+    	quint16 value = ((quint8)mail.value[0]) | ((quint16)mail.value[1] << 8);
+
+        std::cout << value << std::endl;
+
+    	_datasensor.toStrongRef()->setBlockIPropertyValue(mail.propid, value);
+
+    }
 
 protected:
 

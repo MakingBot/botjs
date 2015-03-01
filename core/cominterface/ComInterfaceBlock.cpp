@@ -11,19 +11,17 @@
 bool ComInterfaceBlock::connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
 {
 
-    QWeakPointer<ControllerBlock> controller = qWeakPointerCast<ControllerBlock, BotBlock>(weakblock);
+
+    QSharedPointer<ControllerBlock> controller = qWeakPointerCast<ControllerBlock, BotBlock>(weakblock).toStrongRef();
     if(controller)
     {
-        return false;
+        _controllers[ controller->device() ] = controller.toWeakRef();   
+        return true;
     }
 
     // End
     return BotBlock::connectionHook(weakblock, master);
 }
 
-void ComInterfaceBlock::registerController(quint16 device, ControllerBlock* block)
-{
-    _controllers[device] = block->toSpecializedSharedPointer<ControllerBlock>();
-}
 
 

@@ -98,9 +98,10 @@ void SpyWidgetBody::updateStructure()
                 break;
 
             case IProperty::IPTypeInt:
-                std::cout << "here 2" << std::endl;
+                
 
                 widget = new QSpinBox();
+                ((QSpinBox*)widget)->setRange ( -0xFFFFF, 0xFFFFFF);
                 break;
 
             case IProperty::IPTypeReal:

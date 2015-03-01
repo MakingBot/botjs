@@ -475,6 +475,14 @@ public:
     }
 
     //!
+    //! Block
+    //!
+    void setBlockIPropertyValue(quint8 propid, const QVariant& value)
+    {
+    	this->setProperty(_iPropIds[propid].toStdString().c_str(), value);
+    }
+
+    //!
     //! To append an interactive property
     //!
     void appendBlockIProperty(const QString& pname, IProperty iprop)
@@ -487,6 +495,8 @@ public:
             // Append the property in the id map
             quint16 next_id = _iPropIds.size();
             _iPropIds.insert(next_id, pname);
+
+            std::cout << next_id << " --- " << _iPropIds[next_id].toStdString() << std::endl;
 
             // Log
             BLOCK_LOG("New property [" << next_id << "] - " << pname);

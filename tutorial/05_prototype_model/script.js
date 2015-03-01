@@ -11,6 +11,7 @@ var ddata = core.create("distancesensordata", "distance_data");
 ddata.blockTalk = true;
 
 var controller = core.create("bjsushcsr04ctrl", "us_controller");
+controller.device = 1;
 controller.blockTalk = true;
 
 
@@ -29,7 +30,7 @@ arduino_interface.frequency = 50;
 
 
 interface1.autoconfig();
-//interface1.start();
+interface1.start();
 
 
 

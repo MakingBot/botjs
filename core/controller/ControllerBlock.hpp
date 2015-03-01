@@ -30,13 +30,23 @@ class ControllerBlock : public BotBlock
 {
 	Q_OBJECT
 
+    Q_PROPERTY(quint16 device READ device WRITE setDevice MEMBER _device)
+
 public:
 
     //!
     //! Default constructor
     //!
     explicit ControllerBlock(const QString& name = QString("controller"))
-        : BotBlock(name)
+        : BotBlock(name), _device(0)
+    {
+
+    }
+
+    //!
+    //!
+    //!
+    virtual void newMail(CtrlMail& mail)
     { }
 
 //    //! FROM BotBlock
@@ -46,6 +56,27 @@ public:
 //        // End
 //        return BotBlock::connectionHook(weakblock, master);
 //    }
+
+    // ========================================================================
+    // => Property device
+
+    //!
+    //! Device getter
+    //!
+    quint16 device()
+    {
+        return _device;
+    }
+
+    //!
+    //! Device setter
+    //!
+    void setDevice(quint16 device)
+    {
+        _device = device;
+        emit blockiPropertyValuesChanged();
+    }
+
 
 protected:
 

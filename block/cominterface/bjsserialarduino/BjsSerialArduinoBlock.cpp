@@ -19,7 +19,36 @@
 
 #include <BjsSerialArduinoBlock.hpp>
 
+#include <ControllerBlock.hpp>
+
 /* ============================================================================
  *
  * */
 EXPORT_BLOCK(BjsSerialArduinoBlock)
+
+
+/* ============================================================================
+ *
+ * */
+void BjsSerialArduinoBlock::interpret(QByteArray& array)
+{
+	if(array.size() != ARDUINO_MESSAGE_SIZE)
+	{
+		BLOCK_LOG("fail size = " << array.size()  );
+		return;
+	}
+
+	CtrlMail mail;
+	mail.device = (quint16)array[0];
+	mail.propid = (quint8) array[1];
+
+//	int mode = array[2];
+//	mail.mode = () mode;
+
+	array.remove(0, 3);
+	array.remove(4, 4);
+    mail.value  = array;
+
+    _controllers[mail.device].toStrongRef()->newMail(mail);
+}
+

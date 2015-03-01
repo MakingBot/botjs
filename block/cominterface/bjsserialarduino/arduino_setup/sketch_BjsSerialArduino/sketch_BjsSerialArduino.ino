@@ -33,7 +33,7 @@ struct mail
 // => Loop Parameters
 
 //! 
-#define DELAY_LOOP   200
+#define DELAY_LOOP   50
 
 // ========================================================================
 // => HC_SR04 Parameters

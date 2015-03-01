@@ -52,8 +52,11 @@ public:
     virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
     {
 
+
+        // qSharedPointerObjectCast ( const QSharedPointer<T> & other )
+
         QWeakPointer<SensorDataBlock> sensordata = qWeakPointerCast<SensorDataBlock, BotBlock>(weakblock);
-        if(sensordata)
+        if(sensordata.toStrongRef()->blockTypeName().compare("distancesensordata") == 0)
         {
             _datasensor = sensordata;
         }

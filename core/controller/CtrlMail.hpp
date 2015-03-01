@@ -20,6 +20,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtGlobal>
+#include <QByteArray>
 
 //!
 //! Message to communicate between controllers and communication interface
@@ -33,20 +34,17 @@ public:
 
     enum MsgModeFlag : quint8 { Read = 0x00, Write = 0x01 };
 
-
-protected:
-
     //! Device id
-    quint16 _device;
+    quint16 device;
 
     //! Property id
-    quint8  _propid;
+    quint8  propid;
 
     //! Mode
-    MsgModeFlag _mode;
+    MsgModeFlag mode;
 
     //! 4 bytes value
-    QByteArray _value;
+    QByteArray value;
 
 };
 

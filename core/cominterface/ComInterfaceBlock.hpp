@@ -105,8 +105,6 @@ public:
 
 public slots:
 
-    void registerController(quint16 device, ControllerBlock* block);
-
 	//!
 	//! Start the communication interface
 	//!
