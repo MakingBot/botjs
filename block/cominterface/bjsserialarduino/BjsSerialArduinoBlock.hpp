@@ -19,9 +19,12 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QByteArray>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <ComInterfaceBlock.hpp>
+
+#define ARDUINO_MESSAGE_SIZE 11
 
 //!
 //! Communication interface for custom Arduino configuration
@@ -60,21 +63,91 @@ public slots:
 	//!
 	virtual void sync()
 	{
+
+		int  numRead = 0;
+		char tmpbuffer[5*ARDUINO_MESSAGE_SIZE];
+
 		// To increment counter that check the real time
 		ComInterfaceBlock::sync();
 
-		int numRead = 0;
-		char buffer[50];
-
-//
-//			while( _serial.bytesAvailable() < 50 )
-//			{ }
-		numRead  = _serial.read(buffer, 50);
-
+		// Read
+		numRead = _serial.read(tmpbuffer, 5*ARDUINO_MESSAGE_SIZE);
 		for(int i=0 ; i<numRead ; i++)
 		{
-			BLOCK_LOG(buffer[i]);
+			_buffer += tmpbuffer[i];
 		}
+
+		// Convert Rx buffer data into control mails
+		if( !_buffer.isEmpty() )
+		{
+			if( _buffer.size() >= ARDUINO_MESSAGE_SIZE )
+			{
+				parseMessage();
+			}
+		}
+	}
+
+	//!
+	//! To parse one message
+	//!
+	void parseMessage()
+	{
+		int i = 0;
+		int counter = 0;
+		QByteArray array;
+
+		while( (counter < 4) && (i < _buffer.size()) )
+		{
+			if(_buffer[i] == ';')
+			{
+				counter++;
+			}
+			else
+			{
+				counter=0;
+
+			}
+
+			array += _buffer[i];
+//			BLOCK_LOG("counter = " << counter << " element = " << _buffer[i]  );
+
+
+			i++;
+		}
+
+		_buffer.remove(0, array.size());
+		interpret(array);
+	}
+
+	//!
+	//! To interpret a incoming message
+	//!
+	void interpret(QByteArray& array)
+	{
+		if(array.size() != ARDUINO_MESSAGE_SIZE)
+		{
+			BLOCK_LOG("fail size = " << array.size()  );
+			return;
+		}
+		int device = (int)array[0];
+		int id = (int)array[1];
+		int mode = (int)array[2];
+
+		array.remove(0, 3);
+		array.remove(4, 4);
+
+
+//		BLOCK_LOG(" size = " << array.size()  );
+//
+		for(int i=0 ; i<4 ; i++)
+		{
+			BLOCK_LOG( i << " = " << (quint8)array[i] );
+		}
+
+		unsigned int lenght = ((quint8)array[0]) | ((quint16)(array[1]<<8)) ;
+
+		BLOCK_LOG("device: " << device << " id: " << id <<  " mode: " << mode  << "  value:" << lenght );
+
 	}
 
 	//!
@@ -134,6 +207,10 @@ public slots:
 	}
 
 protected:
+
+	//! Buffer
+	//! Temporary Rx buffer
+	QByteArray _buffer;
 
 	//! Serial port
 	//! The serial port configuration

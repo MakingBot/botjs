@@ -19,7 +19,7 @@
 //! Mail structure
 struct mail
 {
-  word device;
+  byte device;
   byte propid;
   byte mode;
   
@@ -33,7 +33,7 @@ struct mail
 // => Loop Parameters
 
 //! 
-#define DELAY_LOOP   40
+#define DELAY_LOOP   200
 
 // ========================================================================
 // => HC_SR04 Parameters
@@ -49,7 +49,7 @@ struct mail
 //! Arduino pin tied to echo pin on the ultrasonic sensor.
 #define ECHO_PIN     11
 //! Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-#define MAX_DISTANCE 200
+#define MAX_DISTANCE 500
 
 //! Mail
 struct mail HcSr04Mail;
@@ -66,8 +66,8 @@ void prepareMail(struct mail* mel, unsigned int value)
   {
     const int shift = (i*8);
     unsigned int cast = ( value & (0xFF<<shift) ) >> shift; 
-    mel->data[i] = (byte)cast;
-  }
+    mel->data[i] = byte(cast);
+ }
 }
 
 //!
@@ -79,10 +79,12 @@ void sendMail(struct mail* mel)
   Serial.write(mel->device);
   Serial.write(mel->propid);
   Serial.write(mel->mode);
-  for(i=0 ; i<4 ; i++)
-  {
-    Serial.write(mel->data[i]);
-  }
+ 
+  Serial.write(mel->data[0]);
+  Serial.write(mel->data[1]);
+  Serial.write(mel->data[2]);
+  Serial.write(mel->data[3]);
+  
   Serial.write(";;;;", 4);
 }
 

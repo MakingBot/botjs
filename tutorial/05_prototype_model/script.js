@@ -23,6 +23,8 @@ var iii = interface1.blockNbSons;
 
 arduino_interface.blockTalk = true;
 
+arduino_interface.frequency = 50;
+
 interface1.autoconfig();
 interface1.start();
 
