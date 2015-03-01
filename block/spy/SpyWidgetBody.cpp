@@ -22,7 +22,7 @@
 /* ============================================================================
  *
  * */
-SpyWidgetBody::SpyWidgetBody(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
+SpyWidgetBody::SpyWidgetBody(SpyBlock*  spy_block, QWidget* parent)
     : QWidget(parent), _spyblock(spy_block)
 {
     new QFormLayout(this);
@@ -60,11 +60,14 @@ void SpyWidgetBody::updateStructure()
     destroyStructure();
 
     // Check the spied block pointer
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
     if(!spied) { return; }
-    
+
     // Get properties
+    const QMap<quint16, QString>& propids = spied->iPropIds();
     const QMap<QString, IProperty>& properties = spied->iProperties();
+
+
 
     // Go through properties
     QMapIterator<QString, IProperty> property(properties);
@@ -73,6 +76,10 @@ void SpyWidgetBody::updateStructure()
         // New property, new widget
         property.next();
         QWidget* widget = 0;
+
+
+        std::cout << property.key().toStdString() << std::endl;
+
 
         // Create the widget in function of the property type
         switch(property.value().type())
@@ -91,6 +98,8 @@ void SpyWidgetBody::updateStructure()
                 break;
 
             case IProperty::IPTypeInt:
+                std::cout << "here 2" << std::endl;
+
                 widget = new QSpinBox();
                 break;
 
@@ -188,7 +197,10 @@ void SpyWidgetBody::updateStructure()
  * */
 void SpyWidgetBody::updateValues()
 {
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     if(spied)
     {
         // Get properties
@@ -225,6 +237,13 @@ void SpyWidgetBody::updateValues()
                         }
                     }
                     break;
+
+                case IProperty::IPTypeInt:
+
+                     ((QSpinBox*)widget.value())->setValue( spied->property(widget.key().toStdString().c_str()).toInt() );
+
+
+                     break;
 
                 case IProperty::IPTypeReal:
                     ((QDoubleSpinBox*)widget.value())->setValue( spied->property(widget.key().toStdString().c_str()).toDouble() );
@@ -280,9 +299,11 @@ void SpyWidgetBody::updateValues()
  * */
 void SpyWidgetBody::onLineTextEdited(const QString& text)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -321,9 +342,10 @@ void SpyWidgetBody::onLineTextEdited(const QString& text)
  * */
 void SpyWidgetBody::onComboBoxBool(const QString& text)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -364,9 +386,10 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
  * */
 void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -405,9 +428,10 @@ void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
  * */
 void SpyWidgetBody::onListModified(QList<qreal>& new_value)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -446,9 +470,10 @@ void SpyWidgetBody::onListModified(QList<qreal>& new_value)
  * */
 void SpyWidgetBody::onVector3DEdit(const QVector3D& new_value)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -486,9 +511,10 @@ void SpyWidgetBody::onVector3DEdit(const QVector3D& new_value)
  * */
 void SpyWidgetBody::onVector4DEdit(const QVector4D& new_value)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();
@@ -526,9 +552,10 @@ void SpyWidgetBody::onVector4DEdit(const QVector4D& new_value)
  * */
 void SpyWidgetBody::onDoubleSpinBoxChange(double new_value)
 {
-    // Get spied
-    QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
-    if(!spied) { return; }
+    // Check the spied block pointer
+    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
+    if(!wspied) { return; }
+    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
     
     // Get sender
     QObject* sender = QObject::sender();

@@ -43,23 +43,38 @@ public:
         appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
     }
 
+    //!
     //! Widget visibility getter
-    virtual bool visible() { return _visible; }
+    //!
+    virtual bool visible()
+    {
+        return _visible;
+    }
     
+    //!
     //! Widget visibility setter
-    virtual void setVisible(bool visible) { if(visible) show(); else hide(); }
+    //!
+    virtual void setVisible(bool visible)
+    {
+        if(visible) show(); else hide();
+    }
 
 public slots:
 
+    //!
     //! Widget visibility setter
+    //!
     virtual void show()
     {
+        
         _widget->show();
         _visible = true;
         emit blockiPropertyValuesChanged();
     }
 
+    //!
     //! Widget visibility setter
+    //!
     virtual void hide()
     {
         _widget->hide();

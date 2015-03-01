@@ -20,7 +20,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ControllerBlock.hpp>
-//#include <SensorDataBlock.hpp>
+#include <SensorDataBlock.hpp>
 
 //!
 //!
@@ -43,48 +43,38 @@ public:
     // ========================================================================
     // => BotBlock redefinition
 
-//    //! FROM BotBlock
-//    virtual BlockRole blockRole() const { return BotBlock::BlockController; }
+    //! FROM BotBlock
+    virtual BlockRole blockRole() const { return BotBlock::BlockController; }
 
-//    //!
-//    //! Hook on the connection process
-//    //!
-//    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
-//    {
-//
-//
-//        // End
-//        return ControllerBlock::connectionHook(weakblock, master);
-//    }
-//
-//    //!
-//    //! Hook on the disconnection process
-//    //!
-//    virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
-//    {
-//
-//        return true;
-//    }
+    //!
+    //! Hook on the connection process
+    //!
+    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+    {
 
-    // ========================================================================
-    // => Block data initialization
+        QWeakPointer<SensorDataBlock> sensordata = qWeakPointerCast<SensorDataBlock, BotBlock>(weakblock);
+        if(sensordata)
+        {
+            _datasensor = sensordata;
+        }
 
-//    //!
-//    //!
-//    //!
-//    virtual void iniSensorData()
-//    { }
-//
-//    //!
-//    //!
-//    //!
-//    virtual void clearSensorData()
-//    { }
+        // End
+        return ControllerBlock::connectionHook(weakblock, master);
+    }
+
+    //!
+    //! Hook on the disconnection process
+    //!
+    virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+    {
+
+        return true;
+    }
 
 protected:
 
     //! Data sensor connection
-//    QWeakPointer<SensorDataBlock> _datasensor;
+    QWeakPointer<SensorDataBlock> _datasensor;
 
 };
 

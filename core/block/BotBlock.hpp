@@ -486,7 +486,14 @@ public:
             
             // Append the property in the id map
             quint16 next_id = _iPropIds.size();
-            _iPropIds[next_id] = pname;
+            _iPropIds.insert(next_id, pname);
+
+            // Log
+            BLOCK_LOG("New property [" << next_id << "] - " << pname);
+        }
+        else
+        {
+        	BLOCK_LOG("Property " << pname << " already exists")
         }
     }
     
@@ -609,7 +616,7 @@ public slots:
 		block->setBlockFather(this);
 
         // Set the log buffer id with the id chain
-		block->setLogId( blockIdChain() );
+		block->setLogId( block->blockIdChain() );
 
 		// Log
 		BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");
@@ -646,7 +653,7 @@ public slots:
             if(!block->co(this, false))
             {
                 // Log and return
-                BLOCK_LOG("Connection to #" << block->blockIdChain() << "# failure: connection return refused");
+                BLOCK_LOG("Connection to #" << block->blockIdChain() << "# failure: it refused the connection");
                 return false;
             }
         }
@@ -664,10 +671,17 @@ public slots:
         {
             // Disconnect from the block
             block->dco(this, false);
+            return false;
         }
 
-        // Log and return
-        BLOCK_LOG("Connection to #" << block->blockIdChain() << "#");
+        if(master)
+        {
+            BLOCK_LOG("Connection as master to #" << block->blockIdChain() << "# success");
+        }
+        else
+        {
+            BLOCK_LOG("Connection as slave  to #" << block->blockIdChain() << "# success");    
+        }
         return true;
     }
 

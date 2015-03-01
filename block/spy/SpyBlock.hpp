@@ -23,7 +23,7 @@
 #include <SpyWidget.hpp>
 
 //!
-//! The Spy Block povide a way to get and modify block properties and data 
+//! The Spy Block provides a way to get and modify block properties and data
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
@@ -31,14 +31,15 @@ class SpyBlock : public GuiBlock
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString spiedBlockName READ getSpiedBlockName                        )
-
 public:
 
     //!
     //! Default constructor
     //!
     explicit SpyBlock(const QString& name = QString("spy"));
+
+    // ========================================================================
+    // => BotBlock redefinition
 
     //! FROM BotBlock
     virtual float blockVersion() const { return 1.0; }
@@ -49,56 +50,33 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("spy"); }
 
+    //! FROM BotBlock
+    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
+    //! FROM BotBlock
+    virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
-
-    //!
-    //! Create the widget if it is not
-    //!
-    void createWidgetIfRequired()
-    {
-        if(!_widget) {
-            _widget = QSharedPointer<SpyWidget>( new SpyWidget( qSharedPointerObjectCast<SpyBlock, BotBlock>(this->toBlockSharedPointer()) ) );
-        }
-    }
-
-
+    // ========================================================================
+    // => Property spied block
 
     //!
     //! Weak pointer on the spied block
     //!
-    QWeakPointer<BotBlock> getWeakSpiedBlock() { return _spiedBlock; }
-
-    //!
-    //! Shared pointer on the spied block
-    //!
-    QSharedPointer<BotBlock> getSharedSpiedBlock()
-    {
-        if(_spiedBlock) { return _spiedBlock.toStrongRef();   }
-        else            { return QSharedPointer<BotBlock>(0); }
-    }
-
-    //!
-    //! Spied block name getter
-    //!
-    const QString getSpiedBlockName()
-    {
-        QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
-        if(spied) { return spied->blockName(); } return QString();
-    }
+    QWeakPointer<BotBlock> weakSpiedBlock()
+	{
+    	return _spiedBlock;
+	}
 
 signals:
 
+	//!
     //! Emitted when the spied block has changed
-    void spiedBlockChanged();
+    //!
+	void spiedBlockChanged();
 
 public slots:
 
 protected:
-
-    //! Widget
-    //! Widget for the view
-    QSharedPointer<SpyWidget> _widget;
 
     //! Spied
     //! Pointer on the spied block

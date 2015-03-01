@@ -24,6 +24,8 @@
 #include <CtrlMail.hpp>
 #include <ComInterfaceThread.hpp>
 
+class ControllerBlock;
+
 //!
 //! Convert controller mails into instruction messages for devices.
 //! Each device must be registered with the communication interface.
@@ -46,6 +48,21 @@ public:
 
         setFrequency(2);
     }
+
+    // ========================================================================
+    // => BotBlock redefinition
+
+    //! FROM BotBlock
+    bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
+
+    //! FROM BotBlock
+    bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+    {
+
+        // End
+        return BotBlock::disconnectionHook(weakblock, master);
+    }
+
 
     //!
     //! Status getter
@@ -86,9 +103,9 @@ public:
         _thread->setSyncInterval(msSleepTime);
     }
 
-
-
 public slots:
+
+    void registerController(quint16 device, ControllerBlock* block);
 
 	//!
 	//! Start the communication interface
@@ -126,17 +143,18 @@ public slots:
 
 protected:
 
+    //!
     bool _enable;
 
     //! Controller status
     QString _status;
 
+    //!
     quint32 _counter;
 
     //! Refresh frequency in Hz
     //! Number of time by the second the controller is going to wake up to refresh data.
     quint32 _frequency;
-
 
     //! Tx queue
     //! Queue of messages that have to be treated
@@ -147,7 +165,7 @@ protected:
 
     //! Pointer on controllers
     //! Each controller is associated to a device id
-    // QMap<quint16, QWeakPointer<ControllerBlock> > _controllers;
+    QMap<quint16, QWeakPointer<ControllerBlock> > _controllers;
 
 };
 

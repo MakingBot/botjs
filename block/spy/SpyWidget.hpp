@@ -41,23 +41,8 @@ public:
     //!
     //! Default constructor
     //!
-    explicit SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget *parent = 0);
+    explicit SpyWidget(SpyBlock* parent_block, QWidget *parent = 0);
 
-    //!
-    //! Pointer on the parent spy block
-    //!
-    QSharedPointer<SpyBlock> getSharedSpyBlock()
-    {
-        if(_spyblock) { return _spyblock.toStrongRef();     }
-        else          { throw std::runtime_error("This widget need a parent spy block"); }
-        //return QSharedPointer<SpyBlock>();
-    }
-    
-    //!
-    //! Pointer on the spied block
-    //!
-    QSharedPointer<BotBlock> getSharedSpiedBlock();
-    
 public slots:
     //!
     //! When the spied change
@@ -65,7 +50,7 @@ public slots:
 
 protected:
     //! Parent block
-    QWeakPointer<SpyBlock> _spyblock;
+    SpyBlock* _spyblock;
 
     //! Information header
     SpyWidgetHeader _header;

@@ -36,19 +36,12 @@ public:
     //!
     //! Default constructor
     //!
-    SpyWidgetBody(QWeakPointer<SpyBlock> spy_block, QWidget* parent=0);
+    SpyWidgetBody(SpyBlock* spy_block, QWidget* parent=0);
 
     //! FROM QWidget
     void paintEvent(QPaintEvent *event);
 
-    //!
-    //! Pointer on the parent spy block
-    //!
-    QSharedPointer<SpyBlock> getSharedSpyBlock()
-    {
-        if(_spyblock) { return _spyblock.toStrongRef(); }
-        else          { throw std::runtime_error("This widget need a parent spy block"); }
-    }
+
     
 public slots:
 
@@ -80,11 +73,12 @@ public slots:
     void onDoubleSpinBoxChange(double);
 
 protected:
-    //! Map that contains widget of each property
-    QMap<QString, QWidget*> _widgetMap;
 
     //! Parent block
-    QWeakPointer<SpyBlock>   _spyblock;
+    SpyBlock* _spyblock;
+
+    //! Map that contains widget of each property
+    QMap<QString, QWidget*> _widgetMap;
 
     //! Delete all current widgets
     void destroyStructure();

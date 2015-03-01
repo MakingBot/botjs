@@ -31,20 +31,21 @@
 /* ============================================================================
  *
  * */
-SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
+SpyWidget::SpyWidget(SpyBlock* parent_block, QWidget* parent)
     : QWidget(parent)
-    , _spyblock         (spy_block)
-    , _header           (spy_block)
-    , _body             (spy_block)
-    , _footer           (spy_block)
+    , _spyblock         (parent_block)
+    , _header           (parent_block)
+    , _body             (parent_block)
+    , _footer           (parent_block)
 {
     // Basic verification
-    if(!getSharedSpyBlock()) {
+    if(!_spyblock)
+    {
         throw std::runtime_error("Spy widget has been created without a parent spy block");
     }
 
     // Window configuration
-    setWindowTitle("SpyBlock: " + getSharedSpyBlock()->blockName());
+    setWindowTitle("SpyBlock: " + _spyblock->blockName());
 
     // Create layout
     new QGridLayout(this);
@@ -56,15 +57,7 @@ SpyWidget::SpyWidget(QWeakPointer<SpyBlock> spy_block, QWidget* parent)
     ((QGridLayout*)layout())->addWidget(&_footer, 2, 0, Qt::AlignBottom);
     
     // Connect update signals
-    connect(getSharedSpyBlock().data(), SIGNAL(spiedBlockChanged()), this, SLOT(onSpiedBlockChange()));
-}
-
-/* ============================================================================
- *
- * */
-QSharedPointer<BotBlock> SpyWidget::getSharedSpiedBlock()
-{
-    return getSharedSpyBlock()->getSharedSpiedBlock();
+    connect(_spyblock, SIGNAL(spiedBlockChanged()), this, SLOT(onSpiedBlockChange()));
 }
 
 /* ============================================================================
@@ -77,12 +70,14 @@ void SpyWidget::onSpiedBlockChange()
     _footer.onSpiedBlockChange();
 
     // Build the new one
-    QSharedPointer<BotBlock> spied = getSharedSpiedBlock();
+    QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
     if(spied)
     {        
-        // Connect events
-        connect( spied.data(), SIGNAL(blockfPropertyValuesChanged  ()), &_header, SLOT(updateValues()) );
+        // Connect events to the header
+        connect( spied.data(), SIGNAL(blockFamilyChanged     ()), &_header, SLOT(updateValues()) );
+    	connect( spied.data(), SIGNAL(blockConnectionsChanged()), &_header, SLOT(updateValues()) );
 
+        // Connect events to the body
         connect( spied.data(), SIGNAL(blockiPropertyValuesChanged   ()), &_body  , SLOT(updateValues   ()) );
         connect( spied.data(), SIGNAL(blockiPropertyStructureChanged()), &_body  , SLOT(updateStructure()) );
     }
@@ -96,10 +91,7 @@ void SpyWidget::closeEvent(QCloseEvent* event)
     if(_spyblock)
     {
         //
-        QSharedPointer<SpyBlock> spyblock = _spyblock.toStrongRef();
-        
-        //
-        spyblock->hide();
+        _spyblock->hide();
         
         //
         event->ignore();

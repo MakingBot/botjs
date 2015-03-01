@@ -30,64 +30,62 @@ EXPORT_BLOCK(SpyBlock)
 SpyBlock::SpyBlock(const QString& name)
     : GuiBlock(name)
 {
-    appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
+    // Create the spy widget
+    _widget = qSharedPointerObjectCast<QWidget, SpyWidget>( QSharedPointer<SpyWidget>( new SpyWidget(this) ) );
 }
 
 /* ============================================================================
  *
  * */
-// bool SpyBlock::connect(BotBlock* block, bool master)
-// {
-    // // Basic checks
-    // if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
-    // if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
+bool SpyBlock::connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+{
+	// get a strong reference
+	QSharedPointer<BotBlock> block = weakblock.toStrongRef();
+
+	// This block ask for a connection
+	if(master)
+	{
+		// Disconnect old
+		if(_spiedBlock)
+		{
+			this->dco(_spiedBlock.data());
+		}
+
+		// Track the new spied block
+		_spiedBlock = block->toBlockWeakPointer();
+
+		// Alert the view
+		emit spiedBlockChanged();
+	}
+	// Other block ask for a connection
+	else
+	{
+		// If an other spy ask for a connection accept it
+		QSharedPointer<SpyBlock> spy = qSharedPointerObjectCast<SpyBlock, BotBlock>(block);
+		if(!spy)
+		{
+			BLOCK_LOG("Connection from #" << block->blockIdChain() << "# refused: it is not a spy block");
+			return false;
+		}
+	}
+
+	// End
+	return BotBlock::connectionHook(weakblock, master);
+}
+
+/* ============================================================================
+ *
+ * */
+bool SpyBlock::disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+{
+
+	// End
+	return BotBlock::disconnectionHook(weakblock, master);
+}
 
 
-    // // This block ask for a connection
-    // if(master)
-    // {
-    //     // Ask for connection back
-    //     if(! block->connect(this, false))
-    //     {
-    //         // Log and return
-    //         beglog() << "Connection to " << block->getBlockFathersChain() << " failure: connection return refused" << endlog();
-    //         return false;
-    //     }
 
-    //     // Disconnect old
-    //     if(_spiedBlock)
-    //     {
-    //         this->disconnect(_spiedBlock.data());
-    //     }
 
-    //     // Check widget creation
-    //     createWidgetIfRequired();
-
-    //     // Track the new spied block
-    //     _spiedBlock = block->toBlockWeakPointer();
-
-    //     // Alert the view
-    //     emit spiedBlockChanged();
-
-    //     // Log and return
-    //     beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
-    //     return true;
-    // }
-    // // Other block ask for a connection
-    // else
-    // {
-    //     // If an other spy ask for a connection accept it
-    //     SpyBlock* spy = qobject_cast<SpyBlock*>(block);
-    //     if(spy)
-    //     {
-    //         // Use main connect function
-    //         return BotBlock::connect(block, master);            
-    //     }
-
-    //     // Log and return
-    //     beglog() << "Connection from #" << block->getBlockFathersChain() << "# refused: it is not a spy block" << endlog();
-    //     return false;
-    // }
 // }
 
 /* ============================================================================

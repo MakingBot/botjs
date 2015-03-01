@@ -19,19 +19,11 @@ public:
     //!
     //! Default constructor
     //!
-    explicit SpyWidgetHeader(QWeakPointer<SpyBlock> spy_block, QWidget *parent = 0);
+    explicit SpyWidgetHeader(SpyBlock* spy_block, QWidget *parent = 0);
 
     //! FROM QWidget
     void paintEvent(QPaintEvent *event);
 
-    //!
-    //! Pointer on the parent spy block
-    //!
-    QSharedPointer<SpyBlock> getSharedSpyBlock()
-    {
-        if(_spyblock) { return _spyblock.toStrongRef(); }
-        else          { throw std::runtime_error("This widget need a parent spy block"); }
-    }
 
 public slots:
 
@@ -75,7 +67,7 @@ protected:
 
 
     //! Parent block
-    QWeakPointer<SpyBlock> _spyblock;
+    SpyBlock*  _spyblock;
 
 
 };

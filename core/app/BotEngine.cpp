@@ -179,32 +179,32 @@ QStringList BotEngine::availableBlockNames()
 }
 
 /* ============================================================================
- * TODO Create a cash system
+ * TODO create cash system
  * */
-QStringList BotEngine::getAllFatherChains()
+void BotEngine::allIdChains(QStringList& chains)
 {
-    // Result chain
-    QStringList chains;
+    // Clear chains
+    chains.clear();
 
     // Create stack and store the core block to start
     QStack<QSharedPointer<BotBlock> > blocks;
-    blocks.push(_coreBlock); 
+    blocks.push(_coreBlock);
 
-    // Block after block    
+    // Block after block
     while(!blocks.isEmpty())
     {
         // Get the current block
         QSharedPointer<BotBlock> block = blocks.pop();
 
-        // Get its father chain
-        //chains << block->getBlockFathersChain();
+        // Get its id chain
+        chains << block->blockIdChain();
 
-        //! Add every son
-//        foreach(QSharedPointer<BotBlock> son, block->getBlockSons())
-//        {
-//            blocks.push(son);
-//        }
+        // Add every son
+        QMapIterator<QString, QSharedPointer<BotBlock> > son(block->blockSons());
+        while(son.hasNext())
+        {
+        	son.next();
+        	blocks.push(son.value());
+        }
     }
-    // Return
-    return chains;
 }

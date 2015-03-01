@@ -30,14 +30,18 @@ class DistanceSensorDataBlock : public SensorDataBlock
 {
     Q_OBJECT
 
+    Q_PROPERTY(quint16 distancemm READ distancemm WRITE setDistancemm MEMBER _distancemm)
+
 public:
 
     //!
     //! Default constructor
     //!
     explicit DistanceSensorDataBlock(const QString& name = QString("distancesensordata"))
-        : SensorDataBlock(name)
-    { }
+        : SensorDataBlock(name), _distancemm(0)
+    {
+    	appendBlockIProperty("distancemm", IProperty(IProperty::IPTypeInt, false));
+    }
 
     // ========================================================================
     // => BotBlock redefinition
@@ -48,7 +52,36 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("distancesensordata"); }
 
+    //! FROM BotBlock
+    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
+    //! FROM BotBlock
+    virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master);
+
+    // ========================================================================
+    // => Property distance mm
+
+    //!
+    //! Distance in mm getter
+    //!
+    quint16 distancemm()
+    {
+    	return _distancemm;
+    }
+
+    //!
+    //! Distance in mm setter
+    //!
+    void setDistancemm(quint16 dist)
+    {
+    	_distancemm = dist;
+    	emit blockiPropertyValuesChanged();
+    }
+
+protected:
+
+    //! Distance in mm
+    quint16 _distancemm;
 
 };
 

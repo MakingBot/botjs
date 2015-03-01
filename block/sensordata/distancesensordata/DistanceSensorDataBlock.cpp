@@ -23,3 +23,24 @@
  *
  * */
 EXPORT_BLOCK(DistanceSensorDataBlock)
+
+
+/* ============================================================================
+ *
+ * */
+bool DistanceSensorDataBlock::connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+{
+
+	// End
+	return BotBlock::connectionHook(weakblock, master);
+}
+
+/* ============================================================================
+ *
+ * */
+bool DistanceSensorDataBlock::disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+{
+
+	// End
+	return BotBlock::disconnectionHook(weakblock, master);
+}

@@ -40,16 +40,7 @@ public:
     //!
     //! Default constructor
     //!
-    explicit SpyWidgetFooter(QWeakPointer<SpyBlock> spy_block, QWidget *parent = 0);
-
-    //!
-    //! Pointer on the parent spy block
-    //!
-    QSharedPointer<SpyBlock> getSharedSpyBlock()
-    {
-        if(_spyblock) { return _spyblock.toStrongRef(); }
-        else          { throw std::runtime_error("This widget need a parent spy block"); }
-    }
+    explicit SpyWidgetFooter(SpyBlock* spy_block, QWidget *parent = 0);
 
 public slots:
 
@@ -78,14 +69,14 @@ protected:
     //! Button to create a son to the spied block
     QPushButton _buttonCreate;
 
-    // Combobox to select an other spied block
+    // ComboBox to select an other spied block
     QComboBox   _cbSpiedBlock;
 
     //! Current selection of the combo box
     int _currentValidSelection;
     
     //! Parent block
-    QWeakPointer<SpyBlock> _spyblock;
+    SpyBlock*  _spyblock;
 };
 
 #endif // SPYWIDGETFOOTER_HPP

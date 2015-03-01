@@ -49,7 +49,8 @@ public:
 
 protected:
 
-
+    //! Device id
+    quint16 _device;
 
     //! Pointer on the interface used
     // QWeakPointer<ComInterfaceBlock> _interface;

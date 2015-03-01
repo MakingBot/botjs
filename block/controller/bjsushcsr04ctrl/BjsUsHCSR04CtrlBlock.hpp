@@ -21,8 +21,6 @@
 
 #include <ControllerSensorBlock.hpp>
 
-#include <ControllerBlock.hpp>
-
 //!
 //!
 //!
@@ -38,7 +36,7 @@ public:
     //! Default constructor
     //!
     explicit BjsUsHCSR04CtrlBlock(const QString& name = QString("bjsushcsr04ctrl"))
-        : ControllerSensorBlock(name), _distancemm(0)
+        : ControllerSensorBlock(name)
     { }
 
     // ========================================================================
@@ -53,29 +51,10 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("bjsushcsr04ctrl"); }
 
-    // ========================================================================
-    // => Property distance mm
 
-    //!
-    //! Distance in mm getter
-    //!
-    quint16 distancemm()
-    {
-    	return _distancemm;
-    }
-
-    //!
-    //! Distance in mm setter
-    //!
-    void setDistancemm(quint16 dist)
-    {
-    	_distancemm = dist;
-    }
 
 protected:
 
-    //! Distance in mm
-    quint16 _distancemm;
 
 };
 

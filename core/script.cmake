@@ -29,12 +29,12 @@ SET(PROJECT_HEADER_FILES
 
     core/physic/PhysicBlock.hpp
 
-    core/sensordata/SensorDataBlock.hpp
-
     core/controller/CtrlMail.hpp
     core/controller/ControllerBlock.hpp
     core/controller/ControllerJointBlock.hpp
     core/controller/ControllerSensorBlock.hpp
+
+    core/sensordata/SensorDataBlock.hpp
 
     core/cominterface/ComInterfaceBlock.hpp
     core/cominterface/ComInterfaceThread.hpp
@@ -50,6 +50,7 @@ SET(PROJECT_SOURCE_FILES
     core/block/BotBlock.cpp
     core/type/ShapeData.cpp
 
+    core/cominterface/ComInterfaceBlock.cpp
 
     core/cominterface/ComInterfaceThread.cpp
     )

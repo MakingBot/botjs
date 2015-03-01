@@ -2,40 +2,42 @@
 core.create("shell", "shell");
 
 // Create agents
-//var agent = core.create("spy", "agent");
+var agent = core.create("spy", "agent");
+agent.blockTalk = true;
 
 
 
-
-var ddata = core.create("bjsushcsr04ctrl", "distance_data");
-
+var ddata = core.create("distancesensordata", "distance_data");
+ddata.blockTalk = true;
 
 var controller = core.create("bjsushcsr04ctrl", "us_controller");
+controller.blockTalk = true;
+
 
 var interface1 = core.create("bjsserialarduino", "arduino_interface");
 
 
-var iii = interface1.blockNbSons;
+
+controller.co(ddata);
+controller.co(interface1);
+
+
+
 
 arduino_interface.blockTalk = true;
-
 arduino_interface.frequency = 50;
+
 
 interface1.autoconfig();
 //interface1.start();
 
 
-// Create the viewer3D
-// core.create("viewer3d", "viewer3d");
-// viewer3d.visible = true;
-// viewer3d.logTalking = true;
 
-// viewer3d.connect(base)
-
+agent.co(ddata);
 
 
 // Show spy
-// agent.show();
+agent.show();
 
 // Start shell
 shell.start();

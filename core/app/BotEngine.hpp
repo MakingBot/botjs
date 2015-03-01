@@ -30,7 +30,7 @@
 class BotBlock;
 
 //!
-//! BotEngine provide an interface to use the javascript engine from Qt
+//! BotEngine provide an interface to use the JavaScript engine from Qt
 //!
 class BotEngine : public QObject
 {
@@ -42,18 +42,25 @@ public:
     //!
     explicit BotEngine(QObject *parent = 0);
 
-    //! Block lib directory getter
+    //!
+    //! Block library directory getter
+    //!
     const QString& getBlockLibDirectory() { return _blockLibDirectory; }
 
-    //! Block lib directory getter
+    //!
+    //! Block library directory getter
+    //!
     void setBlockLibDirectory(const QString& block_dir) { _blockLibDirectory = block_dir; }
 
-    //! Block lib directory getter
+    //!
+    //! Block log directory getter
+    //!
     const QString& getBlockLogDirectory() { return _blockLogDirectory; }
 
-    //! Block lib directory getter
+    //!
+    //! Block log directory getter
+    //!
     void setBlockLogDirectory(const QString& block_dir) { _blockLogDirectory = block_dir; }
-
 
     //!
     //! Create a new block from a shared library
@@ -78,7 +85,7 @@ public:
     QJSValue eval(const QString& program) { return _jsEngine->evaluate(program); }
 
     //!
-    //! Get javascript global object
+    //! Get JavaScript global object
     //!
     QJSValue go() { return _jsEngine->globalObject(); }
 
@@ -86,9 +93,6 @@ public:
     //! JsEngine getter
     //!
     QSharedPointer<QJSEngine> engine() { return _jsEngine; }
-
-    // ========================================================================
-    // => Block father and block sons
 
     //!
     //! To create the core block
@@ -103,14 +107,12 @@ public:
     	return _coreBlock;
     }
 
-
-
     //! Return the name of the available blocks
     QStringList availableBlockNames();
 
-    //! Return the list of all father chain
+    //! Return the list of all id chains
     //! It represents every blocks of the system
-    QStringList getAllFatherChains();
+    void allIdChains(QStringList& chains);
 
 protected:
     //! Block lib directory

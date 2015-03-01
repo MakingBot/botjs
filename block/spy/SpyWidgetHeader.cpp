@@ -8,7 +8,7 @@
 /* ============================================================================
  *
  * */
-SpyWidgetHeader::SpyWidgetHeader(QWeakPointer<SpyBlock> spy_block, QWidget *parent)
+SpyWidgetHeader::SpyWidgetHeader(SpyBlock*  spy_block, QWidget *parent)
     : QWidget(parent)
     , _labelTypName ( "type" )
     , _labelVersion ( "version")
@@ -78,7 +78,7 @@ void SpyWidgetHeader::onSpiedBlockChange()
  * */
 void SpyWidgetHeader::updateValues()
 {
-    QSharedPointer<BotBlock> block = getSharedSpyBlock()->getSharedSpiedBlock();
+    QSharedPointer<BotBlock> block = _spyblock->weakSpiedBlock().toStrongRef();
     if(block)
     {
         _labelName.setText(block->blockName());
