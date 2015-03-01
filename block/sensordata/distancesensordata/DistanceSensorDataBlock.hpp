@@ -1,7 +1,7 @@
-#ifndef CONTROLLERBLOCK_HPP
-#define CONTROLLERBLOCK_HPP
+#ifndef DISTANCESENSORBLOCK_HPP
+#define DISTANCESENSORBLOCK_HPP
 //!
-//! \file ControllerBlock.hpp
+//! \file DistanceSensorDataBlock.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -19,42 +19,37 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <BotBlock.hpp>
+#include <SensorDataBlock.hpp>
 
 //!
-//! A controller must synchronize data and real component through a communication interface
+//!
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class ControllerBlock : public BotBlock
+class DistanceSensorDataBlock : public SensorDataBlock
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
     //!
     //! Default constructor
     //!
-    explicit ControllerBlock(const QString& name = QString("controller"))
-        : BotBlock(name)
+    explicit DistanceSensorDataBlock(const QString& name = QString("distancesensordata"))
+        : SensorDataBlock(name)
     { }
 
-//    //! FROM BotBlock
-//    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
-//    {
-//
-//        // End
-//        return BotBlock::connectionHook(weakblock, master);
-//    }
+    // ========================================================================
+    // => BotBlock redefinition
 
-protected:
+    //! FROM BotBlock
+    virtual float blockVersion() const { return 1.0; }
 
+    //! FROM BotBlock
+    virtual QString blockTypeName() const { return QString("distancesensordata"); }
 
 
-    //! Pointer on the interface used
-    // QWeakPointer<ComInterfaceBlock> _interface;
 
 };
 
-
-#endif // CONTROLLERBLOCK_HPP
+#endif // DISTANCESENSORBLOCK_HPP

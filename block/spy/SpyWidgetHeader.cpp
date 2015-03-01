@@ -92,10 +92,10 @@ void SpyWidgetHeader::updateValues()
         _labelTypName.setValue(block->blockTypeName());
         _labelVersion.setValue(QString::number(block->blockVersion()));
         _labelRolName.setValue(BotBlock::BlockRoleToString(block->blockRole()));
-        _labelSonsNub.setValue(QString::number(block->blockSonNb()));
-        _labelConnNub.setValue(QString::number(block->getBlockNumberOfConnections()));
+        _labelSonsNub.setValue(QString::number(block->blockNbSons() ));
+        _labelConnNub.setValue(QString::number(block->blockNbConnections()));
         
-        QWeakPointer<BotBlock> father = block->blockFatherWeakPointer();
+        QWeakPointer<BotBlock> father = block->blockFather();
         if(father)
         {
             _labelFather.setValue(father.toStrongRef()->blockName());  

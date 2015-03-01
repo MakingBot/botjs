@@ -123,7 +123,7 @@ void SpyWidgetBody::updateStructure()
             case IProperty::IPTypeSonBlock:
                 widget = new QComboBox();
                 ((QComboBox*)widget)->addItem ( "NONE" );
-                ((QComboBox*)widget)->addItems( spied->selectBlockSonChains( property.value().compatList() ) );
+               // ((QComboBox*)widget)->addItems( spied->selectBlockSonChains( property.value().compatList() ) );
                 break;
 
             case IProperty::IPTypeBrotherBlock:

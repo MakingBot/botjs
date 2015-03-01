@@ -27,8 +27,8 @@ EXPORT_BLOCK(SpyBlock)
 /* ============================================================================
  *
  * */
-SpyBlock::SpyBlock(const QString& name, QObject *parent)
-    : BotBlock(name, parent)
+SpyBlock::SpyBlock(const QString& name)
+    : GuiBlock(name)
 {
     appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
 }
@@ -36,97 +36,97 @@ SpyBlock::SpyBlock(const QString& name, QObject *parent)
 /* ============================================================================
  *
  * */
-bool SpyBlock::connect(BotBlock* block, bool master)
-{
-    // Basic checks
-    if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
-    if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
+// bool SpyBlock::connect(BotBlock* block, bool master)
+// {
+    // // Basic checks
+    // if(!block)        { beglog() << "Connection to null block failure" << endlog(); return false; }
+    // if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
 
 
-    // This block ask for a connection
-    if(master)
-    {
-        // Ask for connection back
-        if(! block->connect(this, false))
-        {
-            // Log and return
-            beglog() << "Connection to " << block->getBlockFathersChain() << " failure: connection return refused" << endlog();
-            return false;
-        }
+    // // This block ask for a connection
+    // if(master)
+    // {
+    //     // Ask for connection back
+    //     if(! block->connect(this, false))
+    //     {
+    //         // Log and return
+    //         beglog() << "Connection to " << block->getBlockFathersChain() << " failure: connection return refused" << endlog();
+    //         return false;
+    //     }
 
-        // Disconnect old
-        if(_spiedBlock)
-        {
-            this->disconnect(_spiedBlock.data());
-        }
+    //     // Disconnect old
+    //     if(_spiedBlock)
+    //     {
+    //         this->disconnect(_spiedBlock.data());
+    //     }
 
-        // Check widget creation
-        createWidgetIfRequired();
+    //     // Check widget creation
+    //     createWidgetIfRequired();
 
-        // Track the new spied block
-        _spiedBlock = block->toBlockWeakPointer();
+    //     // Track the new spied block
+    //     _spiedBlock = block->toBlockWeakPointer();
 
-        // Alert the view
-        emit spiedBlockChanged();
+    //     // Alert the view
+    //     emit spiedBlockChanged();
 
-        // Log and return
-        beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
-        return true;
-    }
-    // Other block ask for a connection
-    else
-    {
-        // If an other spy ask for a connection accept it
-        SpyBlock* spy = qobject_cast<SpyBlock*>(block);
-        if(spy)
-        {
-            // Use main connect function
-            return BotBlock::connect(block, master);            
-        }
+    //     // Log and return
+    //     beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
+    //     return true;
+    // }
+    // // Other block ask for a connection
+    // else
+    // {
+    //     // If an other spy ask for a connection accept it
+    //     SpyBlock* spy = qobject_cast<SpyBlock*>(block);
+    //     if(spy)
+    //     {
+    //         // Use main connect function
+    //         return BotBlock::connect(block, master);            
+    //     }
 
-        // Log and return
-        beglog() << "Connection from #" << block->getBlockFathersChain() << "# refused: it is not a spy block" << endlog();
-        return false;
-    }
-}
+    //     // Log and return
+    //     beglog() << "Connection from #" << block->getBlockFathersChain() << "# refused: it is not a spy block" << endlog();
+    //     return false;
+    // }
+// }
 
 /* ============================================================================
  *
  * */
-void SpyBlock::disconnect(BotBlock* block, bool master)
-{
-    // Basic checks
-    if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
-    if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
+// void SpyBlock::disconnect(BotBlock* block, bool master)
+// {
+//     // Basic checks
+//     if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
+//     if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
     
-    if( _spiedBlock.data() == block )
-    {
-        if(master)
-        {
-            block->disconnect(this, false); 
-        }
-        _spiedBlock.clear();
-    }
-    else 
-    {
-        BotBlock::disconnect(block, master);
-    }
+//     if( _spiedBlock.data() == block )
+//     {
+//         if(master)
+//         {
+//             block->disconnect(this, false); 
+//         }
+//         _spiedBlock.clear();
+//     }
+//     else 
+//     {
+//         BotBlock::disconnect(block, master);
+//     }
 
-    // Log
-    beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
-}
+//     // Log
+//     beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
+// }
 
 /* ============================================================================
  *
  * */
-void SpyBlock::disconnectAll()
-{
-    // Disconnect from spied
-    this->disconnect(_spiedBlock.data());
+// void SpyBlock::disconnectAll()
+// {
+//     // Disconnect from spied
+//     this->disconnect(_spiedBlock.data());
 
-    // Log
-    beglog() << "All connections has been removed" << endlog();
+//     // Log
+//     beglog() << "All connections has been removed" << endlog();
 
-    // Alert the view
-    emit spiedBlockChanged();
-}
+//     // Alert the view
+//     emit spiedBlockChanged();
+// }

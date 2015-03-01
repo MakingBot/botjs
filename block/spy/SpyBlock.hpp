@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <GuiBlock.hpp>
 #include <SpyWidget.hpp>
 
 //!
@@ -26,17 +27,18 @@
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class SpyBlock : public BotBlock
+class SpyBlock : public GuiBlock
 {
     Q_OBJECT
-    Q_PROPERTY(bool    visible        READ visible WRITE setVisible MEMBER _visible )
+
     Q_PROPERTY(QString spiedBlockName READ getSpiedBlockName                        )
 
 public:
+
     //!
     //! Default constructor
     //!
-    explicit SpyBlock(const QString& name = QString("spy"), QObject *parent = 0);
+    explicit SpyBlock(const QString& name = QString("spy"));
 
     //! FROM BotBlock
     virtual float blockVersion() const { return 1.0; }
@@ -47,12 +49,8 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("spy"); }
 
-    //! FROM BotBlock
-    virtual int getBlockNumberOfConnections() const
-    {
-        if(_spiedBlock) { return 1; }
-        else            { return 0; }
-    }
+
+
 
     //!
     //! Create the widget if it is not
@@ -64,19 +62,7 @@ public:
         }
     }
 
-    //!
-    //! Widget visibility getter
-    //!
-    bool visible() { return _visible; }
-    
-    //!
-    //! Widget visibility setter
-    //!
-    void setVisible(bool visible)
-    {
-        if(visible) { show(); }
-        else        { hide(); }
-    }
+
 
     //!
     //! Weak pointer on the spied block
@@ -108,41 +94,16 @@ signals:
 
 public slots:
 
-    //! FROM BotBlock
-    virtual bool connect(BotBlock* block, bool master=true);
-
-    //! FROM BotBlock
-    void disconnect(BotBlock* block, bool master=true);
-
-    //! FROM BotBlock
-    virtual void disconnectAll();
-
-    //! Widget visibility setter
-    virtual void show()
-    { 
-        createWidgetIfRequired();
-        _widget->show();
-        _visible = true;
-        emit blockiPropertyValuesChanged();
-    }
-
-    //! Widget visibility setter
-    virtual void hide()
-    {
-        _widget->hide();
-        _visible = false;
-        emit blockiPropertyValuesChanged();
-    }
-
 protected:
-    //! Widget visibility
-    bool _visible;
 
+    //! Widget
+    //! Widget for the view
+    QSharedPointer<SpyWidget> _widget;
+
+    //! Spied
     //! Pointer on the spied block
     QWeakPointer<BotBlock> _spiedBlock;
 
-    //! Widget for the view
-    QSharedPointer<SpyWidget>  _widget;
 };
 
 #endif // SPYBLOCK_HPP

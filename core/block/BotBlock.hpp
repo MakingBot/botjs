@@ -62,7 +62,7 @@ public:
 	//!
     //! Define different block roles
 	//!
-    enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi } ;
+    enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi, BlockController, BlockInterface } ;
 
     // ========================================================================
     // => Block basic information
@@ -396,6 +396,22 @@ public:
     	return _connections.size();
     }
 
+    //!
+    //! Hook on the connection process
+    //!
+    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+    {
+        return true;
+    }
+
+    //!
+    //! Hook on the disconnection process
+    //!
+    virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
+    {
+        return true;
+    }
+
     // ========================================================================
     // => Block log and talk
 
@@ -439,7 +455,47 @@ public:
     	_logBuffer.setTalkEnable(e);
     }
 
+    // ========================================================================
+    // => Block interactive properties
 
+    //!
+    //! Interactive properties ids getter
+    //!
+    const QMap<quint16, QString>& iPropIds()
+    {
+        return _iPropIds;  
+    }
+
+    //!
+    //! Interactive properties getter
+    //!
+    const QMap<QString, IProperty>& iProperties()
+    {
+        return _iProperties;
+    }
+
+    //!
+    //! To append an interactive property
+    //!
+    void appendBlockIProperty(const QString& pname, IProperty iprop)
+    {
+        if( _iProperties.find(pname) == _iProperties.end() )
+        {
+            // Append the property
+            _iProperties.insert(pname, iprop);
+            
+            // Append the property in the id map
+            quint16 next_id = _iPropIds.size();
+            _iPropIds[next_id] = pname;
+        }
+    }
+    
+    // To remove an interactive property
+    void removeBlockIProperty(const QString& pname)
+    {
+        _iProperties.remove(pname);
+        _iPropIds.remove( _iPropIds.key(pname) );
+    }
 
     // ========================================================================
     // => Block architecture parameters
@@ -475,8 +531,6 @@ public:
     {
         _bposition = pos;
     }
-
-
 
     // ========================================================================
     // => Block static members
@@ -528,34 +582,6 @@ public:
         }
     }
 
-
-
-    
-
-
-
-    // === === === I-PROPERTIES === === ===
-
-    //! Interactive properties getter
-    const QMap<QString, IProperty>& iProperties() { return _iProperties; }
-
-    //! To append an interactive property
-    void appendBlockIProperty(const QString& pname, IProperty iprop)
-    {
-        if( _iProperties.find(pname) == _iProperties.end() )
-        {
-            _iProperties.insert(pname, iprop);
-        }
-    }
-    
-    // To remove an interactive property
-    void removeBlockIProperty(const QString& pname)
-    {
-        _iProperties.remove(pname);
-    }
-
-
-
 public slots:
 
 	// ========================================================================
@@ -598,72 +624,70 @@ public slots:
     //!
     //! To connect the block to others
     //!
-    bool connect(BotBlock* block, bool master=true)
+    bool co(BotBlock* block, bool master=true)
     {
-        // Basic checks
+        // Basic pointer checks
         if(!block)        { BLOCK_LOG("Connection to null block failure"); return false; }
-        //if(block == this) { beglog() << "Connection to itself refused"     << endlog(); return false; }
-        
+        if(block == this) { BLOCK_LOG("Connection to itself refused"    ); return false; }
+
+        // Get the weak pointer
+        QWeakPointer<BotBlock> weakblock = block->toBlockWeakPointer();
+
+        // Check that the block is not already connected
+        if(_connections.indexOf( weakblock ) != -1)
+        {
+            BLOCK_LOG("Already connected to #" << block->blockIdChain() << "#");
+            return false;
+        }
+
         // This block ask for a connection
         if(master)
         {
-            if(!block->connect(this, false))
+            if(!block->co(this, false))
             {
                 // Log and return
-                //beglog() << "Connection to #" << block->getBlockFathersChain() << "# failure: connection return refused" << endlog();
+                BLOCK_LOG("Connection to #" << block->blockIdChain() << "# failure: connection return refused");
                 return false;
             }
         }
-        // Other block ask for a connection
-        // Default behavior : accept
-       // _connections << block->toBlockWeakPointer();
 
-        // Alert BotJs
-        //emit blockfPropertyValuesChanged();
+        // If user accept register the connection
+        if( connectionHook(weakblock, master) )
+        {
+            // Other block ask for a connection
+            _connections << weakblock;
+
+            // Alert BotJs
+            emit blockConnectionsChanged();
+        }
+        else
+        {
+            // Disconnect from the block
+            block->dco(this, false);
+        }
 
         // Log and return
-        //beglog() << "Connection to #" << block->getBlockFathersChain() << "#" << endlog();
+        BLOCK_LOG("Connection to #" << block->blockIdChain() << "#");
         return true;
     }
 
     //!
-    //! Ask for reconnection
+    //! To disconnect the block
     //!
-    virtual void disconnect(BotBlock* block, bool master=true)
+    virtual void dco(BotBlock* block, bool master=true)
     {
-        // Basic checks
-        //if(!block)        { beglog() << "Disconnection from null block failure" << endlog(); return ; }
-        //if(block == this) { beglog() << "Disconnection from itself refused"     << endlog(); return ; }
-        
-        // This block ask for a disconnection
-        if(master)
-        {
-            block->disconnect(this, false);
-        }
+        // Basic pointer checks
+        if(!block)        { BLOCK_LOG("Disconnection from null block failure"); return; }
+        if(block == this) { BLOCK_LOG("Disconnection from itself refused"    ); return; }
 
-        // Delete pointer from connection
-       // _connections.removeAll(block->toBlockWeakPointer());
-
-        // Alert BotJs
-        //emit blockfPropertyValuesChanged();
-
-        // Log
-       //beglog() << "Disconnection from #" << block->getBlockFathersChain() << "#" << endlog();
     }
 
     //!
     //! To delete all connections
     //!
-    virtual void disconnectAll()
+    virtual void dcoAll()
     {
-//        foreach(QWeakPointer<BotBlock> co, _connections)
-//        {
-//            QSharedPointer<BotBlock> coshared = co.toStrongRef();
-//            if(coshared)
-//            {
-//                this->disconnect(coshared.data());
-//            }
-//        }
+
     }
 
 signals:
@@ -730,7 +754,7 @@ protected:
     // => Block connections
 
     //! Connections
-    QMap<QString, QWeakPointer<BotBlock> > _connections;
+    QList<QWeakPointer<BotBlock> > _connections;
 
     // ========================================================================
     // => Block log and talk
@@ -741,8 +765,14 @@ protected:
     // ========================================================================
     // => Block interactive properties
 
+    //! Interactive property id
+    //! Properties are ordered, this map keep a link between the property id
+    //! and the property name
+    QMap<quint16, QString> _iPropIds;
+
     //! Interactive properties
-    QMap<QString, IProperty> _iProperties;
+    //! Properties map that link the property name with the property structure
+    QMap<QString , IProperty> _iProperties;
 
     // ========================================================================
     // => Block architecture parameters

@@ -1,7 +1,7 @@
-#ifndef CONTROLLERBLOCK_HPP
-#define CONTROLLERBLOCK_HPP
+#ifndef SENSORDATABLOCK_HPP
+#define SENSORDATABLOCK_HPP
 //!
-//! \file ControllerBlock.hpp
+//! \file SensorDataBlock.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -19,42 +19,38 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+
 #include <BotBlock.hpp>
 
+
 //!
-//! A controller must synchronize data and real component through a communication interface
+//!
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class ControllerBlock : public BotBlock
+class SensorDataBlock : public BotBlock
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
 
     //!
     //! Default constructor
     //!
-    explicit ControllerBlock(const QString& name = QString("controller"))
+    explicit SensorDataBlock(const QString& name = QString("mutabledata"))
         : BotBlock(name)
     { }
 
-//    //! FROM BotBlock
-//    virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
-//    {
-//
-//        // End
-//        return BotBlock::connectionHook(weakblock, master);
-//    }
+    //! FROM BotBlock
+    virtual BlockRole blockRole() const { return BotBlock::BlockData; }
+
 
 protected:
 
 
 
-    //! Pointer on the interface used
-    // QWeakPointer<ComInterfaceBlock> _interface;
-
 };
 
 
-#endif // CONTROLLERBLOCK_HPP
+
+#endif // SENSORDATABLOCK_HPP

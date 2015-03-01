@@ -60,7 +60,7 @@ void SpyWidgetFooter::updateValues()
     if(!spied) { return; }
 
     // Get block father chain
-    QString chain = spied->getBlockFathersChain();
+    QString chain = spied->blockIdChain();
 
     // Comboboc to this item
     _cbSpiedBlock.setCurrentIndex( _cbSpiedBlock.findText(chain) );
@@ -125,19 +125,19 @@ void SpyWidgetFooter::onCBSpiedChange( const QString & chain )
     QSharedPointer<BotBlock> spied = getSharedSpyBlock()->getSharedSpiedBlock();
     if(spied)
     {
-        if( spied->getBlockFathersChain().compare(chain) == 0 )
+        if( spied->blockIdChain().compare(chain) == 0 )
         {
             // Cannot spy if its is already spied
-            spy->beglog() << "Try to spy the block that is already spied" << spy->endlog();
+            // spy->beglog() << "Try to spy the block that is already spied" << spy->endlog();
             return;
         }
     }
 
     // Get the block from its father chain
-    BotBlock* block = spy->getBlockFromFathersChain( chain );
+    QSharedPointer<BotBlock> block = spy->IdChainToBlockPointer( chain );
 
     // Try to connect to block
-    if( !spy->connect(block) )
+    if( !spy->co(block.data()) )
     {
         // restore if fail
         _cbSpiedBlock.setCurrentIndex(_currentValidSelection);

@@ -1,5 +1,15 @@
 # Includes
-INCLUDE_DIRECTORIES( core/app core/block core/type core/controller core/cominterface)
+INCLUDE_DIRECTORIES(
+    core/app
+    core/gui
+    core/type
+    core/block
+    core/robot
+    core/physic
+    core/controller
+    core/sensordata
+    core/cominterface
+    )
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -7,19 +17,24 @@ SET(PROJECT_HEADER_FILES
     core/app/BotEngine.hpp
     core/app/CoreBlock.hpp
 
-    core/block/BotBlock.hpp
-    core/block/GuiBlock.hpp
-    core/block/IProperty.hpp
-    core/block/LogBuffer.hpp
-    core/block/PhysicBlock.hpp
+    core/gui/GuiBlock.hpp
 
-    core/type/QRealList.hpp
     core/type/Type.hpp
+    core/type/QRealList.hpp
     core/type/ShapeData.hpp
 
+    core/block/BotBlock.hpp
+    core/block/IProperty.hpp
+    core/block/LogBuffer.hpp
+
+    core/physic/PhysicBlock.hpp
+
+    core/sensordata/SensorDataBlock.hpp
 
     core/controller/CtrlMail.hpp
     core/controller/ControllerBlock.hpp
+    core/controller/ControllerJointBlock.hpp
+    core/controller/ControllerSensorBlock.hpp
 
     core/cominterface/ComInterfaceBlock.hpp
     core/cominterface/ComInterfaceThread.hpp
@@ -34,6 +49,7 @@ SET(PROJECT_SOURCE_FILES
 
     core/block/BotBlock.cpp
     core/type/ShapeData.cpp
+
 
     core/cominterface/ComInterfaceThread.cpp
     )

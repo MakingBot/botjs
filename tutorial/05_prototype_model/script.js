@@ -2,19 +2,15 @@
 core.create("shell", "shell");
 
 // Create agents
-// core.create("spy", "agent");
+//var agent = core.create("spy", "agent");
 
-// // Create the robot
-// var proteo = core.create("robot", "proteo");
-// proteo.logTalking = true;
 
-// // Create the leg as a child of the robot
-// var leg = proteo.create("kinasm", "leg");
-// leg.logTalking = true;
 
-// Create the origine fixe joint
-// var base = leg.create("joint", "base");
-//var base = core.create("joint", "base");
+
+var ddata = core.create("bjsushcsr04ctrl", "distance_data");
+
+
+var controller = core.create("bjsushcsr04ctrl", "us_controller");
 
 var interface1 = core.create("bjsserialarduino", "arduino_interface");
 
@@ -26,7 +22,7 @@ arduino_interface.blockTalk = true;
 arduino_interface.frequency = 50;
 
 interface1.autoconfig();
-interface1.start();
+//interface1.start();
 
 
 // Create the viewer3D

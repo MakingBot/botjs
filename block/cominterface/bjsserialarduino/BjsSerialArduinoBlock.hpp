@@ -148,6 +148,9 @@ public slots:
 
 		BLOCK_LOG("device: " << device << " id: " << id <<  " mode: " << mode  << "  value:" << lenght );
 
+		//CtrlMail mail;
+
+
 	}
 
 	//!
