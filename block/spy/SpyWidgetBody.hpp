@@ -72,19 +72,22 @@ public slots:
 
     void onDoubleSpinBoxChange(double);
 
+
+    //! Signal to the spy, which property has to be updated
+    void onNewValueRequestFor(quint8 propid);
+
+
 protected:
 
     //! Parent block
     SpyBlock* _spyblock;
 
     //! Map that contains widget of each property
-    QMap<QString, QWidget*> _widgetMap;
+    QMap<quint8, QWidget*> _widgetMap;
 
     //! Delete all current widgets
     void destroyStructure();
 
-
-    // void updateValueEnum(QSharedPointer<BotBlock> spied, BotBlock::InteractivePropertyMap& properties, QMapIterator<QString, QWidget*>& widget);
 
 
 };

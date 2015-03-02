@@ -1,7 +1,8 @@
-#ifndef CTRLMAIL_HPP
-#define CTRLMAIL_HPP
+
+#ifndef VIEWERINTEGER_HPP
+#define VIEWERINTEGER_HPP
 //!
-//! \file CtrlMail.hpp
+//! \file ViewerInteger.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -19,45 +20,55 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QtGlobal>
-#include <iostream>
-#include <QByteArray>
+#include <QSpinBox>
+#include <QPushButton>
+#include <ViewerIProperty.hpp>
 
 //!
-//! Message to communicate between controllers and communication interface
+//! To display and modify integers
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class CtrlMail
+class ViewerInteger : public ViewerIProperty
 {
+    Q_OBJECT
 
 public:
 
-    enum MsgModeFlag : quint8 { Read = 0x00, Write = 0x01 };
-
-    //! Device id
-    quint8 device;
-
-    //! Property id
-    quint8 propid;
-
-    //! Mode
-    MsgModeFlag mode;
-
-    //! 4 bytes value
-    QByteArray value;
+    //!
+    //! Default constructor
+    //!
+    ViewerInteger(quint8 propid, bool readonly, QWidget* parent=0);
 
     //!
-    //! Convert the value array into a quint16
+    //! Integer getter
     //!
-    quint16 valueToQuint16()
+    long getInteger()
     {
-        quint16 result;
-        result  = (quint8)value[0];
-        result |= ((quint16)value[1]) << 8;
-        return result;
+        return _box.value();
     }
+
+    //!
+    //! Integer setter
+    //!
+    void setInterger(long integer)
+    {
+        _box.setValue(integer);
+    }
+
+public slots:
+
+    //! To apply the choice of the user
+    void apply();
+
+protected:
+
+    //! Box to display the value
+    QSpinBox _box;
+
+    //! Button to set the 
+    QPushButton _setButton;
 
 };
 
-#endif // CTRLMAIL_HPP
+#endif // VIEWERINTEGER_HPP

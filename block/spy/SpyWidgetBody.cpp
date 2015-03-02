@@ -19,6 +19,9 @@
 #include <ViewerQVectornD.hpp>
 #include <ViewerQMatrix4x4.hpp>
 
+#include <ViewerInteger.hpp>
+
+
 /* ============================================================================
  *
  * */
@@ -64,26 +67,52 @@ void SpyWidgetBody::updateStructure()
     if(!spied) { return; }
 
     // Get properties
-    const QMap<quint16, QString>& propids = spied->iPropIds();
-    const QMap<QString, IProperty>& properties = spied->iProperties();
-
-
+    const QMap<QString, quint8>& propids = spied->iPropIds();
+    const QMap<quint8, IProperty>& properties = spied->iProperties();
 
     // Go through properties
-    QMapIterator<QString, IProperty> property(properties);
+    QMapIterator<quint8, IProperty> property(properties);
     while (property.hasNext())
     {
         // New property, new widget
         property.next();
         QWidget* widget = 0;
 
+        // Create the widget in function of the property type
+        switch(property.value().type())
+        {
+
+            case IProperty::IPTypeInt:
+                widget = new ViewerInteger(property.key(), !property.value().isWritable());
+                if( property.value().isWritable() )
+                {
+                    connect( (ViewerInteger*)widget, SIGNAL(newValueRequestedFor(quint8 propid)), this, SLOT(onNewValueRequestFor(quint8)) );
+                }
+                
+                //((QSpinBox*)widget)->setRange ( -0xFFFFF, 0xFFFFFF);
+                break;
+
+            default:
+                // TODO log the warning
+                break;
+        }
+        if(!widget) { continue; }
+
+        // Add it into the layout
+        _widgetMap[property.key()] = widget;
+        ((QFormLayout*)layout())->addRow( propids.key(property.key()), widget );
+    }
+
+/*
+
+
+
+
 
         std::cout << property.key().toStdString() << std::endl;
 
 
-        // Create the widget in function of the property type
-        switch(property.value().type())
-        {
+
             case IProperty::IPTypeBool:
                 if(property.value().isWritable())
                 {
@@ -97,12 +126,7 @@ void SpyWidgetBody::updateStructure()
                 }
                 break;
 
-            case IProperty::IPTypeInt:
-                
 
-                widget = new QSpinBox();
-                ((QSpinBox*)widget)->setRange ( -0xFFFFF, 0xFFFFFF);
-                break;
 
             case IProperty::IPTypeReal:
                 widget = new QDoubleSpinBox();
@@ -179,16 +203,12 @@ void SpyWidgetBody::updateStructure()
                 
                 break;        
 
-            default:
-                // TODO Log erreur
-                break;
+
         }
         if(!widget) { continue; }
 
-        // Add it into the layout
-        _widgetMap[property.key()] = widget;
-        ((QFormLayout*)layout())->addRow(property.key(), _widgetMap[property.key()]); 
     }
+*/
 
     updateValues();
 }
@@ -199,11 +219,37 @@ void SpyWidgetBody::updateStructure()
 void SpyWidgetBody::updateValues()
 {
     // Check the spied block pointer
-    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
-    if(!wspied) { return; }
-    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
-    if(spied)
+    QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
+    if(!spied) { return; }
+
+    // Get properties
+    // const QMap<QString, quint8>& propids = spied->iPropIds();
+    const QMap<quint8, IProperty>& properties = spied->iProperties();
+
+    // Go through widgets
+    QMapIterator<quint8, QWidget*> widget(_widgetMap);
+    while (widget.hasNext())
     {
+        // Get widget and property associated
+        widget.next();
+        IProperty property = properties[widget.key()];
+
+        //
+        switch(property.type())
+        {
+
+            case IProperty::IPTypeInt:
+                ((ViewerInteger*)(widget.value()))->setInterger( spied->blockIPropertyValue(widget.key()).toInt() );
+                break;
+
+            default:
+                // TODO log the warning
+                break;
+        }
+    }
+
+    /*
+
         // Get properties
         const QMap<QString, IProperty>& properties = spied->iProperties();
 
@@ -293,14 +339,24 @@ void SpyWidgetBody::updateValues()
             }
         }
     }
+    */
 }
+
+/* ============================================================================
+ *
+ * */
+void SpyWidgetBody::onNewValueRequestFor(quint8 propid)
+{
+
+}
+
 
 /* ============================================================================
  *
  * */
 void SpyWidgetBody::onLineTextEdited(const QString& text)
 {
-
+/*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -336,6 +392,7 @@ void SpyWidgetBody::onLineTextEdited(const QString& text)
             spied->setProperty(widget.key().toStdString().c_str(), new_value);
         }
     }
+    */
 }
 
 /* ============================================================================
@@ -343,6 +400,7 @@ void SpyWidgetBody::onLineTextEdited(const QString& text)
  * */
 void SpyWidgetBody::onComboBoxBool(const QString& text)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -380,6 +438,7 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
             spied->setProperty(widget.key().toStdString().c_str(), new_value);
         }    
     }
+    */
 }
 
 /* ============================================================================
@@ -387,6 +446,7 @@ void SpyWidgetBody::onComboBoxBool(const QString& text)
  * */
 void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -422,6 +482,7 @@ void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
             spied->setProperty( widget.key().toStdString().c_str(), new_value );
         }
     }
+    */
 }
 
 /* ============================================================================
@@ -429,6 +490,7 @@ void SpyWidgetBody::onComboBoxEnum(const QString& enum_name)
  * */
 void SpyWidgetBody::onListModified(QList<qreal>& new_value)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -463,6 +525,7 @@ void SpyWidgetBody::onListModified(QList<qreal>& new_value)
             spied->setProperty( widget.key().toStdString().c_str(), QVariant(QVariant::Matrix4x4, &new_value) );
         }    
     }
+    */
 }
 
 
@@ -471,6 +534,7 @@ void SpyWidgetBody::onListModified(QList<qreal>& new_value)
  * */
 void SpyWidgetBody::onVector3DEdit(const QVector3D& new_value)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -505,6 +569,7 @@ void SpyWidgetBody::onVector3DEdit(const QVector3D& new_value)
             spied->setProperty( widget.key().toStdString().c_str(), QVariant(QVariant::Vector3D, &new_value) );
         }
     }
+    */
 }
 
 /* ============================================================================
@@ -512,6 +577,7 @@ void SpyWidgetBody::onVector3DEdit(const QVector3D& new_value)
  * */
 void SpyWidgetBody::onVector4DEdit(const QVector4D& new_value)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -546,6 +612,7 @@ void SpyWidgetBody::onVector4DEdit(const QVector4D& new_value)
             spied->setProperty( widget.key().toStdString().c_str(), QVariant(QVariant::Vector4D, &new_value) );
         }
     }
+    */
 }
 
 /* ============================================================================
@@ -553,6 +620,7 @@ void SpyWidgetBody::onVector4DEdit(const QVector4D& new_value)
  * */
 void SpyWidgetBody::onDoubleSpinBoxChange(double new_value)
 {
+    /*
     // Check the spied block pointer
     QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
     if(!wspied) { return; }
@@ -587,6 +655,7 @@ void SpyWidgetBody::onDoubleSpinBoxChange(double new_value)
             spied->setProperty( widget.key().toStdString().c_str(),  new_value );
         }
     }
+    */
 }
 
 
@@ -596,14 +665,15 @@ void SpyWidgetBody::onDoubleSpinBoxChange(double new_value)
 void SpyWidgetBody::destroyStructure()
 {
     // Go through widgets
-    QMapIterator<QString, QWidget*> widget(_widgetMap);
+    QMapIterator<quint8, QWidget*> widget(_widgetMap);
     while (widget.hasNext())
     {
         widget.next();
 
         // Find the label and destroy it
         QWidget* label = ((QFormLayout*)layout())->labelForField(widget.value());
-        if(label) {
+        if(label)
+        {
             label->deleteLater();
         }
 

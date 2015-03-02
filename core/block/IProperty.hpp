@@ -63,8 +63,13 @@ public:
         copy(p);
     }
     
+    //!
     //! Writable flag getter
-    inline bool isWritable() const { return _writable; }
+    //!
+    inline bool isWritable() const
+    {
+        return _writable;
+    }
     
     //! Property type getter
     inline IPropertyType type() const { return _type; }

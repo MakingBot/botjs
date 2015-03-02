@@ -46,32 +46,36 @@ public:
     //! FROM BotBlock
     virtual BlockRole blockRole() const { return BotBlock::BlockController; }
 
-    //!
-    //! Hook on the connection process
-    //!
+    //! FROM BotBlock
     virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
     {
-
-
-        // qSharedPointerObjectCast ( const QSharedPointer<T> & other )
-
-        QWeakPointer<SensorDataBlock> sensordata = qWeakPointerCast<SensorDataBlock, BotBlock>(weakblock);
-        if(sensordata.toStrongRef()->blockTypeName().compare("distancesensordata") == 0)
+    	// Check if it is a distance sensor data
+        if(weakblock.toStrongRef()->blockTypeName().compare("distancesensordata") == 0)
         {
-            _datasensor = sensordata;
+            _datasensor = qWeakPointerCast<SensorDataBlock, BotBlock>(weakblock);
+            if( !checkDataProperties(_datasensor) )
+            {
+            	return false;
+            }
         }
 
         // End
         return ControllerBlock::connectionHook(weakblock, master);
     }
 
-    //!
-    //! Hook on the disconnection process
-    //!
+    //! FROM BotBlock
     virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master)
     {
 
         return true;
+    }
+
+    //!
+    //! To check if the sensor data has the good properties
+    //!
+    virtual bool checkDataProperties(QWeakPointer<SensorDataBlock> data)
+    {
+    	return true;
     }
 
 protected:

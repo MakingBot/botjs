@@ -20,6 +20,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <CtrlMail.hpp>
+#include <QMetaProperty>
 #include <ControllerSensorBlock.hpp>
 
 //!
@@ -55,16 +56,24 @@ public:
     // ========================================================================
     // => ControllerBlock redefinition
 
+    //! FROM ControllerBlock
     virtual void newMail(CtrlMail& mail)
     {
+    	_datasensor.toStrongRef()->setBlockIPropertyValue(mail.propid, mail.valueToQuint16());
+    }
 
+    // ========================================================================
+    // => ControllerSensorBlock redefinition
 
-    	quint16 value = ((quint8)mail.value[0]) | ((quint16)mail.value[1] << 8);
-
-        std::cout << value << std::endl;
-
-    	_datasensor.toStrongRef()->setBlockIPropertyValue(mail.propid, value);
-
+    //! FROM ControllerSensorBlock
+    virtual bool checkDataProperties(QWeakPointer<SensorDataBlock> data)
+    {
+    	QSharedPointer<SensorDataBlock> sdata = data.toStrongRef();
+    	if( sdata->metaObject()->property(sdata->metaObject()->indexOfProperty("distancemm")).isValid() )
+    	{
+    		return true;
+    	}
+    	return false;
     }
 
 protected:

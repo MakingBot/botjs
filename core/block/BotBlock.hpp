@@ -64,6 +64,11 @@ public:
 	//!
     enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi, BlockController, BlockInterface } ;
 
+    //!
+    //! Define block state
+    //!
+    enum BlockState { BlockOperational, BlockDeteriorated, BlockNotFunctionning } ;
+
     // ========================================================================
     // => Block basic information
 
@@ -461,7 +466,7 @@ public:
     //!
     //! Interactive properties ids getter
     //!
-    const QMap<quint16, QString>& iPropIds()
+    const QMap<QString, quint8>& iPropIds()
     {
         return _iPropIds;  
     }
@@ -469,17 +474,25 @@ public:
     //!
     //! Interactive properties getter
     //!
-    const QMap<QString, IProperty>& iProperties()
+    const QMap<quint8, IProperty>& iProperties()
     {
         return _iProperties;
     }
 
     //!
-    //! Block
+    //!
+    //!
+    QVariant blockIPropertyValue(quint8 propid) const
+    {
+        return this->property(_iPropIds.key(propid).toStdString().c_str());
+    }
+
+    //!
+    //! Set property value with the property id
     //!
     void setBlockIPropertyValue(quint8 propid, const QVariant& value)
     {
-    	this->setProperty(_iPropIds[propid].toStdString().c_str(), value);
+    	this->setProperty(_iPropIds.key(propid).toStdString().c_str(), value);
     }
 
     //!
@@ -487,31 +500,31 @@ public:
     //!
     void appendBlockIProperty(const QString& pname, IProperty iprop)
     {
-        if( _iProperties.find(pname) == _iProperties.end() )
+        // Check if the property already exist
+        if( _iPropIds.find(pname) != _iPropIds.end() )
         {
-            // Append the property
-            _iProperties.insert(pname, iprop);
-            
-            // Append the property in the id map
-            quint16 next_id = _iPropIds.size();
-            _iPropIds.insert(next_id, pname);
-
-            std::cout << next_id << " --- " << _iPropIds[next_id].toStdString() << std::endl;
-
-            // Log
-            BLOCK_LOG("New property [" << next_id << "] - " << pname);
+            BLOCK_LOG("Property " << pname << " already exists")
+            return;
         }
-        else
-        {
-        	BLOCK_LOG("Property " << pname << " already exists")
-        }
+
+        // Append the property in the id map
+        quint8 id = _iPropIds.size();
+        _iPropIds.insert(pname, id);
+
+        // Append the property
+        _iProperties.insert(id, iprop);
+
+        // Log
+        BLOCK_LOG("New property [" << id << "] - " << pname);
     }
     
-    // To remove an interactive property
+    //!
+    //! To remove an interactive property
+    //!
     void removeBlockIProperty(const QString& pname)
     {
-        _iProperties.remove(pname);
-        _iPropIds.remove( _iPropIds.key(pname) );
+        _iProperties.remove( _iPropIds[pname] );
+        _iPropIds.remove(pname);
     }
 
     // ========================================================================
@@ -792,11 +805,11 @@ protected:
     //! Interactive property id
     //! Properties are ordered, this map keep a link between the property id
     //! and the property name
-    QMap<quint16, QString> _iPropIds;
+    QMap<QString, quint8> _iPropIds;
 
     //! Interactive properties
     //! Properties map that link the property name with the property structure
-    QMap<QString , IProperty> _iProperties;
+    QMap<quint8 , IProperty> _iProperties;
 
     // ========================================================================
     // => Block architecture parameters
@@ -809,6 +822,15 @@ protected:
     //! Position of the block in the architecture map
     //! This position is relative the father position
     QPointF _bposition;
+
+    // ========================================================================
+    // => Block status management
+
+    //!
+    QString _bstatus;
+
+    //!
+    BlockState _bstate;
 
 };
 

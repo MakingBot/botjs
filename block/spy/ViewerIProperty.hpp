@@ -1,7 +1,7 @@
-#ifndef CTRLMAIL_HPP
-#define CTRLMAIL_HPP
+#ifndef VIEWERIPROPERTY_HPP
+#define VIEWERIPROPERTY_HPP
 //!
-//! \file CtrlMail.hpp
+//! \file ViewerIProperty.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -19,45 +19,41 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QtGlobal>
-#include <iostream>
-#include <QByteArray>
+#include <QWidget>
 
 //!
-//! Message to communicate between controllers and communication interface
+//! Global interface for interactive property viewers
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class CtrlMail
+class ViewerIProperty : public QWidget
 {
+
+    Q_OBJECT
 
 public:
 
-    enum MsgModeFlag : quint8 { Read = 0x00, Write = 0x01 };
-
-    //! Device id
-    quint8 device;
-
-    //! Property id
-    quint8 propid;
-
-    //! Mode
-    MsgModeFlag mode;
-
-    //! 4 bytes value
-    QByteArray value;
-
     //!
-    //! Convert the value array into a quint16
+    //! Default constructor
     //!
-    quint16 valueToQuint16()
-    {
-        quint16 result;
-        result  = (quint8)value[0];
-        result |= ((quint16)value[1]) << 8;
-        return result;
-    }
+    ViewerIProperty(quint8 propid, bool readonly, QWidget* parent=0)
+        : QWidget(parent), _propid(propid), _readOnly(readonly)
+    { }
+
+signals:
+
+    //! Signal to the spy, which property has to be updated
+    void newValueRequestedFor(quint8 propid);
+
+protected:
+
+    //! The ID of the property
+    quint8 _propid;
+
+    //! True if the widget cannot be change by the user
+    bool _readOnly;
 
 };
 
-#endif // CTRLMAIL_HPP
+
+#endif // VIEWERIPROPERTY_HPP

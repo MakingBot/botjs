@@ -1,5 +1,5 @@
 # Includes
-INCLUDE_DIRECTORIES( block/spy )
+INCLUDE_DIRECTORIES( block/spy block/spy/viewer )
 
 # Headers
 SET(PROJECT_HEADER_FILES
@@ -13,6 +13,10 @@ SET(PROJECT_HEADER_FILES
     block/spy/ViewerQVectornD.hpp
     block/spy/ViewerRealList.hpp
     block/spy/ViewerQMatrix4x4.hpp
+
+    block/spy/ViewerIProperty.hpp
+
+    block/spy/viewer/ViewerInteger.hpp
     )
 
 # Sources
@@ -26,6 +30,8 @@ SET(PROJECT_SOURCE_FILES
     block/spy/ViewerQVectornD.cpp
     block/spy/ViewerRealList.cpp
     block/spy/ViewerQMatrix4x4.cpp
+
+    block/spy/viewer/ViewerInteger.cpp
     )
 
 # Qt Modules
