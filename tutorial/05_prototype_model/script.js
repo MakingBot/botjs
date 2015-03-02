@@ -26,7 +26,7 @@ controller.co(interface1);
 
 
 arduino_interface.blockTalk = true;
-arduino_interface.frequency = 50;
+arduino_interface.frequency = 60;
 
 
 interface1.autoconfig();

@@ -80,6 +80,9 @@ void SpyWidget::onSpiedBlockChange()
         // Connect events to the body
         connect( spied.data(), SIGNAL(blockiPropertyValuesChanged   ()), &_body  , SLOT(updateValues   ()) );
         connect( spied.data(), SIGNAL(blockiPropertyStructureChanged()), &_body  , SLOT(updateStructure()) );
+
+        // Connect events to the footer
+        connect( spied.data(), SIGNAL(blockStatusChanged()), &_footer, SLOT(updateValues()) );
     }
 }
 

@@ -67,7 +67,7 @@ public:
     //!
     //! Define block state
     //!
-    enum BlockState { BlockOperational, BlockDeteriorated, BlockNotFunctionning } ;
+    enum BlockState { BlockInitialization, BlockOperational, BlockDeteriorated, BlockOutOfService } ;
 
     // ========================================================================
     // => Block basic information
@@ -123,6 +123,8 @@ public:
         , _bname(name)
     	, _idNumber(0xFFFFFFFF)
         , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
+        , _bstatus("Block initialization")
+        , _bstate(BlockInitialization)
     { }
 
     //!
@@ -563,6 +565,47 @@ public:
     }
 
     // ========================================================================
+    // => Block status management
+
+    //!
+    //! Block status getter
+    //!
+    QString blockStatus()
+    {
+        return _bstatus;
+    }
+
+    //!
+    //! Block state getter
+    //!
+    BlockState blockState()
+    {
+        return _bstate;
+    }
+
+    //!
+    //! Block status setter
+    //!
+    void setBlockStatus(BlockState state, const QString& status)
+    {
+        // Useless to set again if it is the same status
+        if( state == _bstate && status == _bstatus )
+        {
+            return;
+        }
+
+        // Set
+        _bstate = state;
+        _bstatus = status;
+        
+        // Log
+        BLOCK_LOG("Status changed to: " << _bstatus);
+
+        // Alert
+        emit blockStatusChanged();
+    }
+
+    // ========================================================================
     // => Block static members
 
     //! JavaScript engine used by the application
@@ -728,6 +771,8 @@ public slots:
     }
 
 signals:
+
+    void blockStatusChanged();
 
 	//! Signal
 	//! Emitted when father or sons changed

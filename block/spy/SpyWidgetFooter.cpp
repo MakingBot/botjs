@@ -2,6 +2,7 @@
 #include <SpyBlock.hpp>
 
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 
 /* ============================================================================
  *
@@ -31,10 +32,18 @@ SpyWidgetFooter::SpyWidgetFooter(SpyBlock*  spy_block, QWidget *parent)
     connect(&_buttonCreate, SIGNAL(clicked()), this, SLOT(createSonOfSpiedBlock()));
 
     // Create layout
-    QHBoxLayout* lay = new QHBoxLayout(this);
-    lay->addWidget(&_cbSpiedBlock);
-    lay->addWidget(&_buttonCreate);
-    lay->addWidget(&_buttonKill);
+    QWidget* status_widget = new QWidget();
+    QHBoxLayout* lay1 = new QHBoxLayout(status_widget);
+    lay1->addWidget(&_labelBlockStatus);
+
+    QHBoxLayout* lay2 = new QHBoxLayout();
+    lay2->addWidget(&_cbSpiedBlock);
+    lay2->addWidget(&_buttonCreate);
+    lay2->addWidget(&_buttonKill);
+
+    QVBoxLayout* main_lay = new QVBoxLayout(this);
+    main_lay->addWidget(status_widget);
+    main_lay->addLayout(lay2);
 
     // First update
     onSpiedBlockChange();
@@ -54,10 +63,12 @@ void SpyWidgetFooter::onSpiedBlockChange()
  * */
 void SpyWidgetFooter::updateValues()
 {
+        std::cout << " mmmmm " << std::endl;
+
+
     // Check the spied block pointer
-    QWeakPointer<BotBlock> wspied = _spyblock->weakSpiedBlock();
-    if(!wspied) { return; }
-    QSharedPointer<BotBlock> spied = wspied.toStrongRef();
+    QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
+    if(!spied) { return; }
 
     // Get block father chain
     QString chain = spied->blockIdChain();
@@ -65,6 +76,11 @@ void SpyWidgetFooter::updateValues()
     // ComboBox to this item
     _cbSpiedBlock.setCurrentIndex( _cbSpiedBlock.findText(chain) );
     _currentValidSelection = _cbSpiedBlock.currentIndex();
+
+    std::cout << " ==== " << spied->blockStatus().toStdString() << std::endl;
+
+    // Set the block status
+    _labelBlockStatus.setText(spied->blockStatus());
 }
 
 /* ============================================================================

@@ -178,6 +178,8 @@ public slots:
 
 		// Log
 		BLOCK_LOG("Port OK: " << _serial.portName() << " - ( Manufacturer:" << port_info.manufacturer() << ")");
+
+        setBlockStatus(BotBlock::BlockOperational, "Arduino connected");
 	}
 
 protected:

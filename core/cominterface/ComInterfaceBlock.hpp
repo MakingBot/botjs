@@ -63,25 +63,6 @@ public:
         return BotBlock::disconnectionHook(weakblock, master);
     }
 
-
-    //!
-    //! Status getter
-    //!
-    const QString& status()
-    {
-        return _status;
-    }
-
-    //!
-    //! Status setter
-    //!
-    void setStatus(const QString& sts)
-    {
-        _status = sts;
-
-        // emit
-    }
-
     // ========================================================================
     // => Property frequency
 
@@ -110,7 +91,10 @@ public slots:
 	//!
 	void start()
 	{
-		_thread->start(QThread::HighestPriority);
+        if( blockState() != BotBlock::BlockOutOfService && blockState() != BotBlock::BlockInitialization )
+        {
+            _thread->start(QThread::HighestPriority);
+        }
 	}
 
     //!
@@ -129,11 +113,11 @@ public slots:
         const int seuil = 1;
         if( _counter < (_frequency-seuil) || (_frequency+seuil) < _counter )
         {
-            setStatus("RealTime Error");
+            setBlockStatus(BotBlock::BlockDeteriorated, "RealTime Error");
         }
         else
         {
-            setStatus("RealTime OK");
+            setBlockStatus(BotBlock::BlockOperational, "RealTime OK");
         }
         // Reset the counter
         _counter = 0;
@@ -141,11 +125,9 @@ public slots:
 
 protected:
 
-    //!
+    //! Enable boolean
+    //! True if the interface is activated
     bool _enable;
-
-    //! Controller status
-    QString _status;
 
     //!
     quint32 _counter;

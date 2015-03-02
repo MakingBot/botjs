@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QLabel>
 #include <QWidget>
 #include <BotBlock.hpp>
 
@@ -63,6 +64,10 @@ public slots:
     void onCBSpiedChange( const QString & text );
 
 protected:
+
+    //! Label to display the block status
+    QLabel _labelBlockStatus;
+
     //! Button to kill the spied block
     QPushButton _buttonKill;
 
@@ -77,6 +82,7 @@ protected:
     
     //! Parent block
     SpyBlock*  _spyblock;
+
 };
 
 #endif // SPYWIDGETFOOTER_HPP
