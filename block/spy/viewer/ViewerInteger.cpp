@@ -35,6 +35,7 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
     if(!readonly)
     {
         lay->addWidget( &_setButton );
+        connect(&_setButton, SIGNAL(click()), &b, SLOT(apply()));
     }
 
     // Box property
@@ -47,6 +48,5 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
  * */
 void ViewerInteger::apply()
 {
-
+    emit newValueRequestedFor(_propid);
 }
-
