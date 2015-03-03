@@ -107,8 +107,10 @@ public:
     	return _coreBlock;
     }
 
-    //! Return the name of the available blocks
-    QStringList availableBlockNames();
+    //!
+    //! Return names of the available blocks
+    //!
+    void availableBlockNames(QStringList& names);
 
     //! Return the list of all id chains
     //! It represents every blocks of the system

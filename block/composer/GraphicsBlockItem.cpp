@@ -20,8 +20,8 @@ const QColor GraphicsBlockItem::TextColor    = QColor("#000000");
 /* ============================================================================
  *
  * */
-GraphicsBlockItem::GraphicsBlockItem( )
-    : QGraphicsItemGroup(),
+GraphicsBlockItem::GraphicsBlockItem(QSharedPointer<BotBlock> block, QGraphicsItem* parent)
+    : QGraphicsItemGroup(parent),
       _hover(false)
     , _dragOver(false)
     , _blockSize(100,100)

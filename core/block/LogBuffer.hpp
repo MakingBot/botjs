@@ -88,7 +88,7 @@ public:
     //!
     //! Log enable getter
     //!
-    bool logEnable()
+    bool logEnable() const
     {
     	return _logEnable;
     }
@@ -105,7 +105,7 @@ public:
     //!
     //! Talk enable getter
     //!
-    bool talkEnable()
+    bool talkEnable() const
     {
     	return _talkEnable;
     }

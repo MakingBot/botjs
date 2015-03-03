@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QColor>
 #include <QPainter>
+#include <BotBlock.hpp>
 #include <QGraphicsItemGroup>
 
 class GraphicsLinkItem;
@@ -14,11 +15,13 @@ class GraphicsLinkItem;
 //!
 class GraphicsBlockItem : public QGraphicsItemGroup
 {
+
 public:
+
     //!
     //! Default constructor
     //!
-    GraphicsBlockItem( );
+    GraphicsBlockItem(QSharedPointer<BotBlock> block, QGraphicsItem* parent = 0);
 
     //! FROM QGraphicsItem
     QRectF boundingRect() const;
@@ -43,6 +46,13 @@ protected:
     QSizeF _blockSize;
 
 
+    //! Block
+    //! Block that the item represent
+    QSharedPointer<BotBlock> _block;
+
+
+
+
     QList<QWeakPointer<GraphicsLinkItem> > _links;
 
 
@@ -56,7 +66,16 @@ protected:
     static const QColor TextColor;
 
 
-    const QString blockName() const { return QString("robot"); }
+    //!
+    //! Interface
+    //!
+    const QString blockName() const
+    {
+        return _block->blockName();
+    }
+
+
+
 
     const bool hasChilds() const { return true; }
 

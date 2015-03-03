@@ -14,7 +14,7 @@ BlockMenuItem::BlockMenuItem(const QString& block_name, const int hue, QWidget* 
     installEventFilter(this);
 
     // Fixe size
-    const QSize bsize(80,80);
+    const QSize bsize(150,80);
     setMinimumSize(bsize);
     setMaximumSize(bsize);
 

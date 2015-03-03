@@ -8,7 +8,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsSceneDragDropEvent>
 
-
+#include <BotBlock.hpp>
 
 #include <iostream>
 
@@ -22,6 +22,21 @@ GraphicsBlockScene::GraphicsBlockScene(QWidget* parent)
 {
 
 
+}
+
+/* ============================================================================
+ *
+ * */
+void GraphicsBlockScene::initialize()
+{
+    QSharedPointer<BotBlock> core = BotBlock::JsEngine.getCoreBlock();
+
+    QSharedPointer<GraphicsBlockItem> core_item(new GraphicsBlockItem(core));
+
+    _itemMap.insert(core->blockIdNumber(), core_item);
+
+
+    addItem( core_item.data() );
 }
 
 /* ============================================================================

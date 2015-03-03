@@ -44,9 +44,9 @@ public:
     //!
     explicit ComposerWidget(ComposerBlock* parent_block, QWidget *parent = 0);
 
-
 protected:
 
+    //! Block
     //! The parent block
     ComposerBlock* _block;
 
@@ -66,10 +66,6 @@ protected:
     //!
     GraphicsBlockScene _scene;
 
-
-
-
 };
-
 
 #endif // COMPOSERWIDGET_HPP

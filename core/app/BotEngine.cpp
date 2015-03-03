@@ -171,11 +171,31 @@ void BotEngine::createCoreBlock()
 /* ============================================================================
  *
  * */
-QStringList BotEngine::availableBlockNames()
+void BotEngine::availableBlockNames(QStringList& names)
 {
-    QStringList names;
+    // Clear the list
+    names.clear();
 
-    return names;
+    // Find the directory where block lib are stored
+    QDir blockDir(_blockLibDirectory);
+
+    // Get the list of files in this directory
+    QStringList filenames = blockDir.entryList (  QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot );
+
+    // Remove the lib and the .so
+    QStringList blocknames;
+    foreach(const QString& filename, filenames)
+    {
+        QByteArray array(filename.toStdString().c_str());
+        // Remove the lib
+        array.remove(0, 3);
+        // Remove the .so
+        array.remove(array.size()-3, 3);
+        blocknames << QString(array);
+    }
+    
+    // Append those names
+    names << blocknames;
 }
 
 /* ============================================================================

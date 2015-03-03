@@ -1,9 +1,29 @@
-#include "BlockMenu.hpp"
+//!
+//! \file BlockMenu.cpp
+//!
+// Copyright 2015 MakingBot
+// This file is part of BotJs.
+//
+// BotJs is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BotJs is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
+
+#include <BotBlock.hpp>
+#include <BlockMenu.hpp>
 
 #include <QPainter>
+#include <QScrollBar>
 #include <QVBoxLayout>
 #include <QStyleOption>
-#include <QScrollBar>
 
 /* ============================================================================
  *
@@ -38,7 +58,7 @@ BlockMenu::BlockMenu(QWidget *parent)
 );
 
     // Set size
-    const int min_width = 130;
+    const int min_width = 200;
     setMinimumWidth(min_width);
     setMaximumWidth(min_width);
 
@@ -53,21 +73,25 @@ BlockMenu::BlockMenu(QWidget *parent)
     lay->setContentsMargins(QMargins(16,16,16,16));
     lay->setSpacing(16);
 
+    // Get available blocks
+    QStringList blocknames;
+    BotBlock::JsEngine.availableBlockNames(blocknames);
 
-
-
-    for(int i = 0 ; i < 10 ; i++)
+    // Go through blocks
+    foreach(const QString& blockname, blocknames)
     {
+        // Create the item
+        QSharedPointer<BlockMenuItem> item ( new BlockMenuItem(blockname, 50) );
 
-        QSharedPointer<BlockMenuItem> item ( new BlockMenuItem("test", 50) );
-
+        // Append the widget in the view
         lay->addWidget( item.data() );
 
+        // Save the pointer on this item
         _items << item;
     }
 
+    // Give a widget for the scrollaera
     setWidget( _menu.data() );
-
 }
 
 

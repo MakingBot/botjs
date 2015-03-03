@@ -106,13 +106,16 @@ public:
         BLOCK_TYPE* block = new BLOCK_TYPE(name);
 
         // Create the shared pointer
-        QSharedPointer<BotBlock> shared_ptr = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
+        QSharedPointer<BotBlock> shared_block = qSharedPointerObjectCast<BotBlock, BLOCK_TYPE>( QSharedPointer<BLOCK_TYPE>(block) );
+
+        // Generate an id number for unique identification
+        BotBlock::GenerateIdNumber(shared_block);
 
         // Save it as a weak pointer in this
-        shared_ptr->_wThis = shared_ptr.toWeakRef();
+        shared_block->_wThis = shared_block.toWeakRef();
 
         // Return shared in order that parent can save it
-        return shared_ptr;
+        return shared_block;
     }
 
     //!
@@ -125,7 +128,9 @@ public:
         , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
         , _bstatus("Block initialization")
         , _bstate(BlockInitialization)
-    { }
+    {
+
+    }
 
     //!
     //! Initialize block, each block has it own init process
@@ -433,7 +438,7 @@ public:
 	//!
     //! Log enable getter
     //!
-    bool blockLog()
+    bool blockLog() const
     {
     	return _logBuffer.logEnable();
     }
@@ -449,7 +454,7 @@ public:
 	//!
     //! Talk enable getter
     //!
-    bool blockTalk()
+    bool blockTalk() const
     {
     	return _logBuffer.talkEnable();
     }

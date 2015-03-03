@@ -33,6 +33,8 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     // Window configuration
     setWindowTitle("Composer");
 
+    setMinimumSize(800, 600);
+
     // Layout
     QGridLayout* lay = new QGridLayout(this);
     lay->setSpacing(0);
@@ -43,7 +45,9 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     lay->addWidget(&_view     , 1, 1);
 
    _menuBar.addAction ( "Bim une action" );
-    
+
+
+   _scene.initialize();
 }
 
 
