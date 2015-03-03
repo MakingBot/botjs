@@ -24,7 +24,7 @@
  *
  * */
 ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
-    : ViewerIProperty(propid, readonly, parent)
+    : ViewerIProperty(propid, readonly, parent), _valid(false)
 {
     // Create the layout
     QHBoxLayout* lay = new QHBoxLayout(this);
@@ -32,6 +32,7 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
     
     // Manage the read only parameter
     _box.setReadOnly(readonly);
+    connect(&_box, SIGNAL(valueChanged(int)), &b, SLOT(apply()));
     if(!readonly)
     {
         lay->addWidget( &_setButton );
@@ -48,5 +49,17 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
  * */
 void ViewerInteger::apply()
 {
-    emit newValueRequestedFor(_propid);
+    if(_valid)
+    {
+        emit newValueRequestedFor(_propid);
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void ViewerInteger::onValueChange()
+{
+    _valid = true;
+    _setButton.setText("SET READY!");
 }
