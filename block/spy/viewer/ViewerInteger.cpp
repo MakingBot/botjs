@@ -37,8 +37,6 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
     {
         lay->addWidget( &_setButton );
         connect(&_setButton, SIGNAL(click()), this, SLOT(apply()));
-
-
     }
 
     // Box property

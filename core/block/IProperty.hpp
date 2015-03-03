@@ -117,11 +117,28 @@ public:
     //! Copy operator
     inline void operator=(const IProperty& p){ copy(p); }
 
+    /* 
+    void updateQid()
+    {
+      _qid =  obj->metaObject()->indexOfProperty ( const char * name ) ;
+    }
+    */
+
 protected:
+
+    //! Id
+    //! The qobject property id
+    int _qid;
     
+    //! Name
+    //! Name of the property
+    QString _name;
+    
+    //! Is writable
     //! True if the property is writable
     bool _writable;
 
+    //! Type
     //! Custom type for the interactive properties
     IPropertyType _type;
 
