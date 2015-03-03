@@ -54,6 +54,10 @@ BOTJS_GENERATE_BLOCK(
 
 INCLUDE(block/spy/script.cmake)
 
+# === COM-INTERFACE ===
+
+INCLUDE(block/composer/script.cmake)
+
 
 # # === VIEWER 3D ===
 

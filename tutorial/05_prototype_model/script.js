@@ -37,6 +37,9 @@ interface1.start();
 agent.co(ddata);
 
 
+core.create("composer", "compoz");
+compoz.visible = true;
+
 // Show spy
 agent.show();
 
