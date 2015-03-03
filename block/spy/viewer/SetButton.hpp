@@ -1,8 +1,8 @@
 
-#ifndef VIEWERINTEGER_HPP
-#define VIEWERINTEGER_HPP
+#ifndef SETBUTTON_HPP
+#define SETBUTTON_HPP
 //!
-//! \file ViewerInteger.hpp
+//! \file SetButton.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -20,16 +20,14 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QSpinBox>
-#include <SetButton.hpp>
-#include <ViewerIProperty.hpp>
+#include <QPushButton>
 
 //!
-//! To display and modify integers
+//! Button for interative properties viewer
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class ViewerInteger : public ViewerIProperty
+class SetButton : public QPushButton
 {
     Q_OBJECT
 
@@ -38,43 +36,52 @@ public:
     //!
     //! Default constructor
     //!
-    ViewerInteger(quint8 propid, bool readonly, QWidget* parent=0);
-
-    //!
-    //! Integer getter
-    //!
-    long getInteger()
+    SetButton(QWidget* parent=0)
+        : QPushButton(parent), _changed(false)
     {
-        return _box.value();
+        setText("ok");
     }
 
     //!
-    //! Integer setter
     //!
-    void setInterger(long integer)
+    //!
+    bool hasChanged()
     {
-        _box.setValue(integer);
-        _setButton.update();
+        return _changed;
     }
 
-public slots:
+    //!
+    //!
+    //!
+    void change()
+    {
+        if( !_changed )
+        {
+            setText("READY TO UPDATE");
+            _changed = true;
+        }
+    }
 
-    //! To apply the choice of the user
-    void apply();
-
-    //! Called when the user change the value
-    void onValueChange(int value);
+    //!
+    //!
+    //!
+    void update()
+    {
+        if( _changed )
+        {
+            setText("ok");
+            _changed = false;
+        }
+    }
 
 protected:
 
-    //! Box
-    //! Box to display the value
-    QSpinBox _box;
-
-    //! Set Button
-    //! Button to set the value
-    SetButton _setButton;
+    //! True when the data has changed
+    bool _changed;
 
 };
 
-#endif // VIEWERINTEGER_HPP
+#endif // SETBUTTON_HPP
+
+
+

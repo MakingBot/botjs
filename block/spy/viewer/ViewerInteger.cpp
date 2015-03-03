@@ -32,9 +32,13 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
     
     // Manage the read only parameter
     _box.setReadOnly(readonly);
+    connect(&_box, SIGNAL(valueChanged(int)), this, SLOT(onValueChange(int)));
     if(!readonly)
     {
         lay->addWidget( &_setButton );
+        connect(&_setButton, SIGNAL(click()), this, SLOT(apply()));
+
+
     }
 
     // Box property
@@ -47,6 +51,16 @@ ViewerInteger::ViewerInteger(quint8 propid, bool readonly, QWidget* parent)
  * */
 void ViewerInteger::apply()
 {
-
+    if(_setButton.hasChanged())
+    {
+        emit newValueRequestedFor(_propid);
+    }
 }
 
+/* ============================================================================
+ *
+ * */
+void ViewerInteger::onValueChange(int value)
+{
+    _setButton.change();
+}

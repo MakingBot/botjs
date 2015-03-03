@@ -16,6 +16,8 @@ SET(PROJECT_HEADER_FILES
 
     block/spy/ViewerIProperty.hpp
 
+    block/spy/viewer/SetButton.hpp
+
     block/spy/viewer/ViewerInteger.hpp
     )
 
