@@ -53,6 +53,8 @@ public:
     //!
     void setInterger(long integer)
     {
+        _valid = false;
+        _setButton.setText("OK");
         _box.setValue(integer);
     }
 
@@ -62,6 +64,9 @@ public slots:
     void apply();
 
 protected:
+
+    //! True if the value has changed
+    bool _valid;
 
     //! Box to display the value
     QSpinBox _box;
