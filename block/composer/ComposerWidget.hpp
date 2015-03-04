@@ -66,6 +66,11 @@ protected:
     //!
     GraphicsBlockScene _scene;
 
+
+    //! FROM QWidget
+    void wheelEvent(QWheelEvent* event);
+
+
 };
 
 #endif // COMPOSERWIDGET_HPP

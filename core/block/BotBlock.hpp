@@ -126,6 +126,10 @@ public:
         , _bname(name)
     	, _idNumber(0xFFFFFFFF)
         , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
+
+        , _bsize     (150,150)
+        , _bposition ( 0 , 0 )
+
         , _bstatus("Block initialization")
         , _bstate(BlockInitialization)
     {
@@ -540,7 +544,7 @@ public:
     //!
     //! Block size getter
     //!
-    const QSize& blockSize()
+    const QSize& blockSize() const
     {
         return _bsize;
     }

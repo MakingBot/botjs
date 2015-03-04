@@ -18,6 +18,8 @@ class GraphicsBlockItem : public QGraphicsItemGroup
 
 public:
 
+    enum BlockItemCorner { BICornerTopLeft, BICornerBotLeft, BICornerBotRight, BICornerTopRight };
+
     //!
     //! Default constructor
     //!
@@ -41,30 +43,35 @@ protected:
     //! Color of the block role
     QColor _mainColor;
 
+    //! Bounding rectangle
+    QRectF _brect;
 
-    //! Block size
-    QSizeF _blockSize;
+    //! Top left corner point of the bounding rectangle
+    QPointF _corner;
+    
+    QPointF _extCorner;
 
+    QRectF _topTextZone;
+
+    //! Corner handlers
+    QMap<BlockItemCorner, QRectF> _cHandler;
 
     //! Block
     //! Block that the item represent
     QSharedPointer<BotBlock> _block;
 
-
-
-
+    //!
     QList<QWeakPointer<GraphicsLinkItem> > _links;
 
 
-    //! Color passive border
-    static const QColor BorderColor1;
 
-    //! Color active border
-    static const QColor BorderColor2;
+    //!
+    void computeGeometry();
 
-    //! Color text
-    static const QColor TextColor;
-
+    //!
+    //! Paint the item body
+    //!
+    void paintStructure(QPainter* painter);
 
     //!
     //! Interface
@@ -74,30 +81,35 @@ protected:
         return _block->blockName();
     }
 
-
-
-
-    const bool hasChilds() const { return true; }
-
- virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event )
+    //!
+    //! Interface
+    //!
+    const QSize& blockSize() const
     {
-        _hover = true;
-        update();
-    }
-
-    virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
-    {
-        _hover = false;
-        update();
+        return _block->blockSize();
     }
 
 
-    virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event )
-    {
-QGraphicsItem::mousePressEvent(event);
-        qDebug() << "click";
 
-    }
+    const bool hasChilds() const { return false; }
+
+    //! FROM QGraphicsItem
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
+
+    //! FROM QGraphicsItem
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
+
+    //! FROM QGraphicsItem
+    void hoverMoveEvent(QGraphicsSceneHoverEvent* event);
+
+    //! FROM QGraphicsItem
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+
+    //! FROM QGraphicsItem
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+
+    //! FROM QGraphicsItem
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
     //! FROM QGraphicsItem
     void dragEnterEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
