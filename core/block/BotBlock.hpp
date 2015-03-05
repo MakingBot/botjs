@@ -554,7 +554,10 @@ public:
     //!
     void setBlockSize(const QSize& size)
     {
-        _bsize = size;
+        if( size.width() > 100 && size.height() > 100 )
+        {
+            _bsize = size;    
+        }
     }
 
     //!

@@ -88,9 +88,9 @@ void GraphicsBlockItem::computeGeometry()
     _brect  = QRectF(corner, size);
 
     // Handler rectangles
-    _cHandler[BICornerTopLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() - h2 - hsize.height() ) , hsize);
+    // _cHandler[BICornerTopLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() - h2 - hsize.height() ) , hsize);
     _cHandler[BICornerBotLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() + h2                  ) , hsize);
-    _cHandler[BICornerBotRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() + h2                  ) , hsize);
+    // _cHandler[BICornerBotRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() + h2                  ) , hsize);
     _cHandler[BICornerTopRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() - h2 - hsize.height() ) , hsize);
 
     //
@@ -245,7 +245,7 @@ void GraphicsBlockItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
     _hover = true;
 
     // Change cursor
-    setCursor(QCursor(Qt::PointingHandCursor));
+    setCursor(QCursor(Qt::OpenHandCursor));
 
     // refresh view
     update();
@@ -271,7 +271,16 @@ void GraphicsBlockItem::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
  * */
 void GraphicsBlockItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
 {
-
+    QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
+    while(c.hasNext())
+    {
+        c.next();
+        if( c.value().contains(event->pos()) )
+        {
+            // Change cursor
+            setCursor(QCursor(Qt::SizeBDiagCursor));
+        }
+    }
 }
 
 /* ============================================================================
@@ -279,8 +288,33 @@ void GraphicsBlockItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
  * */
 void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+    if( _resizeMode )
+    {
+        QSize new_size = blockSize();
+        QPointF diff = event->scenePos() - event->lastScenePos();
+        diff *= 2;
+        switch(_resizeCorner)
+        {
+            case BICornerTopLeft:
+                break;
 
-    QGraphicsItemGroup::mouseMoveEvent(event);
+            case BICornerBotLeft:
+                new_size += QSize( -diff.x() ,  diff.y() );
+                break;
+            
+            case BICornerBotRight:
+                break;
+
+            case BICornerTopRight:
+                new_size += QSize( diff.x() , -diff.y() );
+                break;
+        }
+        setBlockSize( new_size );
+    }
+    else
+    {
+        QGraphicsItemGroup::mouseMoveEvent(event);        
+    }
 }
 
 /* ============================================================================
@@ -288,9 +322,23 @@ void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
  * */
 void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
+    while(c.hasNext())
+    {
+        c.next();
+        if( c.value().contains(event->pos()) )
+        {
+            _resizeMode = true;
+            _resizeCorner = c.key();
+        }
+    }
 
-
-    QGraphicsItemGroup::mousePressEvent(event);
+    if( !_resizeMode )
+    {
+        // Change cursor
+        setCursor(QCursor(Qt::ClosedHandCursor));
+        QGraphicsItemGroup::mousePressEvent(event); 
+    }
 }
 
 /* ============================================================================
@@ -298,6 +346,25 @@ void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
  * */
 void GraphicsBlockItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* event)
 {
+    // If resize mode was enabled, disable it
+    if( _resizeMode )
+    {
+        _resizeMode = false;
+    }
+
+    // Change cursor
+    if( _hover )
+    {
+        setCursor(QCursor(Qt::OpenHandCursor));
+    }
+    else
+    {
+        setCursor(QCursor(Qt::ArrowCursor));
+    }
+
+
+
+
 
     QGraphicsItemGroup::mouseReleaseEvent(event);
 }

@@ -40,6 +40,14 @@ protected:
     //! When object is dragged over
     bool _dragOver;
 
+    //! Resize mode
+    //! True when the item is in resize mode
+    bool _resizeMode;
+
+    //! Resize corner
+    //! Hold the corner grab by the mouse for resizing
+    BlockItemCorner _resizeCorner;
+
     //! Color of the block role
     QColor _mainColor;
 
@@ -87,6 +95,15 @@ protected:
     const QSize& blockSize() const
     {
         return _block->blockSize();
+    }
+
+    //!
+    //! Interface
+    //!
+    void setBlockSize(const QSize& size)
+    {
+        _block->setBlockSize(size);
+        computeGeometry();
     }
 
 
