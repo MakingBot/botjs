@@ -23,7 +23,7 @@
 #include <QWidget>
 #include <QMenuBar>
 #include <BlockMenu.hpp>
-#include <QGraphicsView>
+#include <GraphicsBlockView.hpp>
 #include <GraphicsBlockScene.hpp>
 
 class ComposerBlock;
@@ -60,16 +60,36 @@ protected:
 
     //! View
     //!
-    QGraphicsView _view;
+    GraphicsBlockView _view;
 
     //! Scene
-    //!
+    //! The graphic scene, where items are displayed
     GraphicsBlockScene _scene;
 
+
+
+    QCursor _cursorZoom;
+    QCursor _cursorKill;
+    QCursor _cursorConnect;
+
+
+
+    //!
+    //! This function initialize a cursor with a svg cursor
+    //!
+    static QCursor InitializeSvgCusor(const QString& filename);
 
     //! FROM QWidget
     void wheelEvent(QWheelEvent* event);
 
+    //! FROM QWidget
+    void closeEvent(QCloseEvent* event);
+
+    //! FROM QWidget
+    void keyPressEvent(QKeyEvent* event);
+    
+    //! FROM QWidget
+    void keyReleaseEvent(QKeyEvent* event);
 
 };
 

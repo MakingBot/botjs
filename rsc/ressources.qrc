@@ -3,5 +3,8 @@
         <file alias="logo">icon/logo.svg</file>
         <file alias="plus">icon/plus.svg</file>
         <file alias="skull">icon/skull.svg</file>
+        <file alias="magnifier">icon/magnifier.svg</file>
+        <file alias="plug">icon/plug.svg</file>
+        <file alias="spy">icon/spy.svg</file>
     </qresource>
 </RCC>

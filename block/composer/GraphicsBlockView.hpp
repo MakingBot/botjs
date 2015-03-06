@@ -1,7 +1,7 @@
-#ifndef GRAPHICSBLOCKSCENE_HPP
-#define GRAPHICSBLOCKSCENE_HPP
+#ifndef GRAPHICSBLOCKVIEW_HPP
+#define GRAPHICSBLOCKVIEW_HPP
 //!
-//! \file GraphicsBlockScene.hpp
+//! \file GraphicsBlockView.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -19,48 +19,27 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
-#include <BotEngine.hpp>
-#include <QGraphicsScene>
+
+#include <QGraphicsView>
 #include <BlockViewMode.hpp>
-#include <GraphicsBlockItem.hpp>
+#include <GraphicsBlockScene.hpp>
 
 //!
-//! The scene of blocks
+//! 
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class GraphicsBlockScene : public QGraphicsScene
+class GraphicsBlockView : public QGraphicsView
 {
+
     Q_OBJECT
     
 public:
 
-
     //!
     //! Default constructor
     //!
-    explicit GraphicsBlockScene(QWidget* parent);
-
-    //!
-    //! Initialize the secne and place block already existing
-    //!
-    void initialize();
-
-
-    void appendBlock(QSharedPointer<BotBlock> block);
-
-
-    // ========================================================================
-    // => Cursor management
-
-    //!
-    //! Widget centralize cursor management
-    //!
-    void setCursor(const QCursor& cursor)
-    {
-        _wParent->setCursor(cursor);
-    }
+    explicit GraphicsBlockView(QWidget* parent);
 
 
     // ========================================================================
@@ -80,30 +59,21 @@ public:
     void setMode(BlockViewMode mode)
     {
         _mode = mode;
+        qobject_cast<GraphicsBlockScene*>(scene())->setMode(mode);
     }
-
-public slots:
-
-    void onRequestBlockCreation(QSharedPointer<BotBlock> creator_block, QPointF position, QString type);
-
 
 protected:
 
-    //! Window parent
-    //! The scene need a parent widget
-    QWidget* _wParent;
 
-    //! TODO correct this architecture error
     //! Mode
     //! View mode, change action of the mouse
     BlockViewMode _mode;
 
-    //! Item map
-    //! Every item is stored in a map, linked to its id number
-    QMap<quint32, QSharedPointer<GraphicsBlockItem> > _itemMap;
-
     //! FROM QWidget
-    // virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+    void mouseMoveEvent(QMouseEvent* event);
+
+
 };
 
-#endif // GRAPHICSBLOCKSCENE_HPP
+
+#endif // GRAPHICSBLOCKVIEW_HPP

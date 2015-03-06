@@ -17,18 +17,18 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QPixmap>
 #include <QGridLayout>
 #include <QWheelEvent>
+#include <QSvgRenderer>
 #include <ComposerWidget.hpp>
 #include <ComposerBlock.hpp>
-
-
 
 /* ============================================================================
  *
  * */
 ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
-    : QWidget(parent), _block(parent_block)
+    : QWidget(parent), _block(parent_block), _view(this), _scene(this)
 {
     // Window configuration
     setWindowTitle("Composer");
@@ -53,27 +53,117 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     _view.setScene(&_scene);
     _view.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
+
+    _cursorConnect  = InitializeSvgCusor(":/icon/plug");
+    _cursorKill     = InitializeSvgCusor(":/icon/skull");
+    _cursorZoom     = InitializeSvgCusor(":/icon/magnifier");
+
 }
 
+/* ============================================================================
+ *
+ * */
+QCursor ComposerWidget::InitializeSvgCusor(const QString& filename)
+{
+    const unsigned int i = 20;
 
+    // Create the image and the renderer
+    QSvgRenderer svgRender( filename );
+    QImage image(i, i, QImage::Format_ARGB32);
+
+    // Get QPainter that paints to the image
+    QPainter painter(&image);
+    svgRender.render(&painter);
+
+    // Cursor
+    return QCursor( QPixmap::fromImage( image ) );
+}
 
 /* ============================================================================
  *
  * */
 void ComposerWidget::wheelEvent(QWheelEvent* event)
 {
-    _view.setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    
-    // Scale the view / do the zoom
-    double scaleFactor = 1.15;
-    if(event->delta() > 0)
+    switch( _view.mode() )
     {
-        // Zoom in
-        _view.scale(scaleFactor, scaleFactor);
+        case BlockViewMode::BSM_Editor  : break;
+
+        case BlockViewMode::BSM_Zoom    :
+        {
+            // Define transformatio anchor
+            _view.setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+            // Scale the view / do the zoom
+            double scaleFactor = 1.15;
+            if(event->delta() > 0)
+            {
+                // Zoom in
+                _view.scale(scaleFactor, scaleFactor);
+            }
+            else
+            {
+                // Zooming out
+                _view.scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            }       
+            break;
+        }
+
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
     }
-    else
+}
+
+/* ============================================================================
+ *
+ * */
+void ComposerWidget::closeEvent(QCloseEvent* event)
+{
+    if(_block)
     {
-        // Zooming out
-        _view.scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+        // Hide instead of close
+        _block->hide();
+        
+        // Ignore
+        event->ignore();
     }
+}
+
+/* ============================================================================
+ *
+ * */
+void ComposerWidget::keyPressEvent(QKeyEvent* event)
+{
+    //std::cout << event->key() << std::endl;
+    switch(event->key())
+    {
+        case Qt::Key_Control :
+            setCursor(_cursorZoom);
+            _view.setMode( BlockViewMode::BSM_Zoom );
+            break;
+
+        case Qt::Key_Shift :
+            setCursor(Qt::SizeAllCursor);
+            _view.setMode( BlockViewMode::BSM_Move );
+            break;
+
+        case Qt::Key_D :
+            setCursor(_cursorKill);
+            _view.setMode( BlockViewMode::BSM_Kill );
+            break;
+
+        case Qt::Key_C :
+            setCursor(_cursorConnect);
+            _view.setMode( BlockViewMode::BSM_Connect );
+            break;
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void ComposerWidget::keyReleaseEvent(QKeyEvent* event)
+{
+    setCursor(Qt::ArrowCursor);
+    _view.setMode( BlockViewMode::BSM_Editor );
 }

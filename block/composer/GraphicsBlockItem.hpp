@@ -6,15 +6,18 @@
 #include <QColor>
 #include <QPainter>
 #include <BotBlock.hpp>
+#include <BlockViewMode.hpp>
 #include <QGraphicsItemGroup>
 
 class GraphicsLinkItem;
+class GraphicsBlockScene;
 
 //!
 //! Block item
 //!
-class GraphicsBlockItem : public QGraphicsItemGroup
+class GraphicsBlockItem : public QObject, public QGraphicsItemGroup
 {
+    Q_OBJECT
 
 public:
 
@@ -31,6 +34,12 @@ public:
     //! FROM QGraphicsItem
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+
+
+
+signals:
+
+    void requestBlockCreation(QSharedPointer<BotBlock> creator_block, QPointF position, QString type);
 
 protected:
 
@@ -74,12 +83,26 @@ protected:
 
 
     //!
+    //! Compute each geometric parameters
+    //!
     void computeGeometry();
 
     //!
     //! Paint the item body
     //!
     void paintStructure(QPainter* painter);
+
+
+    //!
+    //! Block scene mode getter 
+    //!
+    BlockViewMode bSceneMode();
+
+    //!
+    //! Block scene getter
+    //!
+    GraphicsBlockScene* bScene();
+
 
     //!
     //! Interface
@@ -106,9 +129,14 @@ protected:
         computeGeometry();
     }
 
+    //!
+    //! Interface
+    //!
+    const bool hasChilds() const
+    {
+        return _block->blockHasSons();
+    }
 
-
-    const bool hasChilds() const { return false; }
 
     //! FROM QGraphicsItem
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event);

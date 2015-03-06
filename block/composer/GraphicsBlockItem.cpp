@@ -5,6 +5,7 @@
 #include <QCursor>
 #include <QMimeData>
 #include <QMapIterator>
+#include <GraphicsBlockScene.hpp>
 #include <QGraphicsSceneDragDropEvent>
 
 #include <iostream>
@@ -16,24 +17,27 @@ using namespace std;
  *
  * */
 GraphicsBlockItem::GraphicsBlockItem(QSharedPointer<BotBlock> block, QGraphicsItem* parent)
-    : QGraphicsItemGroup(parent),
-      _hover(false)
-    , _dragOver(false)
+    : QObject(), QGraphicsItemGroup(parent)
+    , _hover(false) , _dragOver(false)
     , _block(block)
 {
     // Configure events
     setAcceptDrops(true);
     setAcceptHoverEvents(true);
+    setAcceptedMouseButtons(Qt::LeftButton);
 
     // Define flags
     setFlag(ItemIsMovable);
     setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges);
 
+    // Define the position
+    setPos(block->blockPosition());
+
     // Initialize block main color
     _mainColor = QColor( BotBlock::BlockRoleToColor(block->blockRole()) );
 
-    //
+    // Compute geometry
     computeGeometry();
 }
 
@@ -128,7 +132,6 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
             }
         }
 
-
         // The body is always the same
         pen.setStyle     ( Qt::SolidLine );
         pen.setColor     ( _mainColor    );
@@ -221,9 +224,11 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
 
             // Write the block name
             QFont font( "Roboto" );
-            font.setBold ( true );
+            font.setBold ( false );
             font.setPixelSize(20);
             painter->setFont(font);
+
+            pen.setStyle     ( Qt::SolidLine );
             pen.setColor( QColor("#FFFFFF") );
             painter->setPen(pen);
             painter->drawText(QRectF(_corner, blockSize()), Qt::AlignCenter, blockName());
@@ -235,20 +240,43 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
     }
 }
 
+/* ============================================================================
+ *
+ * */
+BlockViewMode GraphicsBlockItem::bSceneMode()
+{
+    return bScene()->mode();
+}
+
+/* ============================================================================
+ *
+ * */
+GraphicsBlockScene* GraphicsBlockItem::bScene()
+{
+    return qobject_cast<GraphicsBlockScene*>(scene());
+}
 
 /* ============================================================================
  *
  * */
 void GraphicsBlockItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-    // Set a flag
-    _hover = true;
+    switch( bSceneMode() )
+    {
+        case BlockViewMode::BSM_Editor:
+            // Set a flag
+            _hover = true;
+            // Change cursor
+            bScene()->setCursor(QCursor(Qt::OpenHandCursor));
+            // refresh view
+            update();
+            break;
 
-    // Change cursor
-    setCursor(QCursor(Qt::OpenHandCursor));
-
-    // refresh view
-    update();
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
+    }
 }
 
 /* ============================================================================
@@ -256,30 +284,49 @@ void GraphicsBlockItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
  * */
 void GraphicsBlockItem::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
 {
-    // Set a flag
-    _hover = false;
+    switch( bSceneMode() )
+    {
+        case BlockViewMode::BSM_Editor:
+            // Set a flag
+            _hover = false;
+            // Change cursor
+            bScene()->setCursor(QCursor(Qt::ArrowCursor));
+            // refresh view
+            update();
+            break;
 
-    // Change cursor
-    setCursor(QCursor(Qt::ArrowCursor));
-
-    // refresh view
-    update();
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
+    }
 }
 
 /* ============================================================================
  *
  * */
 void GraphicsBlockItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
-{
-    QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
-    while(c.hasNext())
+{   
+    switch( bSceneMode() )
     {
-        c.next();
-        if( c.value().contains(event->pos()) )
+        case BlockViewMode::BSM_Editor:
         {
-            // Change cursor
-            setCursor(QCursor(Qt::SizeBDiagCursor));
+            QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
+            while(c.hasNext())
+            {
+                c.next();
+                if( c.value().contains(event->pos()) )
+                {
+                    // Change cursor
+                    bScene()->setCursor(QCursor(Qt::SizeBDiagCursor));
+                }
+            }
         }
+
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
     }
 }
 
@@ -288,32 +335,54 @@ void GraphicsBlockItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
  * */
 void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    if( _resizeMode )
+    switch( bSceneMode() )
     {
-        QSize new_size = blockSize();
-        QPointF diff = event->scenePos() - event->lastScenePos();
-        diff *= 2;
-        switch(_resizeCorner)
+        case BlockViewMode::BSM_Editor:
         {
-            case BICornerTopLeft:
-                break;
+            if( _resizeMode )
+            {
+                QSize new_size = blockSize();
+                QPointF diff = event->scenePos() - event->lastScenePos();
+                diff *= 2;
+                if( !hasChilds() )
+                {
+                    if( diff.x() > diff.y() )
+                    {
+                        diff.setY( diff.x() );
+                    }
+                    else
+                    {
+                        diff.setX( diff.y() );
+                    }
+                }
+                switch(_resizeCorner)
+                {
+                    case BICornerTopLeft:
+                        break;
 
-            case BICornerBotLeft:
-                new_size += QSize( -diff.x() ,  diff.y() );
-                break;
-            
-            case BICornerBotRight:
-                break;
+                    case BICornerBotLeft:
+                        new_size += QSize( -diff.x() ,  diff.y() );
+                        break;
+                    
+                    case BICornerBotRight:
+                        break;
 
-            case BICornerTopRight:
-                new_size += QSize( diff.x() , -diff.y() );
-                break;
+                    case BICornerTopRight:
+                        new_size += QSize( diff.x() , -diff.y() );
+                        break;
+                }
+                setBlockSize( new_size );
+            }
+            else
+            {
+                QGraphicsItemGroup::mouseMoveEvent(event);        
+            }
         }
-        setBlockSize( new_size );
-    }
-    else
-    {
-        QGraphicsItemGroup::mouseMoveEvent(event);        
+
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
     }
 }
 
@@ -322,22 +391,32 @@ void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
  * */
 void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
-    while(c.hasNext())
+    switch( bSceneMode() )
     {
-        c.next();
-        if( c.value().contains(event->pos()) )
+        case BlockViewMode::BSM_Editor:
         {
-            _resizeMode = true;
-            _resizeCorner = c.key();
+            QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
+            while(c.hasNext())
+            {
+                c.next();
+                if( c.value().contains(event->pos()) )
+                {
+                    _resizeMode = true;
+                    _resizeCorner = c.key();
+                }
+            }
+            if( !_resizeMode )
+            {
+                bScene()->setCursor(QCursor(Qt::ClosedHandCursor));
+                QGraphicsItemGroup::mousePressEvent(event); 
+            }
+            break;
         }
-    }
 
-    if( !_resizeMode )
-    {
-        // Change cursor
-        setCursor(QCursor(Qt::ClosedHandCursor));
-        QGraphicsItemGroup::mousePressEvent(event); 
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
     }
 }
 
@@ -346,27 +425,37 @@ void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
  * */
 void GraphicsBlockItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* event)
 {
-    // If resize mode was enabled, disable it
-    if( _resizeMode )
+    switch( bSceneMode() )
     {
-        _resizeMode = false;
+        case BlockViewMode::BSM_Editor:
+        {
+            // If resize mode was enabled, disable it
+            if( _resizeMode )
+            {
+                _resizeMode = false;
+            }
+
+            // Change cursor
+            if( _hover )
+            {
+                bScene()->setCursor(QCursor(Qt::OpenHandCursor));
+            }
+            else
+            {
+                bScene()->setCursor(QCursor(Qt::ArrowCursor));
+            }
+
+            QGraphicsItemGroup::mouseReleaseEvent(event);
+            break;
+        }
+
+        case BlockViewMode::BSM_Zoom    : break;
+        case BlockViewMode::BSM_Move    : break;
+        case BlockViewMode::BSM_Kill    : break;
+        case BlockViewMode::BSM_Connect : break;
     }
 
-    // Change cursor
-    if( _hover )
-    {
-        setCursor(QCursor(Qt::OpenHandCursor));
-    }
-    else
-    {
-        setCursor(QCursor(Qt::ArrowCursor));
-    }
 
-
-
-
-
-    QGraphicsItemGroup::mouseReleaseEvent(event);
 }
 
 /* ============================================================================
@@ -377,7 +466,9 @@ void GraphicsBlockItem::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
     if (event->mimeData()->hasText())
     {
         event->setAccepted(true);
+        
         _dragOver = true;
+
         update();
     }
     else
@@ -391,7 +482,11 @@ void GraphicsBlockItem::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
  * */
 void GraphicsBlockItem::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
 {
+    Q_UNUSED(event);
 
+    _dragOver = false;
+
+    update();
 }
 
 /* ============================================================================
@@ -400,6 +495,26 @@ void GraphicsBlockItem::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
 void GraphicsBlockItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
 
-    cout << "block : " << event->mimeData()->text().toStdString() << endl;
+
+    if (event->mimeData()->hasText() )
+    {
+            bool ok;
+            event->setAccepted(true);
+
+            // Get the requested block name
+            QString requested_block_type = event->mimeData()->text();
+
+
+            QPointF new_block_position = event->scenePos() - pos();
+
+
+
+            emit requestBlockCreation(_block, new_block_position, requested_block_type);
+
+
+
+    }
+
+
 }
 

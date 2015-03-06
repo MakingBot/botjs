@@ -19,12 +19,12 @@ BlockMenuItem::BlockMenuItem(const QString& block_name, const int hue, QWidget* 
     setMaximumSize(bsize);
 
     // Compute color
-    QColor color;
-    color.setHsv( hue, 89, 242 );
+    QColor color("#424242");
+    // color.setHsv( hue, 89, 242 );
 
     // Define style
     QString style = QString("QLabel { background-color: ") +  color.name() +
-                    QString("; font: 14px Roboto ;  }"); //border: 2px solid #666666;
+                    QString("; font: 14px Roboto ; border: none ; color: white ; border-radius: 30px; }");
     setStyleSheet( style );
 
     // Align
