@@ -50,12 +50,10 @@ BOTJS_GENERATE_BLOCK(
     PROJECT_DEPENDENT_BLOCKS
     )
 
-# === SPY ===
+# === WIDGETS ===
 
 INCLUDE(block/spy/script.cmake)
-
-# === COM-INTERFACE ===
-
+INCLUDE(block/network/script.cmake)
 INCLUDE(block/composer/script.cmake)
 
 

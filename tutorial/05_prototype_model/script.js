@@ -36,9 +36,16 @@
 
 // agent.co(ddata);
 
+core.create("network", "net")
 
-core.create("composer", "compoz");
-compoz.visible = true;
+net.port = 5000;
+
+net.ping();
+
+
+
+// core.create("composer", "compoz");
+// compoz.visible = true;
 
 // // Show spy
 // agent.show();
