@@ -23,8 +23,9 @@
 /* ============================================================================
  *
  * */
-CoreBlock::CoreBlock(const QString& name, QObject *parent)
-    : BotBlock(name, parent)
+CoreBlock::CoreBlock(const QString& name)
+    : BotBlock(name)
+    , _coreCfgMapper( (int*)&_cfg, { EnumPair(CoreCfgDev,"dev"), EnumPair(CoreCfgBot,"bot") } )
 { }
 
 /* ============================================================================
@@ -50,21 +51,44 @@ BotBlock* CoreBlock::create(const QString& btypename, const QString& varname)
     return block;
 }
 
+
 /* ============================================================================
  *
  * */
-void CoreBlock::toJsCfg(QTextStream& stream)
+void CoreBlock::updateBotCfg()
 {
-
+    updateCfg(CoreCfgBot);
 }
 
 /* ============================================================================
  *
  * */
-void CoreBlock::updateCfgOpe()
+void CoreBlock::updateDevCfg()
 {
-    // Operatonal configuration file path
-    QString filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("ope.js");
+    updateCfg(CoreCfgDev);
+}
+
+/* ============================================================================
+ *
+ * */
+void CoreBlock::updateCfg(CoreCfg cfg)
+{
+    // Get the filepath
+    QString filepath;
+    switch(cfg)
+    {
+        case CoreBlock::CoreCfgDev:
+            filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("dev.js");
+            break;
+
+        case CoreBlock::CoreCfgBot:
+            filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("bot.js");
+            break;
+
+        default:
+            // TODO log an error
+            break;
+    }
 
     // Create and open the file
     QFile file(filepath);
@@ -76,20 +100,59 @@ void CoreBlock::updateCfgOpe()
 
     // Initialize a text stream
     QTextStream stream(&file);
-    
+    stream << "// =========================" << endl;
+
     // Append a little header
-    stream << "// ================================" << endl;
-    stream << "// === Operatonal Configuration ===" << endl;
+    switch(cfg)
+    {
+        case CoreBlock::CoreCfgDev:
+            stream << "// === Dev Configuration ===" << endl << endl;
+            break;
+
+        case CoreBlock::CoreCfgBot:
+            stream << "// === Bot Configuration ===" << endl << endl;
+            break;
+
+        default:
+            // TODO log an error
+            break;
+    }
 
     // TODO append the date and the hour
 
     // Convert the architecture
-    toJsCfg(stream);
+    toJsCfg(cfg, stream);
 
     // Close the file
     file.close();
 }
 
+/* ============================================================================
+ *
+ * */
+void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
+{
+    QString str_creation;
+
+    QTextStream stream_creation(&str_creation);
 
 
+    for(quint32 id=0 ; id<BotBlock::BlockCounter ; id++)
+    {
+        // Get the block
+        QSharedPointer<BotBlock> block = BotBlock::IdNumberToBlock(id);
+ 
+        if( block )
+        {
+            // Creation phase
+            block->jsCfgPhaseCreation(stream_creation);
+            stream_creation << endl;
+        
+        
+        }
+    }
 
+
+    // Concatenate streams
+    stream << str_creation;
+}

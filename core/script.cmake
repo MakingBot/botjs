@@ -22,6 +22,7 @@ SET(PROJECT_HEADER_FILES
     core/type/Type.hpp
     core/type/QRealList.hpp
     core/type/ShapeData.hpp
+    core/type/EnumStringMapper.hpp
 
     core/block/BotBlock.hpp
     core/block/IProperty.hpp

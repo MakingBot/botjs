@@ -50,3 +50,11 @@ QSharedPointer<BotBlock> BotBlock::IdNumberToBlock(quint32 id)
 {
 	return BlockMap[id];
 }
+
+/* ============================================================================
+ *
+ * */
+QString BotBlock::JsString(const QString& string)
+{
+    return QString("'") + string + QString("'");
+}

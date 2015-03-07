@@ -385,6 +385,8 @@ public:
         return ptr;
     }
 
+
+
     //!
     //! ID Number getter
     //!
@@ -635,6 +637,9 @@ public:
     //! To get a block with its Id number
     static QSharedPointer<BotBlock> IdNumberToBlock(quint32 id);
 
+    //! To convert a string into a js string
+    static QString JsString(const QString& string);
+
     //!
     //! Each role is associated to a color
     //!
@@ -670,10 +675,25 @@ public:
     // ========================================================================
     // => Block save function
 
-    // virtual QTextStream& jsCfgPhaseCreation(QTextStream& stream)
-    // {
-        
-    // }
+    //!
+    //! Provide the js creation phase of this block
+    //!
+    virtual void jsCfgPhaseCreation(QTextStream& stream)
+    {
+        QSharedPointer<BotBlock> father = blockFather().toStrongRef();
+        if( father )
+        {
+
+            stream << "// Creation block: " << blockName() << endl;
+
+            stream << "core.idChainToBlock(" << JsString(father->blockIdChain())
+                   << ").create(" << JsString(blockTypeName()) << " , " << JsString(blockName()) << ");" << endl;
+
+
+
+        }
+        // else it is the core and it does not need to be created
+    }
 
     // virtual void jsCfgConnectionPhase
     // virtual void jsCfgEnablePhase

@@ -20,6 +20,7 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <BotBlock.hpp>
+#include <EnumStringMapper.hpp>
 
 //!
 //! This block is the top parent of all blocks
@@ -30,7 +31,14 @@ class CoreBlock : public BotBlock
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString blockName READ cfgAsStr WRITE setCfgAsStr)
+
 public:
+
+    //!
+    //! Core configuration
+    //!
+    enum CoreCfg { CoreCfgDev, CoreCfgBot } ;
 
     //!
     //! Default constructor
@@ -52,20 +60,92 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("core"); }
 
+    // ========================================================================
+    // => Property core configuration
+
+    //!
+    //! Cfg getter
+    //!
+    CoreCfg cfg()
+    {
+        return _cfg;
+    }
+
+    //!
+    //! Cfg setter
+    //!
+    void setCfg(CoreCfg cfg)
+    {
+        _cfg = cfg;
+    }
+
+    //!
+    //! Cfg getter string
+    //!
+    QString cfgAsStr() const
+    {
+        return _coreCfgMapper.toString();
+    }
+
+    //!
+    //! Cfg setter string
+    //!
+    void setCfgAsStr(const QString& name)
+    {
+        _coreCfgMapper.fromString(name);
+    }
+
+    // ========================================================================
+    // => Save architecture functions
+
+    //!
+    //! Update the given configuration  
+    //!
+    void updateCfg(CoreCfg cfg);
+
+    //!
+    //! Convert the architecture into a JavaScript script
+    //!
+    void toJsCfg(CoreCfg cfg, QTextStream& stream);
+
 public slots:
+
+    // ========================================================================
+    // => BotBlock redefinition
 
     //! FROM BotBlock
     virtual BotBlock* create(const QString& btypename, const QString& varname);
 
     //!
-    //! Convert the architecture into a JavaScript script
+    //! Convert an id chain to a block pointer
     //!
-    void toJsCfg(QTextStream& stream);
+    BotBlock* idChainToBlock(const QString& chain)
+    {
+        return BotBlock::IdChainToBlockPointer(chain).data();
+    }
+
+    // ========================================================================
+    // => Save architecture functions
 
     //!
-    //! Update the OPE configuration with the current architecture
+    //! Update the Bot configuration with the current architecture
     //!
-    void updateCfgOpe();
+    void updateBotCfg();
+
+    //!
+    //! Update the Dev configuration with the current architecture
+    //!
+    void updateDevCfg();
+
+protected:
+
+    //! Core configuration
+    //! - Dev for computer developer 
+    //! - Bot for the embeded robot configuration
+    CoreCfg _cfg;
+
+    //! Mapper for core cfg
+    EnumStringMapper _coreCfgMapper;
 
 };
 

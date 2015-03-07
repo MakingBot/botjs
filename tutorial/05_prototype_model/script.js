@@ -55,5 +55,5 @@ compoz.visible = true;
 
 
 
-core.updateCfgOpe();
+core.updateDevCfg();
 

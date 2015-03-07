@@ -46,7 +46,30 @@ public:
     //!
     QString analyzeArguments();
 
+    //!
+    bool useCfgBot() { return _useCfgBot; }
+    //!
+    bool useCfgDev() { return _useCfgDev; }
+    //!
+    bool useCustom() { return _useCustom; }
+
 private:
+
+    //!
+    //! Use bot configuration
+    //!
+    bool _useCfgBot;
+
+    //!
+    //! Use dev configuration
+    //!
+    bool _useCfgDev;
+
+    //!
+    //! Use custom script
+    //!
+    bool _useCustom;
+
     //!
     //! Set application attributes: name, version...
     //!

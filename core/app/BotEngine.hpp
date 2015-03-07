@@ -19,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QDir>
 #include <QObject>
 #include <QLibrary>
 #include <QWeakPointer>
@@ -82,6 +83,21 @@ public:
         _botConfigDirectory = directory;
     }
 
+    //!
+    //! Dev configuration file path
+    //!
+    QString devCfgFilePath()
+    {
+        return getConfigDirectory() + QDir::separator() + QString("dev.js");
+    }
+
+    //!
+    //! Bot configuration file path
+    //!
+    QString botCfgFilePath()
+    {
+        return getConfigDirectory() + QDir::separator() + QString("bot.js");
+    }
 
     //!
     //! Create a new block from a shared library

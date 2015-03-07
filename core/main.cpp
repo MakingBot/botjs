@@ -42,26 +42,39 @@ int main(int argc, char *argv[])
     // Manage arguments
     QString js_file_path = app.analyzeArguments();
 
-    // If no js script provided start console
-    if(js_file_path.isEmpty())
+
+    if     ( app.useCfgBot() )
+    {
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Use bot configuration script" << std::endl;
+        #endif
+
+        BotBlock::JsEngine.evalScriptFile( BotBlock::JsEngine.botCfgFilePath() );
+    }
+    else if( app.useCfgDev() )
+    {
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Use dev configuration script" << std::endl;
+        #endif
+
+        BotBlock::JsEngine.evalScriptFile( BotBlock::JsEngine.devCfgFilePath() );
+    }
+    else if( app.useCustom() )
     {
         #ifdef BOTJS_CORE_DEBUG_PRINT
         std::cout << "++ Use user script" << std::endl;
         #endif
 
-        // Default script shell
-        BotBlock::JsEngine.eval("core.create('shell', 'shell'); shell.start();");
+        BotBlock::JsEngine.evalScriptFile(js_file_path);
     }
     else
     {
         #ifdef BOTJS_CORE_DEBUG_PRINT
-        std::cout << "++ Use user script" << std::endl;
+        std::cout << "++ Use basic shell script" << std::endl;
         #endif
 
-        // Start user script
-        BotBlock::JsEngine.evalScriptFile(js_file_path);
+        BotBlock::JsEngine.eval("core.create('shell', 'shell'); shell.start();");
     }
-
 
     #ifdef BOTJS_CORE_DEBUG_PRINT
     // Stop timer

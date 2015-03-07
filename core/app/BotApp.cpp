@@ -37,6 +37,9 @@
  * */
 BotApp::BotApp(int & argc, char** argv)
     : QApplication(argc, argv)
+    , _useCfgBot(false)
+    , _useCfgDev(false)
+    , _useCustom(false)
 {
     // Set application attributes
     setApplicationAttributes();
@@ -65,13 +68,28 @@ QString BotApp::analyzeArguments()
     parser.addVersionOption();
     parser.addPositionalArgument("js_file", QApplication::translate("main", "Js file script"));
 
+    // A boolean option for dev (-d, --dev)
+    QCommandLineOption cfgDevOption(QStringList() << "d" << "dev",
+        QCoreApplication::translate("dev", "BotJs will use the dev configuration."));
+    parser.addOption(cfgDevOption);
+
+    // A boolean option for dev (-b, --bot)
+    QCommandLineOption cfgBotOption(QStringList() << "b" << "bot",
+        QCoreApplication::translate("bot", "BotJs will use the bot configuration."));
+    parser.addOption(cfgBotOption);
+
     // Process the actual command line arguments given by the user
     parser.process(*this);
+
+    // Check cfg
+    _useCfgDev = parser.isSet(cfgDevOption);
+    _useCfgBot = parser.isSet(cfgBotOption);
 
     // If exist return the js file
     const QStringList args = parser.positionalArguments();
     if(args.size() >= 1)
     {
+        _useCustom = true;
         return args.at(0);
     }
 
