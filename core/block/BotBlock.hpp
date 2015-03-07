@@ -36,6 +36,11 @@ if(blockLog() || blockTalk())       \
 }
 
 //!
+//! Core configuration
+//!
+enum CoreCfg { CoreCfgDev, CoreCfgBot } ;
+
+//!
 //! The BotBlock is the main component of the BotJs modular architecture. 
 //! BotBlock is the master interface of all blocks.
 //!
@@ -678,26 +683,44 @@ public:
     //!
     //! Provide the js creation phase of this block
     //!
-    virtual void jsCfgPhaseCreation(QTextStream& stream)
+    virtual void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream)
     {
         QSharedPointer<BotBlock> father = blockFather().toStrongRef();
         if( father )
         {
+            // Build tmp variable
+            QString var_name = father->blockIdChain();
+            var_name  = var_name.replace(".","_")  ;
+            var_name += QString("_") + blockName() ; 
 
+            // Commentary
             stream << "// Creation block: " << blockName() << endl;
 
-            stream << "core.idChainToBlock(" << JsString(father->blockIdChain())
+            // Block Creation
+            stream << "var " << var_name 
+                   << " = core.idChainToBlock(" << JsString(father->blockIdChain())
                    << ").create(" << JsString(blockTypeName()) << " , " << JsString(blockName()) << ");" << endl;
-
 
 
         }
         // else it is the core and it does not need to be created
     }
 
-    // virtual void jsCfgConnectionPhase
-    // virtual void jsCfgEnablePhase
+    //!
+    //! Provide the js connection phase of this block
+    //!
+    virtual void jsCfgConnectionPhase(CoreCfg cfg, QTextStream& stream)
+    {
 
+    }
+    
+    //!
+    //! Provide the js enable phase of this block
+    //!
+    virtual void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream)
+    {
+
+    }
 
 public slots:
 

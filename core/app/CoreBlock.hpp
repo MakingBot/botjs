@@ -36,11 +36,6 @@ class CoreBlock : public BotBlock
 public:
 
     //!
-    //! Core configuration
-    //!
-    enum CoreCfg { CoreCfgDev, CoreCfgBot } ;
-
-    //!
     //! Default constructor
     //!
     explicit CoreBlock(const QString& name = QString("core"));

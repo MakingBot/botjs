@@ -77,11 +77,11 @@ void CoreBlock::updateCfg(CoreCfg cfg)
     QString filepath;
     switch(cfg)
     {
-        case CoreBlock::CoreCfgDev:
+        case CoreCfgDev:
             filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("dev.js");
             break;
 
-        case CoreBlock::CoreCfgBot:
+        case CoreCfgBot:
             filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("bot.js");
             break;
 
@@ -105,11 +105,11 @@ void CoreBlock::updateCfg(CoreCfg cfg)
     // Append a little header
     switch(cfg)
     {
-        case CoreBlock::CoreCfgDev:
+        case CoreCfgDev:
             stream << "// === Dev Configuration ===" << endl << endl;
             break;
 
-        case CoreBlock::CoreCfgBot:
+        case CoreCfgBot:
             stream << "// === Bot Configuration ===" << endl << endl;
             break;
 
@@ -123,6 +123,9 @@ void CoreBlock::updateCfg(CoreCfg cfg)
     // Convert the architecture
     toJsCfg(cfg, stream);
 
+    // End
+    stream << "// === End of Script ===" << endl;
+
     // Close the file
     file.close();
 }
@@ -132,11 +135,17 @@ void CoreBlock::updateCfg(CoreCfg cfg)
  * */
 void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
 {
-    QString str_creation;
+    // Declare strings
+    QString str_creation  ;
+    QString str_connection;
+    QString str_enable    ;
 
-    QTextStream stream_creation(&str_creation);
+    // Declare streams
+    QTextStream stream_creation  (&str_creation  );
+    QTextStream stream_connection(&str_connection);
+    QTextStream stream_enable    (&str_enable    );
 
-
+    // 
     for(quint32 id=0 ; id<BotBlock::BlockCounter ; id++)
     {
         // Get the block
@@ -145,14 +154,19 @@ void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
         if( block )
         {
             // Creation phase
-            block->jsCfgPhaseCreation(stream_creation);
+            block->jsCfgPhaseCreation(cfg, stream_creation);
             stream_creation << endl;
         
-        
+            // Connection phase
+            block->jsCfgPhaseCreation(cfg, stream_connection);
+            stream_connection << endl;
+
+            // Enable pahse
+            block->jsCfgPhaseCreation(cfg, stream_enable);
+            stream_enable << endl;
         }
     }
 
-
     // Concatenate streams
-    stream << str_creation;
+    stream << str_creation << str_connection << str_enable;
 }
