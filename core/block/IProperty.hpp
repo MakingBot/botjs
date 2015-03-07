@@ -69,7 +69,7 @@ public:
     //!
     //! Name getter
     //!
-    const QString& name()
+    const QString& name() const
     {
         return _name;
     }
@@ -91,9 +91,17 @@ public:
     {
         return _writable;
     }
+
+    // ========================================================================
+    // => Interactive property type
     
+    //!
     //! Property type getter
-    inline IPropertyType type() const { return _type; }
+    //!
+    inline IPropertyType type() const
+    {
+        return _type;
+    }
 
     //! Enum map getter
     inline const QMap<QString, int>& enumMap() const { return _enum; }

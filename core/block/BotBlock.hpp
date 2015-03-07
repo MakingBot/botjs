@@ -527,7 +527,7 @@ public:
             BLOCK_LOG("Property " << pname << " already exists")
             return;
         }
-        iprop.setName( iprop.pname );
+        iprop.setName( pname );
 
         // Append the property in the id map
         quint8 id = _iPropIds.size();
@@ -692,7 +692,7 @@ public:
     //!
     //! Provide the js creation phase of this block
     //!
-    virtual void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream)
+    void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream)
     {
         QSharedPointer<BotBlock> father = blockFather().toStrongRef();
         if( father )
@@ -722,17 +722,33 @@ public:
     //!
     //! Provide the js connection phase of this block
     //!
-    virtual void jsCfgConnectionPhase(CoreCfg cfg, QTextStream& stream)
+    void jsCfgConnectionPhase(CoreCfg cfg, QTextStream& stream)
     {
 
     }
     
+
+    virtual void jsCfgEnablePhaseHook(const QString& var_name, CoreCfg cfg, QTextStream& stream)
+    { }
+
     //!
     //! Provide the js enable phase of this block
     //!
-    virtual void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream)
+    void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream)
     {
+        QSharedPointer<BotBlock> father = blockFather().toStrongRef();
+        if( father )
+        {
+            // Build tmp variable
+            QString var_name = father->blockIdChain();
+            var_name  = var_name.replace(".","_")  ;
+            var_name += QString("_") + blockName() ; 
 
+            // Commentary
+            stream << "// Enable block: " << blockName() << endl;
+
+            jsCfgEnablePhaseHook(var_name, cfg, stream);
+        }
     }
 
 public slots:

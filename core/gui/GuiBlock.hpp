@@ -59,6 +59,15 @@ public:
         if(visible) show(); else hide();
     }
 
+    //! FROM BotBlock
+    virtual void jsCfgEnablePhaseHook(const QString& var_name, CoreCfg cfg, QTextStream& stream)
+    {
+
+
+        stream << var_name << JsIProperty("visible") << endl;
+
+    }
+
 public slots:
 
     //!

@@ -64,5 +64,82 @@ QString BotBlock::JsString(const QString& string)
  * */
 QString BotBlock::JsIProperty(const QString& property_name)
 {
-    
+    QString jsline;
+    QTextStream stream(&jsline);
+
+    // Get the id
+    quint8 id = _iPropIds[property_name];
+
+    // Get the property
+    const IProperty& prop = _iProperties[id];
+
+    // Append the name
+    stream << "." << property_name << " = ";
+
+    // Set the property in function of the type
+    switch( prop.type() )
+    {
+        case IProperty::IPTypeBool         :
+        {
+            bool value = this->property(property_name.toStdString().c_str()).toBool();
+            if( value )
+            {
+                stream << "true;";
+            }
+            else
+            {
+                stream << "false;";
+            }
+            break;
+        }
+        
+        case IProperty::IPTypeInt          :
+        {
+            break;   
+        }
+        case IProperty::IPTypeReal         :
+        {
+            break;   
+        }
+        case IProperty::IPTypeString       :
+        {
+            break;   
+        }
+        case IProperty::IPTypeEnum         :
+        {
+            break;   
+        }
+        case IProperty::IPTypeBlock        :
+        {
+            break;   
+        }
+        case IProperty::IPTypeSonBlock     :
+        {
+            break;   
+        }
+        case IProperty::IPTypeBrotherBlock :
+        {
+            break;   
+        }
+        case IProperty::IPTypeRealList     :
+        {
+            break;   
+        }
+        case IProperty::IPTypeVector3D     :
+        {
+            break;   
+        }
+        case IProperty::IPTypeVector4D     :
+        {
+            break;   
+        }
+        case IProperty::IPTypeMatrix44     :
+        {
+            break;   
+        }
+    }
+
+    // End
+    stream << endl;
+    return jsline;
 }
