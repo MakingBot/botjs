@@ -36,7 +36,6 @@ class GraphicsBlockScene : public QGraphicsScene
     
 public:
 
-
     //!
     //! Default constructor
     //!
@@ -47,8 +46,10 @@ public:
     //!
     void initialize();
 
-
-    void appendBlock(QSharedPointer<BotBlock> block);
+    //!
+    //! Create and append an item representing the block
+    //!
+    void appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator = 0);
 
 
     // ========================================================================
@@ -61,7 +62,6 @@ public:
     {
         _wParent->setCursor(cursor);
     }
-
 
     // ========================================================================
     // => Property mode
@@ -84,7 +84,7 @@ public:
 
 public slots:
 
-    void onRequestBlockCreation(QSharedPointer<BotBlock> creator_block, QPointF position, QString type);
+    void onRequestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type);
 
 
 protected:

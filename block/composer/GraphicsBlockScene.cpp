@@ -18,14 +18,14 @@ using namespace std;
 GraphicsBlockScene::GraphicsBlockScene(QWidget* parent)
     : QGraphicsScene(), _wParent(parent), _mode(BSM_Editor)
 {
+    // The scene must have a parent widget
     if( !_wParent )
     {
-        throw std::runtime_error("No widget parent found!");
+        throw std::runtime_error("No widget parent provided!");
     }
 
     // Set the background color
     setBackgroundBrush( QBrush(QColor( "#efefef" )) );
-
 }
 
 /* ============================================================================
@@ -33,30 +33,23 @@ GraphicsBlockScene::GraphicsBlockScene(QWidget* parent)
  * */
 void GraphicsBlockScene::initialize()
 {
-    // Get core block pointer
-    QSharedPointer<BotBlock> core = BotBlock::JsEngine.getCoreBlock();
-
-    // Create an item with it
-    QSharedPointer<GraphicsBlockItem> core_item(new GraphicsBlockItem(core));
-
-    // Save it
-    _itemMap.insert(core->blockIdNumber(), core_item);
-
-    // Append it into the scene
-    addItem( core_item.data() );
-
-    // Connection
-    connect(core_item.data(), SIGNAL( requestBlockCreation  (QSharedPointer<BotBlock>, QPointF, QString) ) ,
-                        this, SLOT  ( onRequestBlockCreation(QSharedPointer<BotBlock>, QPointF, QString) ) );
+    // Get core block pointer and append the block
+    appendBlock( BotBlock::JsEngine.getCoreBlock() );
 }
 
 /* ============================================================================
  *
  * */
-void GraphicsBlockScene::appendBlock(QSharedPointer<BotBlock> block)
+void GraphicsBlockScene::appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator)
 {
-    // Create an item with it
-    QSharedPointer<GraphicsBlockItem> block_item(new GraphicsBlockItem(block));
+    // Check input
+    if( !block )
+    {
+        return;
+    }
+
+    // Create an item with the block
+    QSharedPointer<GraphicsBlockItem> block_item(new GraphicsBlockItem(block, creator));
 
     // Save it
     _itemMap.insert(block->blockIdNumber(), block_item);
@@ -65,30 +58,29 @@ void GraphicsBlockScene::appendBlock(QSharedPointer<BotBlock> block)
     addItem( block_item.data() );
 
     // Connection
-    connect(block_item.data(), SIGNAL( requestBlockCreation  (QSharedPointer<BotBlock>, QPointF, QString) ) ,
-                         this, SLOT  ( onRequestBlockCreation(QSharedPointer<BotBlock>, QPointF, QString) ) );
+    connect(block_item.data(), SIGNAL( requestBlockCreation  (GraphicsBlockItem*, QPointF, QString) ) ,
+                         this, SLOT  ( onRequestBlockCreation(GraphicsBlockItem*, QPointF, QString) ) );
 }
-
 
 /* ============================================================================
  *
  * */
-void GraphicsBlockScene::onRequestBlockCreation(QSharedPointer<BotBlock> creator_block, QPointF position, QString type)
+void GraphicsBlockScene::onRequestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type)
 {
-    bool ok;
-
-    std::cout << "block " << position.x() << std::endl;
-
+    QSharedPointer<BotBlock> creator_block = creator->associatedBlock();
 
     // Get a name for the block from the user
+    bool ok;
     QString block_name = QInputDialog::getText(_wParent, tr("Provide a name for the new block"), tr("Block name:"), QLineEdit::Normal, type, &ok);
 
-
+    // Create the new block
     BotBlock* new_block = creator_block->create( type , block_name );
 
+    // Set its position
     new_block->setBlockPosition( position );
 
-    appendBlock( new_block->toBlockSharedPointer() );
+    // Append the block into the scene
+    appendBlock( new_block->toBlockSharedPointer(), creator );
 }
 
 

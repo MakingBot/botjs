@@ -24,16 +24,22 @@
 //!
 //! This block is the top parent of all blocks
 //!
+//! \author [XR]MakingBot ( http://makingbot.fr )
+//!
 class CoreBlock : public BotBlock
 {
     Q_OBJECT
 
 public:
+
     //!
     //! Default constructor
     //!
-    explicit CoreBlock(const QString& name = QString("core"), QObject* parent = 0);
+    explicit CoreBlock(const QString& name = QString("core"));
     
+    // ========================================================================
+    // => BotBlock redefinition
+
     //! FROM BotBlock
     virtual void blockInit();
 
@@ -47,8 +53,20 @@ public:
     virtual QString blockTypeName() const { return QString("core"); }
 
 public slots:
+
     //! FROM BotBlock
     virtual BotBlock* create(const QString& btypename, const QString& varname);
+
+    //!
+    //! Convert the architecture into a JavaScript script
+    //!
+    void toJsCfg(QTextStream& stream);
+
+    //!
+    //! Update the OPE configuration with the current architecture
+    //!
+    void updateCfgOpe();
+
 };
 
 #endif // COREBLOCK_HPP

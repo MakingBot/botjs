@@ -62,6 +62,27 @@ public:
     //!
     void setBlockLogDirectory(const QString& block_dir) { _blockLogDirectory = block_dir; }
 
+
+    // ========================================================================
+    // => Block Configuration directory
+
+    //!
+    //! Configuration directory getter
+    //!
+    const QString& getConfigDirectory() const
+    {
+        return _botConfigDirectory;
+    }
+
+    //!
+    //! Configuration directory setter
+    //!
+    void setConfigDirectory(const QString& directory)
+    {
+        _botConfigDirectory = directory;
+    }
+
+
     //!
     //! Create a new block from a shared library
     //!
@@ -117,14 +138,21 @@ public:
     void allIdChains(QStringList& chains);
 
 protected:
+
     //! Block lib directory
     QString _blockLibDirectory;
 
     //! Block log directory
     QString _blockLogDirectory;
 
+    //! Configuration directory
+    //! BotJs can store some reference configuration
+    QString _botConfigDirectory;
+
     //! JavaScript engine
+    //! BotJs use the JavaScript engine from Qt
     QSharedPointer<QJSEngine> _jsEngine;
+
 
     //! Pointer on the global parent block
     QSharedPointer<BotBlock> _coreBlock;

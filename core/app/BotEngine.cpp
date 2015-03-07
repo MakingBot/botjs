@@ -158,6 +158,9 @@ void BotEngine::createCoreBlock()
 	// Set this as the block parent
     _coreBlock->setBlockFather(0);
 
+    // Set the log id
+    _coreBlock->setLogId( "core" );
+
     // Create a qt js object
     QJSValue js_val = _jsEngine->newQObject(_coreBlock.data());
     

@@ -29,10 +29,10 @@
 //!
 //! Log macro
 //!
-#define BLOCK_LOG(msg)  			\
-if(blockLog() || blockTalk())  		\
-{ 									\
-	_logBuffer << msg << LogEnder();  \
+#define BLOCK_LOG(msg)              \
+if(blockLog() || blockTalk())       \
+{                                   \
+    _logBuffer << msg << LogEnder();  \
 }
 
 //!
@@ -46,22 +46,22 @@ class BotBlock : public QObject
     Q_OBJECT
     Q_ENUMS(BlockRole)
     
-    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT    	)
-    Q_PROPERTY(float        blockVersion            READ blockVersion                                    	)
-    Q_PROPERTY(QString      blockTypename           READ blockTypeName                                   	)
-    Q_PROPERTY(BlockRole    blockRole               READ blockRole                                       	)
+    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT       )
+    Q_PROPERTY(float        blockVersion            READ blockVersion                                       )
+    Q_PROPERTY(QString      blockTypename           READ blockTypeName                                      )
+    Q_PROPERTY(BlockRole    blockRole               READ blockRole                                          )
 
-    Q_PROPERTY(int          blockNbSons             READ blockNbSons                               			)
+    Q_PROPERTY(int          blockNbSons             READ blockNbSons                                        )
     Q_PROPERTY(int          blockNbConn             READ blockNbConnections                            )
 
-    Q_PROPERTY(bool         blockLog            	READ blockLog       	WRITE setBlockLog     			)
-    Q_PROPERTY(bool         blockTalk           	READ blockTalk      	WRITE setBlockTalk    			)
+    Q_PROPERTY(bool         blockLog                READ blockLog           WRITE setBlockLog               )
+    Q_PROPERTY(bool         blockTalk               READ blockTalk          WRITE setBlockTalk              )
 
 public:
 
-	//!
+    //!
     //! Define different block roles
-	//!
+    //!
     enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi, BlockController, BlockInterface } ;
 
     //!
@@ -124,7 +124,7 @@ public:
     explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
         : QObject(parent)
         , _bname(name)
-    	, _idNumber(0xFFFFFFFF)
+        , _idNumber(0xFFFFFFFF)
         , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
 
         , _bsize     (150,150)
@@ -148,7 +148,7 @@ public:
     //!
     //! Return a weak pointer on this block
     //!
-    QWeakPointer<BotBlock>   toBlockWeakPointer           	()
+    QWeakPointer<BotBlock>   toBlockWeakPointer             ()
     {
         return _wThis;
     }
@@ -156,7 +156,7 @@ public:
     //!
     //! Return a shared pointer on this block
     //!
-    QSharedPointer<BotBlock> toBlockSharedPointer         	()
+    QSharedPointer<BotBlock> toBlockSharedPointer           ()
     {
         return _wThis.toStrongRef();
     }
@@ -189,7 +189,7 @@ public:
     //!
     QWeakPointer<BotBlock> blockFather()
     {
-    	return _father;
+        return _father;
     }
 
     //!
@@ -197,14 +197,14 @@ public:
     //!
     void setBlockFather(BotBlock* father)
     {
-    	if(father)
-    	{
-    		setBlockFather(father->toBlockWeakPointer());
-    	}
-    	else
-    	{
-    		setBlockFather(QSharedPointer<BotBlock>(0).toWeakRef());
-    	}
+        if(father)
+        {
+            setBlockFather(father->toBlockWeakPointer());
+        }
+        else
+        {
+            setBlockFather(QSharedPointer<BotBlock>(0).toWeakRef());
+        }
     }
 
     //!
@@ -212,8 +212,8 @@ public:
     //!
     void setBlockFather(QWeakPointer<BotBlock> father)
     {
-    	_father = father;
-    	updateIdChain();
+        _father = father;
+        updateIdChain();
     }
 
     //!
@@ -221,17 +221,17 @@ public:
     //!
     QSharedPointer<BotBlock> blockSonSharedPointer(const QString& name)
     {
-    	if( _sons.find(name) != _sons.end() )
-    	{
-    		return _sons[name];
-    	}
+        if( _sons.find(name) != _sons.end() )
+        {
+            return _sons[name];
+        }
         return QSharedPointer<BotBlock>(0);
     }
 
     //! Block sons getter
     const QMap<QString, QSharedPointer<BotBlock> >& blockSons() const
     {
-    	return _sons;
+        return _sons;
     }
 
     //!
@@ -239,11 +239,11 @@ public:
     //!
     virtual void appendBlockSon(QSharedPointer<BotBlock> son)
     {
-    	const QString name = son->blockName();
-    	if( _sons.find(name) == _sons.end() )
-		{
-    		_sons[name] = son;
-		}
+        const QString name = son->blockName();
+        if( _sons.find(name) == _sons.end() )
+        {
+            _sons[name] = son;
+        }
     }
 
     //!
@@ -251,7 +251,7 @@ public:
     //!
     int blockNbSons() const
     {
-    	return _sons.size();
+        return _sons.size();
     }
 
     //!
@@ -259,14 +259,14 @@ public:
     //!
     bool blockHasSons() const
     {
-    	if( blockNbSons() > 0 )
-    	{
-    		return true;
-    	}
-    	else
-    	{
-    		return false;
-    	}
+        if( blockNbSons() > 0 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //!
@@ -329,32 +329,32 @@ public:
     //!
     //! ID Chain getter
     //!
-	const QString& blockIdChain() const
-	{
-		return _idChain;
-	}
+    const QString& blockIdChain() const
+    {
+        return _idChain;
+    }
 
-	//!
-	//! Update ID Chain
-	//!
+    //!
+    //! Update ID Chain
+    //!
     void updateIdChain()
     {
-    	// Clear the chain
-    	_idChain.clear();
+        // Clear the chain
+        _idChain.clear();
 
-    	// Initialize
-    	_idChain = blockName();
+        // Initialize
+        _idChain = blockName();
 
-    	// Get the father
+        // Get the father
         QWeakPointer<BotBlock> next = blockFather();
         while(next)
         {
-        	// Prepare parent piece of chain
-        	QString chain = next.toStrongRef()->blockName() + '.';
-        	_idChain.insert(0, chain);
+            // Prepare parent piece of chain
+            QString chain = next.toStrongRef()->blockName() + '.';
+            _idChain.insert(0, chain);
 
-        	// Get next parent
-        	next = next.toStrongRef()->blockFather();
+            // Get next parent
+            next = next.toStrongRef()->blockFather();
         }
     }
 
@@ -379,7 +379,7 @@ public:
         // Find the end pointer
         foreach(QString str, chainstr)
         {
-        	QSharedPointer<BotBlock> son = ptr->blockSonSharedPointer(str);
+            QSharedPointer<BotBlock> son = ptr->blockSonSharedPointer(str);
             if(son) { ptr = son; }
         }
         return ptr;
@@ -390,26 +390,26 @@ public:
     //!
     quint32 blockIdNumber() const
     {
-    	return _idNumber;
+        return _idNumber;
     }
 
     //!
     //! ID Number setter
     //!
-	void setBlockIdNumber(quint32 id)
-	{
-		_idNumber = id;
-	}
+    void setBlockIdNumber(quint32 id)
+    {
+        _idNumber = id;
+    }
 
     // ========================================================================
     // => Block connections
 
-	//!
+    //!
     //! Connections number getter
     //!
-	int blockNbConnections() const
+    int blockNbConnections() const
     {
-    	return _connections.size();
+        return _connections.size();
     }
 
     //!
@@ -431,20 +431,20 @@ public:
     // ========================================================================
     // => Block log and talk
 
-	//!
-	//! LogId setter
-	//!
-	void setLogId(const QString& id)
-	{
-		_logBuffer.setId(id);
-	}
+    //!
+    //! LogId setter
+    //!
+    void setLogId(const QString& id)
+    {
+        _logBuffer.setId(id);
+    }
 
-	//!
+    //!
     //! Log enable getter
     //!
     bool blockLog() const
     {
-    	return _logBuffer.logEnable();
+        return _logBuffer.logEnable();
     }
 
     //!
@@ -452,15 +452,15 @@ public:
     //!
     void setBlockLog(bool e)
     {
-    	_logBuffer.setLogEnable(e);
+        _logBuffer.setLogEnable(e);
     }
 
-	//!
+    //!
     //! Talk enable getter
     //!
     bool blockTalk() const
     {
-    	return _logBuffer.talkEnable();
+        return _logBuffer.talkEnable();
     }
 
     //!
@@ -468,7 +468,7 @@ public:
     //!
     void setBlockTalk(bool e)
     {
-    	_logBuffer.setTalkEnable(e);
+        _logBuffer.setTalkEnable(e);
     }
 
     // ========================================================================
@@ -503,7 +503,7 @@ public:
     //!
     void setBlockIPropertyValue(quint8 propid, const QVariant& value)
     {
-    	this->setProperty(_iPropIds.key(propid).toStdString().c_str(), value);
+        this->setProperty(_iPropIds.key(propid).toStdString().c_str(), value);
     }
 
     //!
@@ -667,44 +667,56 @@ public:
         }
     }
 
+    // ========================================================================
+    // => Block save function
+
+    // virtual QTextStream& jsCfgPhaseCreation(QTextStream& stream)
+    // {
+        
+    // }
+
+    // virtual void jsCfgConnectionPhase
+    // virtual void jsCfgEnablePhase
+
+
 public slots:
 
-	// ========================================================================
-	// => Block pointer management
+    // ========================================================================
+    // => Block pointer management
 
-	//!
-	//! Create a block as a child of this one
-	//!
-	virtual BotBlock* create(const QString& btypename, const QString& varname)
-	{
-		// Check if the name already exist
-		if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
-		{
-			BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
-			return 0;
-		}
+    //!
+    //! Create a block as a child of this one
+    //!
+    virtual BotBlock* create(const QString& btypename, const QString& varname)
+    {
+        // Check if the name already exist
+        if(BotBlock::JsEngine.go().property(varname).toVariant().isValid())
+        {
+            BLOCK_LOG("Create block #" << btypename << "# failure: this name is already used");
+            return 0;
+        }
 
-		// Create block from the JsEngine
-		QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
+        // Create block from the JsEngine
+        QSharedPointer<BotBlock> block = BotBlock::JsEngine.createBlock(btypename, varname);
 
-		// Add block to this sons
-		appendBlockSon(block);
+        // Add block to this sons
+        appendBlockSon(block);
 
-		// Set this as the block parent
-		block->setBlockFather(this);
+        // Set this as the block parent
+        block->setBlockFather(this);
 
         // Set the log buffer id with the id chain
-		block->setLogId( block->blockIdChain() );
+        block->setLogId( block->blockIdChain() );
 
-		// Log
-		BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");
+        // Log
+        BLOCK_LOG("Create block #" << block->blockName() << "#" << " [ID:" << block->blockIdNumber() << "]");
 
-		// return
-		return block.data();
-	}
+        // return
+        return block.data();
+    }
 
-	// ========================================================================
-	// => Block connections
+    // ========================================================================
+    // => Block connections
 
     //!
     //! To connect the block to others
@@ -786,14 +798,14 @@ signals:
 
     void blockStatusChanged();
 
-	//! Signal
-	//! Emitted when father or sons changed
-	//!
+    //! Signal
+    //! Emitted when father or sons changed
+    //!
     void blockFamilyChanged();
 
-	//! Signal
-	//! Emitted when connections has been appended or deleted
-	//!
+    //! Signal
+    //! Emitted when connections has been appended or deleted
+    //!
     void blockConnectionsChanged();
 
     //! Signal

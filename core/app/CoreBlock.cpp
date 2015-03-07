@@ -50,4 +50,46 @@ BotBlock* CoreBlock::create(const QString& btypename, const QString& varname)
     return block;
 }
 
+/* ============================================================================
+ *
+ * */
+void CoreBlock::toJsCfg(QTextStream& stream)
+{
+
+}
+
+/* ============================================================================
+ *
+ * */
+void CoreBlock::updateCfgOpe()
+{
+    // Operatonal configuration file path
+    QString filepath = BotBlock::JsEngine.getConfigDirectory() + QDir::separator() + QString("ope.js");
+
+    // Create and open the file
+    QFile file(filepath);
+    if( !file.open(QIODevice::WriteOnly | QIODevice::Text) )
+    {
+        BLOCK_LOG("Unable to open the operatonal configuration file (" << filepath << ")");   
+        return;
+    }
+
+    // Initialize a text stream
+    QTextStream stream(&file);
+    
+    // Append a little header
+    stream << "// ================================" << endl;
+    stream << "// === Operatonal Configuration ===" << endl;
+
+    // TODO append the date and the hour
+
+    // Convert the architecture
+    toJsCfg(stream);
+
+    // Close the file
+    file.close();
+}
+
+
+
 

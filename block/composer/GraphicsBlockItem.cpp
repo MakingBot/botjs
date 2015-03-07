@@ -24,6 +24,7 @@ GraphicsBlockItem::GraphicsBlockItem(QSharedPointer<BotBlock> block, QGraphicsIt
     // Configure events
     setAcceptDrops(true);
     setAcceptHoverEvents(true);
+    setHandlesChildEvents(false);
     setAcceptedMouseButtons(Qt::LeftButton);
 
     // Define flags
@@ -189,7 +190,7 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
             painter->setPen  ( pen           );
 
             painter->setBrush( Qt::SolidPattern   );
-            painter->setBrush( QBrush(QColor( "#efefef" )) );
+            painter->setBrush( QBrush(QColor( "#FFFFFF" )) );
 
             QVector<QPointF> point_chain;
             point_chain << _brect.center();
@@ -494,27 +495,17 @@ void GraphicsBlockItem::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
  * */
 void GraphicsBlockItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
-
-
-    if (event->mimeData()->hasText() )
+    // If has text -> block creation
+    if( event->mimeData()->hasText() )
     {
-            bool ok;
-            event->setAccepted(true);
+        // Get the requested block name
+        QString type = event->mimeData()->text();
 
-            // Get the requested block name
-            QString requested_block_type = event->mimeData()->text();
+        // Request the block creation
+        emit requestBlockCreation(this, event->pos(), type);
 
-
-            QPointF new_block_position = event->scenePos() - pos();
-
-
-
-            emit requestBlockCreation(_block, new_block_position, requested_block_type);
-
-
-
+        // Accept the drop
+        event->setAccepted(true);
     }
-
-
 }
 

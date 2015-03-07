@@ -35,11 +35,21 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 
+    //!
+    //! Associate block getter
+    //!
+    QSharedPointer<BotBlock> associatedBlock()
+    {
+        return _block;
+    }
 
 
 signals:
 
-    void requestBlockCreation(QSharedPointer<BotBlock> creator_block, QPointF position, QString type);
+    //!
+    //! Signal to request a block creation
+    //!
+    void requestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type);
 
 protected:
 

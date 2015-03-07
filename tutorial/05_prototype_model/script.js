@@ -36,16 +36,16 @@
 
 // agent.co(ddata);
 
-core.create("network", "net")
+// core.create("network", "net")
 
-net.port = 5000;
+// net.port = 5000;
 
-net.ping();
+// net.ping();
 
+core.blockTalk = true;
 
-
-// core.create("composer", "compoz");
-// compoz.visible = true;
+core.create("composer", "compoz");
+compoz.visible = true;
 
 // // Show spy
 // agent.show();
@@ -53,4 +53,7 @@ net.ping();
 // // Start shell
 // shell.start();
 
+
+
+core.updateCfgOpe();
 
