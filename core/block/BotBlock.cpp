@@ -58,3 +58,11 @@ QString BotBlock::JsString(const QString& string)
 {
     return QString("'") + string + QString("'");
 }
+
+/* ============================================================================
+ *
+ * */
+QString BotBlock::JsIProperty(const QString& property_name)
+{
+    
+}

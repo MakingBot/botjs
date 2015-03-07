@@ -52,27 +52,28 @@ protected:
 
     //! Menu block
     //!
-    QMenuBar _menuBar;
+    QWidget _menuBar;
 
     //! Menu Block
     //! Display dragable block elements
     BlockMenu _menuBlock;
 
     //! View
-    //!
+    //! One view on the scene
     GraphicsBlockView _view;
 
     //! Scene
     //! The graphic scene, where items are displayed
     GraphicsBlockScene _scene;
 
-
-
+    //! Cursor
     QCursor _cursorZoom;
+
+    //! Cursor
     QCursor _cursorKill;
+
+    //! Cursor
     QCursor _cursorConnect;
-
-
 
     //!
     //! This function initialize a cursor with a svg cursor

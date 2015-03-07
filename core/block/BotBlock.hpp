@@ -57,10 +57,13 @@ class BotBlock : public QObject
     Q_PROPERTY(BlockRole    blockRole               READ blockRole                                          )
 
     Q_PROPERTY(int          blockNbSons             READ blockNbSons                                        )
-    Q_PROPERTY(int          blockNbConn             READ blockNbConnections                            )
+    Q_PROPERTY(int          blockNbConn             READ blockNbConnections                                 )
 
     Q_PROPERTY(bool         blockLog                READ blockLog           WRITE setBlockLog               )
     Q_PROPERTY(bool         blockTalk               READ blockTalk          WRITE setBlockTalk              )
+
+    Q_PROPERTY(QSize        blockSize               READ blockSize          WRITE setBlockSize              )
+    Q_PROPERTY(QPointF      blockPosition           READ blockPosition      WRITE setBlockPosition          )
 
 public:
 
@@ -524,6 +527,7 @@ public:
             BLOCK_LOG("Property " << pname << " already exists")
             return;
         }
+        iprop.setName( iprop.pname );
 
         // Append the property in the id map
         quint8 id = _iPropIds.size();
@@ -681,6 +685,11 @@ public:
     // => Block save function
 
     //!
+    //! To convert an interactive property to a js string line
+    //!
+    QString JsIProperty(const QString& property_name);
+
+    //!
     //! Provide the js creation phase of this block
     //!
     virtual void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream)
@@ -700,6 +709,10 @@ public:
             stream << "var " << var_name 
                    << " = core.idChainToBlock(" << JsString(father->blockIdChain())
                    << ").create(" << JsString(blockTypeName()) << " , " << JsString(blockName()) << ");" << endl;
+
+            // Size and position
+            stream << var_name << "." << "blockSize     = Type.size ([" << QString::number(_bsize.width()) << " , " << QString::number(_bsize.height()) << "])" << endl; 
+            stream << var_name << "." << "blockPosition = Type.point([" << QString::number(_bposition.x()) << " , " << QString::number(_bposition.y() ) << "])" << endl;
 
 
         }

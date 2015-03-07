@@ -84,8 +84,10 @@ public:
 
 public slots:
 
+    //!
+    //! Perform the block creation
+    //!
     void onRequestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type);
-
 
 protected:
 

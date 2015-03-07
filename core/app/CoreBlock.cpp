@@ -158,11 +158,11 @@ void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
             stream_creation << endl;
         
             // Connection phase
-            block->jsCfgPhaseCreation(cfg, stream_connection);
+            block->jsCfgConnectionPhase(cfg, stream_connection);
             stream_connection << endl;
 
             // Enable pahse
-            block->jsCfgPhaseCreation(cfg, stream_enable);
+            block->jsCfgEnablePhase(cfg, stream_enable);
             stream_enable << endl;
         }
     }

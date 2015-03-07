@@ -99,6 +99,23 @@ public:
         return getConfigDirectory() + QDir::separator() + QString("bot.js");
     }
 
+    // ========================================================================
+    // => Save architecture functions
+
+    //!
+    //! Update the Bot configuration with the current architecture
+    //!
+    void updateBotCfg();
+
+    //!
+    //! Update the Dev configuration with the current architecture
+    //!
+    void updateDevCfg();
+
+
+
+
+
     //!
     //! Create a new block from a shared library
     //!

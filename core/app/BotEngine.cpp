@@ -146,6 +146,22 @@ void BotEngine::evalScriptFile(const QString &script_path)
 /* ============================================================================
  *
  * */
+void BotEngine::updateBotCfg()
+{
+    qSharedPointerObjectCast<CoreBlock, BotBlock>(_coreBlock)->updateBotCfg();
+}
+
+/* ============================================================================
+ *
+ * */
+void BotEngine::updateDevCfg()
+{
+    qSharedPointerObjectCast<CoreBlock, BotBlock>(_coreBlock)->updateDevCfg();
+}
+
+/* ============================================================================
+ *
+ * */
 void BotEngine::createCoreBlock()
 {
     // Create core block

@@ -20,6 +20,10 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QObject>
+
+#include <QSize>
+#include <QPoint>
+
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
@@ -39,9 +43,8 @@ public:
 
 public slots:
 
-
     //!
-    //! To generate a vector2D from a javascript list
+    //! To generate a vector2D from a JavaScript list
     //!
     QVector2D vector2D(QList<qreal> list)
     {
@@ -54,7 +57,7 @@ public slots:
     }
 
     //!
-    //! To generate a vector3D from a javascript list
+    //! To generate a vector3D from a JavaScript list
     //!
     QVector3D vector3D(QList<qreal> list)
     {
@@ -68,7 +71,7 @@ public slots:
     }
 
     //!
-    //! To generate a vector4D from a javascript list
+    //! To generate a vector4D from a JavaScript list
     //!
     QVector4D vector4D(QList<qreal> list)
     {
@@ -79,6 +82,32 @@ public slots:
             case 2:  return QVector4D(list.at(0), list.at(1), 0         , 0);
             case 3:  return QVector4D(list.at(0), list.at(1), list.at(2), 0);
             default: return QVector4D(list.at(0), list.at(1), list.at(2), list.at(3));
+        }
+    }
+
+    //!
+    //! To generate a size from a JavaScript list 
+    //!
+    QSize size(QList<qreal> list)
+    {
+        switch(list.size())
+        {
+            case 0:  return QSize(0         , 0         );
+            case 1:  return QSize(list.at(0), 0         );
+            default: return QSize(list.at(0), list.at(1));
+        }
+    }
+
+    //!
+    //! To generate a point from a JavaScript list 
+    //!
+    QPoint point(QList<qreal> list)
+    {
+        switch(list.size())
+        {
+            case 0:  return QPoint(0         , 0         );
+            case 1:  return QPoint(list.at(0), 0         );
+            default: return QPoint(list.at(0), list.at(1));
         }
     }
 

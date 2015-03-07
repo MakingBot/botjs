@@ -20,6 +20,8 @@
 #include <QPixmap>
 #include <QGridLayout>
 #include <QWheelEvent>
+#include <QPushButton>
+#include <QHBoxLayout>
 #include <QSvgRenderer>
 #include <ComposerWidget.hpp>
 #include <ComposerBlock.hpp>
@@ -32,8 +34,7 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
 {
     // Window configuration
     setWindowTitle("Composer");
-
-    setMinimumSize(800, 600);
+    setMinimumSize(1024 , 800);
 
     // Layout
     QGridLayout* lay = new QGridLayout(this);
@@ -44,19 +45,38 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     lay->addWidget(&_menuBlock, 1, 0);
     lay->addWidget(&_view     , 1, 1);
 
-    _menuBar.addAction ( "Bim une action" );
-
-
+    // Initialize the scene
     _scene.initialize();
 
     // Set view properties
     _view.setScene(&_scene);
     _view.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
-
+    // Initialize cursors
     _cursorConnect  = InitializeSvgCusor(":/icon/plug");
     _cursorKill     = InitializeSvgCusor(":/icon/skull");
     _cursorZoom     = InitializeSvgCusor(":/icon/magnifier");
+
+    // Build the menu bar with buttons
+    QHBoxLayout* hlayout = new QHBoxLayout(&_menuBar);
+
+    // Dev button
+    QPushButton* updateDevCfg = new QPushButton(tr("Update Dev"));
+    connect(updateDevCfg, &QPushButton::clicked, 
+        [=](bool checked) {
+            BotBlock::JsEngine.updateDevCfg();
+        }
+    );
+    hlayout->addWidget(updateDevCfg);
+
+    // Bot button
+    QPushButton* updateBotCfg = new QPushButton(tr("Update Bot"));
+    connect(updateBotCfg, &QPushButton::clicked, 
+        [=](bool checked) {
+            BotBlock::JsEngine.updateBotCfg();
+        }
+    );
+    hlayout->addWidget(updateBotCfg);
 
 }
 
