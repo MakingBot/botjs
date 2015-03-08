@@ -55,18 +55,21 @@ public:
     //!
     //! Default constructor
     //!
-    explicit LogBuffer(const QString& logfilepath, QObject* parent = 0)
+    explicit LogBuffer(const QString& name, const QString& directory, QObject* parent = 0)
         : QObject(parent)
-        , _id("init"), _newLog(true), _warning(false)
+        , _id(name), _newLog(true), _warning(false)
         , _logEnable(false), _talkEnable(false), _coutstream(stdout)
     {
+        // Build the name
+        QString filepath = directory + QDir::separator() + name + QString(".log");
+
         // Set the file path
-        _logfile.setFileName(logfilepath);
+        _logfile.setFileName(filepath);
      
         // Open log file
         if( ! _logfile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) )
         {
-            _coutstream << "Unable to open (" << logfilepath << ")" << endl;
+            _coutstream << "Unable to open (" << filepath << ")" << endl;
         }
 
         // Open stream on this file

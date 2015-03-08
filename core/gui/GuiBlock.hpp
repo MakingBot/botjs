@@ -60,12 +60,14 @@ public:
     }
 
     //! FROM BotBlock
-    virtual void jsCfgEnablePhaseHook(const QString& var_name, CoreCfg cfg, QTextStream& stream)
+    virtual void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream, QString& var_name)
     {
-
-
-        stream << var_name << JsIProperty("visible") << endl;
-
+        if( cfg == CoreCfg::CoreCfgDev )
+        {
+            BotBlock::jsCfgEnablePhase(cfg, stream, var_name);
+            
+            stream << var_name << JsIProperty("visible") << endl;
+        }
     }
 
 public slots:

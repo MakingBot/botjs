@@ -42,15 +42,9 @@ public:
     explicit GraphicsBlockScene(QWidget* parent);
 
     //!
-    //! Initialize the secne and place block already existing
+    //! To clear the composer and load the current architecture
     //!
-    void initialize();
-
-    //!
-    //! Create and append an item representing the block
-    //!
-    void appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator = 0);
-
+    void reset();
 
     // ========================================================================
     // => Cursor management
@@ -104,8 +98,19 @@ protected:
     //! Every item is stored in a map, linked to its id number
     QMap<quint32, QSharedPointer<GraphicsBlockItem> > _itemMap;
 
-    //! FROM QWidget
-    // virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent);
+    // ========================================================================
+    // => Architecture Functions
+
+    //!
+    //! Initialize the secne and place block already existing
+    //!
+    void initialize();
+
+    //!
+    //! Create and append an item representing the block
+    //!
+    GraphicsBlockItem* appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator = 0);
+
 };
 
 #endif // GRAPHICSBLOCKSCENE_HPP

@@ -170,7 +170,7 @@ void BotEngine::createCoreBlock()
     // Initialize block
     _coreBlock->blockInit();
     
-	// Set this as the block parent
+    // Set this as the block parent
     _coreBlock->setBlockFather(0);
 
     // Set the log id
@@ -209,7 +209,14 @@ void BotEngine::availableBlockNames(QStringList& names)
         array.remove(0, 3);
         // Remove the .so
         array.remove(array.size()-3, 3);
-        blocknames << QString(array);
+
+        QString blockname(array);
+        if(blockname.compare("composer") == 0)
+        {
+            continue;
+        }
+
+        blocknames << blockname;
     }
     
     // Append those names
@@ -241,8 +248,8 @@ void BotEngine::allIdChains(QStringList& chains)
         QMapIterator<QString, QSharedPointer<BotBlock> > son(block->blockSons());
         while(son.hasNext())
         {
-        	son.next();
-        	blocks.push(son.value());
+            son.next();
+            blocks.push(son.value());
         }
     }
 }

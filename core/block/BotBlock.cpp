@@ -66,30 +66,24 @@ QString BotBlock::JsIProperty(const QString& property_name)
 {
     QString jsline;
     QTextStream stream(&jsline);
-/*
+
     // Get the id
-    quint8 id = _iPropIds[property_name];
+    quint8 id = _iPropertyIds[property_name];
 
     // Get the property
-    const IProperty& prop = _iProperties[id];
+    QSharedPointer<IProperty> property = _iProperties[id];
 
     // Append the name
     stream << "." << property_name << " = ";
 
     // Set the property in function of the type
-    switch( prop.type() )
+    switch( property->type() )
     {
         case IProperty::IPTypeBool         :
         {
-            bool value = this->property(property_name.toStdString().c_str()).toBool();
-            if( value )
-            {
-                stream << "true;";
-            }
-            else
-            {
-                stream << "false;";
-            }
+            bool value = this->property(property->name()).toBool();
+            if( value ) { stream << "true;" ; }
+            else        { stream << "false;"; }
             break;
         }
         
@@ -139,7 +133,6 @@ QString BotBlock::JsIProperty(const QString& property_name)
         }
     }
 
-    */
     // End
     stream << endl;
     return jsline;

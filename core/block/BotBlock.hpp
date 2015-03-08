@@ -52,7 +52,7 @@ class BotBlock : public QObject
     Q_OBJECT
     Q_ENUMS(BlockRole)
     
-    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _bname   CONSTANT       )
+    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _blockName   CONSTANT       )
     Q_PROPERTY(float        blockVersion            READ blockVersion                                       )
     Q_PROPERTY(QString      blockTypename           READ blockTypeName                                      )
     Q_PROPERTY(BlockRole    blockRole               READ blockRole                                          )
@@ -99,7 +99,7 @@ public:
     //!
     //! Block name getter
     //!
-    const   QString   blockName      () const { return _bname; }
+    const   QString   blockName      () const { return _blockName; }
 
     // ========================================================================
     // => Block pointer management
@@ -132,9 +132,9 @@ public:
     //!
     explicit BotBlock(const QString& name = QString(), QObject* parent = 0)
         : QObject(parent)
-        , _bname(name)
+        , _blockName(name)
         , _idNumber(0xFFFFFFFF)
-        , _logBuffer(BotBlock::JsEngine.getBlockLogDirectory() + QDir::separator() + _bname + QString(".log"), this)
+        , _logBuffer(_blockName, BotBlock::JsEngine.getBlockLogDirectory(), this)
 
         , _bsize     (150,150)
         , _bposition ( 0 , 0 )
@@ -142,6 +142,7 @@ public:
         , _bstatus("Block initialization")
         , _bstate(BlockInitialization)
     {
+
 
     }
 
@@ -237,7 +238,9 @@ public:
         return QSharedPointer<BotBlock>(0);
     }
 
+    //!
     //! Block sons getter
+    //!
     const QMap<QString, QSharedPointer<BotBlock> >& blockSons() const
     {
         return _sons;
@@ -383,7 +386,7 @@ public:
         chainstr.removeFirst();
 
         // Pointer on core
-        QSharedPointer<BotBlock> ptr = BotBlock::JsEngine.getCoreBlock();
+        QSharedPointer<BotBlock> ptr = BotBlock::JsEngine.coreBlock();
 
         // Find the end pointer
         foreach(QString str, chainstr)
@@ -393,8 +396,6 @@ public:
         }
         return ptr;
     }
-
-
 
     //!
     //! ID Number getter
@@ -553,7 +554,7 @@ public:
         // Check if the id is already used
         if( _iProperties[id] )
         {
-            BLOCK_WARNING( "the property id (" << id << ") is already used, previous property will be erased" );
+            BLOCK_WARNING( "the property id (" << id << ", " << name_str << ") is already used, previous property will be erased" );
         }
 
         // Check if the vector is large enough
@@ -604,7 +605,7 @@ public:
     {
         if( size.width() > 100 && size.height() > 100 )
         {
-            _bsize = size;    
+            _bsize = size;
         }
     }
 
@@ -729,62 +730,86 @@ public:
     //!
     //! Provide the js creation phase of this block
     //!
-    void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream)
+    virtual void jsCfgPhaseCreation(CoreCfg cfg, QTextStream& stream, QString& var_name)
     {
+        // Get father
         QSharedPointer<BotBlock> father = blockFather().toStrongRef();
+
+        // Commentary
+        stream << "// Block: " << blockName() << endl;
+
         if( father )
         {
             // Build tmp variable
-            QString var_name = father->blockIdChain();
+            var_name = father->blockIdChain();
             var_name  = var_name.replace(".","_")  ;
-            var_name += QString("_") + blockName() ; 
-
-            // Commentary
-            stream << "// Creation block: " << blockName() << endl;
+            var_name += QString("_") + blockName() ;
 
             // Block Creation
             stream << "var " << var_name 
-                   << " = core.idChainToBlock(" << JsString(father->blockIdChain())
-                   << ").create(" << JsString(blockTypeName()) << " , " << JsString(blockName()) << ");" << endl;
-
-            // Size and position
-            stream << var_name << "." << "blockSize     = Type.size ([" << QString::number(_bsize.width()) << " , " << QString::number(_bsize.height()) << "])" << endl; 
-            stream << var_name << "." << "blockPosition = Type.point([" << QString::number(_bposition.x()) << " , " << QString::number(_bposition.y() ) << "])" << endl;
-
-
+               << " = core.idChainToBlock(" << JsString(father->blockIdChain())
+               << ").create(" << JsString(blockTypeName()) << " , " << JsString(blockName()) << ");" << endl;
         }
-        // else it is the core and it does not need to be created
+        else // else it is the core and it does not need to be created
+        {
+            var_name = blockName();
+        }
+
+        // Size and position
+        stream << var_name << "." << "blockSize     = Type.size ([" << QString::number(_bsize.width()) << " , " << QString::number(_bsize.height()) << "])" << endl; 
+        stream << var_name << "." << "blockPosition = Type.point([" << QString::number(_bposition.x()) << " , " << QString::number(_bposition.y() ) << "])" << endl;
+
+
+    
+        
     }
 
     //!
     //! Provide the js connection phase of this block
     //!
-    void jsCfgConnectionPhase(CoreCfg cfg, QTextStream& stream)
+    virtual void jsCfgConnectionPhase(CoreCfg cfg, QTextStream& stream, QString& var_name)
     {
-
-    }
-    
-
-    virtual void jsCfgEnablePhaseHook(const QString& var_name, CoreCfg cfg, QTextStream& stream)
-    { }
-
-    //!
-    //! Provide the js enable phase of this block
-    //!
-    void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream)
-    {
+        // Get father
         QSharedPointer<BotBlock> father = blockFather().toStrongRef();
+        
+        // Commentary
+        stream << "// Block: " << blockName() << endl;
+
         if( father )
         {
             // Build tmp variable
-            QString var_name = father->blockIdChain();
+            var_name = father->blockIdChain();
             var_name  = var_name.replace(".","_")  ;
-            var_name += QString("_") + blockName() ; 
+            var_name += QString("_") + blockName() ;
+        }
+        else // else it is the core and it does not need to be created
+        {
+            var_name = blockName();
+        }
 
-            // Commentary
-            stream << "// Enable block: " << blockName() << endl;
+    }
+    
+    //!
+    //! Provide the js enable phase of this block
+    //!
+    virtual void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream, QString& var_name)
+    {
+        // Get father
+        QSharedPointer<BotBlock> father = blockFather().toStrongRef();
+        
+        // Commentary
+        stream << "// Block: " << blockName() << endl;
 
-            jsCfgEnablePhaseHook(var_name, cfg, stream);
+        if( father )
+        {
+            // Build tmp variable
+            var_name = father->blockIdChain();
+            var_name  = var_name.replace(".","_")  ;
+            var_name += QString("_") + blockName() ;
+        }
+        else // else it is the core and it does not need to be created
+        {
+            var_name = blockName();
         }
     }
 
@@ -934,7 +959,7 @@ protected:
 
     //! Block name
     //! Block variable name in the JavaScript global object
-    const QString _bname;
+    const QString _blockName;
 
     // ========================================================================
     // => Block pointer management

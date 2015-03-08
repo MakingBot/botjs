@@ -145,6 +145,12 @@ void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
     QTextStream stream_connection(&str_connection);
     QTextStream stream_enable    (&str_enable    );
 
+    stream_creation   << "// =====  Creation Phase  =====" << endl;
+    stream_connection << "// ===== Connection Phase =====" << endl;
+    stream_enable     << "// =====   Enable Phase   =====" << endl;
+
+    QString var_name;
+
     // 
     for(quint32 id=0 ; id<BotBlock::BlockCounter ; id++)
     {
@@ -154,15 +160,15 @@ void CoreBlock::toJsCfg(CoreCfg cfg, QTextStream& stream)
         if( block )
         {
             // Creation phase
-            block->jsCfgPhaseCreation(cfg, stream_creation);
+            block->jsCfgPhaseCreation   (cfg, stream_creation, var_name);
             stream_creation << endl;
         
             // Connection phase
-            block->jsCfgConnectionPhase(cfg, stream_connection);
+            block->jsCfgConnectionPhase (cfg, stream_connection, var_name);
             stream_connection << endl;
 
             // Enable pahse
-            block->jsCfgEnablePhase(cfg, stream_enable);
+            block->jsCfgEnablePhase     (cfg, stream_enable, var_name);
             stream_enable << endl;
         }
     }

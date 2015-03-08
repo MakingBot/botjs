@@ -45,9 +45,6 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     lay->addWidget(&_menuBlock, 1, 0);
     lay->addWidget(&_view     , 1, 1);
 
-    // Initialize the scene
-    _scene.initialize();
-
     // Set view properties
     _view.setScene(&_scene);
     _view.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
@@ -78,6 +75,16 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     );
     hlayout->addWidget(updateBotCfg);
 
+    // Reset the all
+    reset();
+}
+
+/* ============================================================================
+ *
+ * */
+void ComposerWidget::reset()
+{
+    _scene.reset();
 }
 
 /* ============================================================================

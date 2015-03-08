@@ -49,12 +49,18 @@ public:
     //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("composer"); }
 
+    //! FROM BotBlock
+    virtual void jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream, QString& var_name);
+    
+public slots:
+
+    //!
+    //! To clear the composer and load the current architecture
+    //!
+    void reset();
 
 protected:
 
-
 };
-
-
 
 #endif // COMPOSERBLOCK_HPP

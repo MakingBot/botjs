@@ -112,8 +112,24 @@ public:
     //!
     void updateDevCfg();
 
+    // ========================================================================
+    // => Core block functions
 
+    //!
+    //! To create the core block
+    //!
+    void createCoreBlock();
 
+    //!
+    //! Core block getter
+    //!
+    QSharedPointer<BotBlock> coreBlock()
+    {
+        return _coreBlock;
+    }
+
+    // ========================================================================
+    // =>  
 
 
     //!
@@ -148,18 +164,6 @@ public:
     //!
     QSharedPointer<QJSEngine> engine() { return _jsEngine; }
 
-    //!
-    //! To create the core block
-    //!
-    void createCoreBlock();
-
-    //!
-    //! Core block getter
-    //!
-    QSharedPointer<BotBlock> getCoreBlock()
-    {
-    	return _coreBlock;
-    }
 
     //!
     //! Return names of the available blocks

@@ -34,3 +34,25 @@ ComposerBlock::ComposerBlock(const QString& name)
     _widget = qSharedPointerObjectCast<QWidget, ComposerWidget>( QSharedPointer<ComposerWidget>( new ComposerWidget(this) ) );
 }
 
+/* ============================================================================
+ *
+ * */
+void ComposerBlock::reset()
+{
+    qSharedPointerObjectCast<ComposerWidget, QWidget>( _widget )->reset();
+}
+
+
+/* ============================================================================
+ *
+ * */
+void ComposerBlock::jsCfgEnablePhase(CoreCfg cfg, QTextStream& stream, QString& var_name)
+{
+    if( cfg == CoreCfg::CoreCfgDev )
+    {
+        GuiBlock::jsCfgEnablePhase(cfg, stream, var_name);
+        
+        // Apply a reset after the creation phase
+        stream << var_name << ".reset();" << endl;
+    }
+}

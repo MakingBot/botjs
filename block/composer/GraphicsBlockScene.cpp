@@ -1,6 +1,8 @@
 #include <GraphicsBlockScene.hpp>
 
+#include <QPair>
 #include <QDrag>
+#include <QStack>
 #include <iostream>
 #include <QMimeData>
 #include <QLineEdit>
@@ -11,6 +13,11 @@
 #include <QGraphicsSceneDragDropEvent>
 
 using namespace std;
+
+//!
+//! Helper
+//!
+typedef QPair<QSharedPointer<BotBlock>, GraphicsBlockItem*> PairBlockItem;
 
 /* ============================================================================
  *
@@ -31,35 +38,12 @@ GraphicsBlockScene::GraphicsBlockScene(QWidget* parent)
 /* ============================================================================
  *
  * */
-void GraphicsBlockScene::initialize()
+void GraphicsBlockScene::reset()
 {
-    // Get core block pointer and append the block
-    appendBlock( BotBlock::JsEngine.getCoreBlock() );
-}
+    _itemMap.clear();
 
-/* ============================================================================
- *
- * */
-void GraphicsBlockScene::appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator)
-{
-    // Check input
-    if( !block )
-    {
-        return;
-    }
 
-    // Create an item with the block
-    QSharedPointer<GraphicsBlockItem> block_item(new GraphicsBlockItem(block, creator));
-
-    // Save it
-    _itemMap.insert(block->blockIdNumber(), block_item);
-
-    // Append it into the scene
-    addItem( block_item.data() );
-
-    // Connection
-    connect(block_item.data(), SIGNAL( requestBlockCreation  (GraphicsBlockItem*, QPointF, QString) ) ,
-                         this, SLOT  ( onRequestBlockCreation(GraphicsBlockItem*, QPointF, QString) ) );
+    initialize();
 }
 
 /* ============================================================================
@@ -83,101 +67,59 @@ void GraphicsBlockScene::onRequestBlockCreation(GraphicsBlockItem* creator, QPoi
     appendBlock( new_block->toBlockSharedPointer(), creator );
 }
 
+/* ============================================================================
+ *
+ * */
+void GraphicsBlockScene::initialize()
+{
+    // Create stack and store the core block to start
+    QStack<PairBlockItem> blocks;
+    blocks.push( PairBlockItem(BotBlock::JsEngine.coreBlock(), 0) );
+
+    // Block after block
+    while( !blocks.isEmpty() )
+    {
+        // Get the current block
+        QPair<QSharedPointer<BotBlock>, GraphicsBlockItem*> block = blocks.pop();
+
+        // Get core block pointer and append the block
+        GraphicsBlockItem* item = appendBlock( block.first, block.second );
+
+        // Add every son
+        QMapIterator<QString, QSharedPointer<BotBlock> > son( block.first->blockSons() );
+        while(son.hasNext())
+        {
+            son.next();
+            blocks.push( PairBlockItem(son.value(), item) );
+        }
+    }
+}
 
 /* ============================================================================
  *
  * */
-// void GraphicsBlockScene::mouseMoveEvent(QGraphicsSceneMouseEvent* mouseEvent)
-// {
-//     switch( _mode )
-//     {
-//         case BlockSceneMode::BSM_Editor  : break;
-//         case BlockSceneMode::BSM_Zoom    : break;
+GraphicsBlockItem* GraphicsBlockScene::appendBlock(QSharedPointer<BotBlock> block, GraphicsBlockItem* creator)
+{
+    // Check input
+    if( !block )
+    {
+        return 0;
+    }
 
-//         case BlockSceneMode::BSM_Move    :
-//         {
-//             //! Redefine a view class, it is not the place for doing that
-            
-            
-//             views()[0]->translate(5,5);
-            
-//             break;
-//         }
+    // Create an item with the block
+    QSharedPointer<GraphicsBlockItem> block_item(new GraphicsBlockItem(block, creator));
 
-//         case BlockSceneMode::BSM_Kill    : break;
-//         case BlockSceneMode::BSM_Connect : break;
-//     }
-// }
+    // Save it
+    _itemMap.insert(block->blockIdNumber(), block_item);
 
-/* ============================================================================
- *
- * */
-//void GraphicsBlockScene::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
-//{
-    // QPointF pp(event->scenePos());
+    // If no creator, Append it manually into the scene    
+    if(!creator)
+        addItem( block_item.data() );
 
-    
-    // QList<QGraphicsItem*> items = this->items( pp , Qt::IntersectsItemBoundingRect, Qt::AscendingOrder) ;
+    // Connection
+    connect(block_item.data(), SIGNAL( requestBlockCreation  (GraphicsBlockItem*, QPointF, QString) ) ,
+                         this, SLOT  ( onRequestBlockCreation(GraphicsBlockItem*, QPointF, QString) ) );
 
-
-    // if (event->mimeData()->hasText() && items.size()==0)
-    // {
-    //     event->setAccepted(true);
-    // }
-    // else
-    // {
-    //      QGraphicsScene::dragMoveEvent(event);
-    // }
-//}
-
-/* ============================================================================
- *
- * */
-//void GraphicsBlockScene::dropEvent(QGraphicsSceneDragDropEvent* event)
-//{
-    // // Get drop point
-    // QPointF dropPoint(event->scenePos());
-
-    // // Check if items was under the mouse
-    // QList<QGraphicsItem*> items = this->items(dropPoint, Qt::IntersectsItemBoundingRect, Qt::AscendingOrder);
-
-    // if(items.size()==0)
-    // {
-
-
-    //     if (event->mimeData()->hasText() )
-    //     {
-    //         bool ok;
-    //         event->setAccepted(true);
-
-    //         // // Get the requested block name
-    //         // QString requested_block_type = event->mimeData()->text();
-
-    //         // // Get a name for the block from the user
-    //         // QString block_name = QInputDialog::getText(_wParent, tr("Provide a name for the new block"), tr("Block name:"), QLineEdit::Normal, requested_block_type, &ok);
-
-    //         // // 
-    //         // BotBlock* block_ptr = _jsEngine->createBlock(requested_block_type, block_name);
-
-
-    //         // GraphicsBlockItem* new_item = new GraphicsBlockItem(block_ptr);
-    //         // new_item->setFlag(QGraphicsItem::ItemIsMovable);
-    //         // new_item->setPos(dropPoint);
-
-    //         // addItem(new_item);
-            
-            
-    //     }
-
-
-
-
-    // }
-    // else
-    // {
-    //     QGraphicsScene::dropEvent(event);
-    // }
-
-
-//}
-
+    // Return the created item
+    return block_item.data();
+}

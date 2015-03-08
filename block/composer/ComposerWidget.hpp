@@ -44,36 +44,41 @@ public:
     //!
     explicit ComposerWidget(ComposerBlock* parent_block, QWidget *parent = 0);
 
+    //!
+    //! To clear the composer and load the current architecture
+    //!
+    void reset();
+
 protected:
 
     //! Block
     //! The parent block
-    ComposerBlock* _block;
+    ComposerBlock*      _block;
 
     //! Menu block
     //!
-    QWidget _menuBar;
+    QWidget             _menuBar;
 
     //! Menu Block
     //! Display dragable block elements
-    BlockMenu _menuBlock;
+    BlockMenu           _menuBlock;
 
     //! View
     //! One view on the scene
-    GraphicsBlockView _view;
+    GraphicsBlockView   _view;
 
     //! Scene
     //! The graphic scene, where items are displayed
-    GraphicsBlockScene _scene;
+    GraphicsBlockScene  _scene;
 
     //! Cursor
-    QCursor _cursorZoom;
+    QCursor             _cursorZoom;
 
     //! Cursor
-    QCursor _cursorKill;
+    QCursor             _cursorKill;
 
     //! Cursor
-    QCursor _cursorConnect;
+    QCursor             _cursorConnect;
 
     //!
     //! This function initialize a cursor with a svg cursor

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         std::cout << "++ Use new configuration script" << std::endl;
         #endif
 
-        BotBlock::JsEngine.eval("core.create('composer', 'composer'); composer.show();");
+        BotBlock::JsEngine.eval("core.create('composer', 'composer'); composer.reset(); composer.show();");
     }
     else if( app.useCfgBot() )
     {
