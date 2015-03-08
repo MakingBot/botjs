@@ -4,6 +4,7 @@ INCLUDE_DIRECTORIES( block/network )
 SET(PROJECT_HEADER_FILES
     block/network/NetworkBlock.hpp
     block/network/NetworkThread.cpp
+    block/network/NetworkMessage.hpp
     )
 
 # Sources

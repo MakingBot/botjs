@@ -19,7 +19,8 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-
+#include <QtGlobal>
+#include <QDataStream>
 
 //!
 //! This class define a network message
@@ -34,9 +35,9 @@ public:
     //!
     //! Define the possible message type
     //!
-    enum NetMsgType : quint32
+    enum NetMsgType : quint16
     {
-        NET_PING      = 10;           // Ping for scanning purpose
+        NET_PING      = 10          // Ping for scanning purpose
 
     };
 
@@ -55,10 +56,24 @@ public:
     NetworkMessage(QByteArray datagram)
         : _datagram(datagram)
     {
-        
+        decryptDatagram();
     }
 
+    //!
+    //! Type getter
+    //!
+    NetMsgType type()
+    {
+        return _type;
+    }
 
+    //!
+    //! Datagram getter
+    //!
+    QByteArray datagram()
+    {
+        return _datagram;
+    }
 
     //!
     //! Datagram updater
@@ -68,16 +83,25 @@ public:
         // Clear the data
         _datagram.clear();
 
+        // Create a stream to fill it
+        QDataStream stream( &_datagram, QIODevice::WriteOnly );
+
         // Append the type
-        _datagram += _type;
+        stream << (quint16)_type;
     }
 
     //!
-    //! Datagram getter
+    //! Datagram updater
     //!
-    QByteArray datagram()
+    void decryptDatagram()
     {
-        return _datagram;
+        // Create a stream to fill it
+        QDataStream stream( _datagram );
+
+        // Get the type
+        quint16 type;
+        stream >> type;
+        _type = (NetMsgType)type;
     }
 
 protected:
