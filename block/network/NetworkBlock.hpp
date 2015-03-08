@@ -19,10 +19,12 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QThread>
 #include <QUdpSocket>
-#include <BotBlock.hpp>
+#include <QTcpSocket>
 #include <QHostAddress>
-#include <NetworkThread.hpp>
+#include <BotBlock.hpp>
+#include <NetworkMessage.hpp>
 
 //!
 //! Block that provides a communication interface for Network using IP on UDP/TCP
@@ -150,6 +152,10 @@ protected:
     //! Activation status, True if the interface is activated
     bool _isActivated;
     
+    //! Thread
+    //! Independant thread to support the communication
+    QThread _thread;
+
     // ========================================================================
     // => Network information
 
@@ -166,6 +172,11 @@ protected:
 
     //! UDP Socket
     QSharedPointer<QUdpSocket> _udpSocket;
+
+    //! Tcp Socket
+    QSharedPointer<QTcpSocket> _tcpSocket;
+
+
 
 
     // //! Role of this interface

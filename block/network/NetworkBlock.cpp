@@ -32,11 +32,13 @@ EXPORT_BLOCK(NetworkBlock)
  * */
 NetworkBlock::NetworkBlock(const QString& name)
     : BotBlock(name)
+    , _isActivated(false), _thread(this)
     , _udpSocket(new QUdpSocket())
+    , _tcpSocket(new QTcpSocket())
 {
 
 
-//    _udpSocket->moveToThread(this);
+//   _udpSocket->moveToThread(this);
 
 
     

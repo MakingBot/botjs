@@ -3,14 +3,12 @@ INCLUDE_DIRECTORIES( block/network )
 # Headers
 SET(PROJECT_HEADER_FILES
     block/network/NetworkBlock.hpp
-    block/network/NetworkThread.cpp
     block/network/NetworkMessage.hpp
     )
 
 # Sources
 SET(PROJECT_SOURCE_FILES
     block/network/NetworkBlock.cpp
-    block/network/NetworkThread.cpp
     )
 
 # Qt Modules
