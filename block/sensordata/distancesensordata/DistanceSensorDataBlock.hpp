@@ -40,7 +40,7 @@ public:
     explicit DistanceSensorDataBlock(const QString& name = QString("distancesensordata"))
         : SensorDataBlock(name), _distancemm(0)
     {
-    	appendBlockIProperty("distancemm", IProperty(IProperty::IPTypeInt, false));
+    	//appendBlockIProperty("distancemm", IProperty(IProperty::IPTypeInt, false));
     }
 
     // ========================================================================

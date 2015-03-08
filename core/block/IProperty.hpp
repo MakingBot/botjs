@@ -34,42 +34,41 @@ class IProperty
 public:
     
     //! Define the different type of property
-    enum IPropertyType{ IPTypeBool      , IPTypeInt     , IPTypeReal        ,
-                        IPTypeString    , IPTypeEnum    ,
-                        IPTypeBlock     , IPTypeSonBlock, IPTypeBrotherBlock,
-                        IPTypeRealList  , IPTypeVector3D, IPTypeVector4D    ,
+    enum IPropertyType{ IPTypeBool              ,
+                        IPTypeInt               ,
+                        IPTypeReal              ,
+                        IPTypeString            ,
+                        IPTypeEnum              ,
+                        IPTypeBlock             ,
+                        IPTypeSonBlock          ,
+                        IPTypeBrotherBlock      ,
+                        IPTypeRealList          ,
+                        IPTypeVector3D          ,
+                        IPTypeVector4D          ,
                         IPTypeMatrix44
     };
 
     //!
     //! Default constructor
     //!
-    IProperty(IPropertyType t = IPTypeBool, bool w = false, QMap<QString, int> enu = QMap<QString, int>())
-        : _writable(w), _type(t), _enum(enu)
+    IProperty(const QString& name, IPropertyType t = IPTypeBool, bool w = false, QMap<QString, int> enu = QMap<QString, int>())
+        : _name(name.toStdString().c_str()), _writable(w), _type(t), _enum(enu)
     { }
     
     //!
     //! Constructor for block type
     //!
-    IProperty(IPropertyType t, QStringList cmp)
+    IProperty(const QString& name, IPropertyType t, QStringList cmp)
         : _writable(true), _type(t), _compat(cmp)
     { }
 
-    //!
-    //! Copy constructor
-    //!
-    IProperty(const IProperty& p)
-    {
-        copy(p);
-    }
-    
     // ========================================================================
     // => Interactive property name
 
     //!
     //! Name getter
     //!
-    const QString& name() const
+    const char* name() const
     {
         return _name;
     }
@@ -79,10 +78,11 @@ public:
     //!
     void setName(const QString& name)
     {
-        _name = name;
+        _name = name.toStdString().c_str();
     }
     
-
+    // ========================================================================
+    // => Interactive property name
 
     //!
     //! Writable flag getter
@@ -103,13 +103,28 @@ public:
         return _type;
     }
 
-    //! Enum map getter
-    inline const QMap<QString, int>& enumMap() const { return _enum; }
+    // ========================================================================
+    // => Interactive property complement
     
+    //!
+    //! Enum map getter
+    //!
+    inline const QMap<QString, int>& enumMap() const
+    {
+        return _enum;
+    }
+    
+    //!
     //! Compat list getter
-    inline const QStringList& compatList() const { return _compat; }
+    //!
+    inline const QStringList& compatList() const
+    {
+        return _compat;
+    }
 
+    //!
     //! To convert the enum a into a stringlist
+    //!
     inline QStringList enumStringList() const
     {
         QStringList l;
@@ -122,51 +137,43 @@ public:
         return l;
     }
 
+    //!
     //! Return the enum value for the given enum name
+    //!
     inline int enumValue(QString name) const
     {
         return _enum[name];
     }
-    
+
+    //!
     //! Return the enum name of the enum value
+    //!
     inline QString enumName(int value) const
     {
         return _enum.key(value); 
     }
 
-    //! Copy function
-    inline void copy(const IProperty& property)
-    {
-        _writable   = property.isWritable();
-        _type       = property.type();
-        _enum       = property.enumMap();
-        _compat     = property.compatList();
-    }
-
-    //! Copy operator
-    inline void operator=(const IProperty& p){ copy(p); }
-
 protected:
     
-    //! Name
     //! Name of the property
-    QString _name;
+    //! To be able to use directly the setProperty function
+    const char*                 _name;
     
     //! Is writable
     //! True if the property is writable
-    bool _writable;
+    const bool                  _writable;
 
     //! Type
     //! Custom type for the interactive properties
-    IPropertyType _type;
+    const IPropertyType         _type;
 
     //! If type is IPTypeEnum
     //! this is the map of the enum[name] = value
-    QMap<QString, int> _enum;
+    const QMap<QString, int>    _enum;
     
     //! If type is IPTypeBlock, IPTypeSonBlock or IPTypeBrotherBlock
     //! This is the list of the accepted block types, empty means all type accepted
-    QStringList _compat;
+    const QStringList           _compat;
 
 };
 

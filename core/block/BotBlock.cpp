@@ -66,7 +66,7 @@ QString BotBlock::JsIProperty(const QString& property_name)
 {
     QString jsline;
     QTextStream stream(&jsline);
-
+/*
     // Get the id
     quint8 id = _iPropIds[property_name];
 
@@ -139,6 +139,7 @@ QString BotBlock::JsIProperty(const QString& property_name)
         }
     }
 
+    */
     // End
     stream << endl;
     return jsline;

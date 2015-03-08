@@ -37,6 +37,11 @@
 class LogEnder { public: LogEnder() {} };
 
 //!
+//! Warning tag to bypass enable boolean
+//!
+class LogWarning { public: LogWarning() {} };
+
+//!
 //! Buffer to store log messages
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
@@ -46,15 +51,14 @@ class LogBuffer : public QObject
     Q_OBJECT
     
 public:
+
     //!
     //! Default constructor
     //!
     explicit LogBuffer(const QString& logfilepath, QObject* parent = 0)
         : QObject(parent)
-    	, _newLog(true)
-    	, _logEnable(false)
-		, _talkEnable(false)
-    	, _coutstream(stdout)
+        , _id("init"), _newLog(true), _warning(false)
+        , _logEnable(false), _talkEnable(false), _coutstream(stdout)
     {
         // Set the file path
         _logfile.setFileName(logfilepath);
@@ -70,10 +74,11 @@ public:
     }
     
     //!
-    //!
+    //! Desctructor
     //!
     ~LogBuffer()
     {
+        // To close the file
         _logfile.close();
     }
 
@@ -82,15 +87,26 @@ public:
     //!
     void setId(const QString& id)
     {
-    	_id = id;
+        _id = id;
     }
+
+    //!
+    //! Synthesis tag getter
+    //!
+    bool synthesis() const
+    {
+        return _enableSynthesis;
+    }
+
+    // ========================================================================
+    // => Log
 
     //!
     //! Log enable getter
     //!
     bool logEnable() const
     {
-    	return _logEnable;
+        return _logEnable;
     }
 
     //!
@@ -100,14 +116,18 @@ public:
     {
         if(e) { _logEnable = true;  }
         else  { _logEnable = false; }
+        _enableSynthesis = _logEnable && _talkEnable;
     }
+
+    // ========================================================================
+    // => Talk
 
     //!
     //! Talk enable getter
     //!
     bool talkEnable() const
     {
-    	return _talkEnable;
+        return _talkEnable;
     }
 
     //!
@@ -117,28 +137,63 @@ public:
     {
         if(e) { _talkEnable = true;  }
         else  { _talkEnable = false; }
+        _enableSynthesis = _logEnable && _talkEnable;
     }
+
+    // ========================================================================
+    // => Stream
 
     //!
     //! General log function
     //!
     template<typename T> void streamlog( T val )
     {
-        if( _logEnable )
+        // --- Warning ---
+        if( _warning )
         {
-        	_filestream << val;
-        }
-
-        if( _talkEnable )
-        {
+            // Header of the log line
             if(_newLog)
             {
+                // Print warning   
+                _filestream << "<WARNING> ";
+            
+                // Print id
                 _coutstream << "[" << _id << "] ";
+                _coutstream << "<WARNING> ";
             }
+            // Log the value
+            _filestream << val;
             _coutstream << val;
         }
+        // --- No Warning ---
+        else
+        {
+            // If log is enabled
+            if( _logEnable )
+            {
+                // Log the value
+                _filestream << val;
+            }
 
-        if(_newLog) { _newLog = false; }
+            // If talk is enabled
+            if( _talkEnable )
+            {
+                // Header of the log line
+                if(_newLog)
+                {
+                    // Print id
+                    _coutstream << "[" << _id << "] ";
+                }
+                // Log the value
+                _coutstream << val;
+            }
+        }
+
+        // Stop the new log
+        if( _newLog )
+        {
+            _newLog = false;
+        }
     }
 
     //!
@@ -146,23 +201,41 @@ public:
     //!
     void endLog()
     {
-        if( _logEnable )
+        // --- Warning ---
+        if( _warning )
         {
-        	_filestream << endl;
+            _filestream << endl;
+            _coutstream << endl;
+            if( _warning )
+            {
+                _warning = false;
+            }
         }
-
-        if( _talkEnable )
+        // --- No Warning ---
+        else
         {
-        	_coutstream << endl;
+            if( _logEnable )
+            {
+                _filestream << endl;
+            }
+            if( _talkEnable )
+            {
+                _coutstream << endl;
+            }
         }
-
-        if(!_newLog) { _newLog = true; }     
+        
+        if( !_newLog )
+        {
+            _newLog = true;
+        }
     }
 
     // --- Stream Operators ---
 
     LogBuffer& operator<< ( LogEnder            p ) { endLog();                             return *this; }
+    LogBuffer& operator<< ( LogWarning          p ) { _warning = true;                      return *this; }
     
+
     LogBuffer& operator<< ( QChar               p ) { streamlog<QChar               >(p);   return *this; }
     LogBuffer& operator<< ( signed short        p ) { streamlog<signed short        >(p);   return *this; }
     LogBuffer& operator<< ( float               p ) { streamlog<float               >(p);   return *this; }
@@ -219,26 +292,39 @@ public:
 
 protected:
 
-    // LogBuffer identifier
-    QString _id;
+    //! Id
+    //! LogBuffer identifier
+    QString     _id;
 
+    //! New log tag
     //! True if no log is being written
-    bool _newLog;
+    bool        _newLog;
 
-    //! Buffer lock
-    QMutex _mutex;
+    //! Warning tag
+    //! True if a warning is being written
+    bool        _warning;
+
+    //! Synthesis tag
+    //! True when the buffer can log or/and talk
+    bool        _enableSynthesis;
+
+    // ========================================================================
+    // => Log
 
     //! True if the buffer can write logs into a file
-    bool _logEnable;
+    bool        _logEnable;
 
     //! Log file descriptor 
-    QFile _logfile;
+    QFile       _logfile;
     
     //! Stream to write logs into a file
     QTextStream _filestream;
 
+    // ========================================================================
+    // => Talk
+
     //! True if the buffer can print logs on the shell
-    bool _talkEnable;
+    bool        _talkEnable;
 
     //! Stream to print logs on the shell
     QTextStream _coutstream;

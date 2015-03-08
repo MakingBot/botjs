@@ -31,6 +31,11 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     std::cout << "===== BOTJS =====" << std::endl;
     std::cout << "++ Initial configuration start" << std::endl;
+
+
+    std::cout << "++ Je t'aime tata pau !!!!" << std::endl;
+
+    
     // Start timer
     QTime timer;
     timer.start();

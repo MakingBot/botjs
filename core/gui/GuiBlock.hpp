@@ -40,7 +40,7 @@ public:
     explicit GuiBlock(const QString& name = QString(), QObject *parent = 0)
         : BotBlock(name, parent), _visible(false)
     {
-        appendBlockIProperty("visible", IProperty(IProperty::IPTypeBool, true));
+        appendBlockIProperty(new IProperty("visible", IProperty::IPTypeBool, true));
     }
 
     //!

@@ -53,7 +53,7 @@ public:
         , _modelType (ModelTypeKinematic)
     {
         // POSITION
-        appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
+        //appendBlockIProperty("position", IProperty(IProperty::IPTypeVector4D, false));
     }
 
     // ========================================================================

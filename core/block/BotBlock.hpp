@@ -29,11 +29,12 @@
 //!
 //! Log macro
 //!
-#define BLOCK_LOG(msg)              \
-if(blockLog() || blockTalk())       \
-{                                   \
-    _logBuffer << msg << LogEnder();  \
-}
+#define BLOCK_LOG(msg) if(blockLogSynthesis()) { _logBuffer << msg << LogEnder(); }
+
+//!
+//! Warning macro
+//!
+#define BLOCK_WARNING(msg) { _logBuffer << LogWarning() << msg << LogEnder(); }
 
 //!
 //! Core configuration
@@ -450,6 +451,14 @@ public:
     }
 
     //!
+    //! Log and talk synthesis
+    //!
+    bool blockLogSynthesis() const
+    {
+        return _logBuffer.synthesis();   
+    }
+
+    //!
     //! Log enable getter
     //!
     bool blockLog() const
@@ -485,27 +494,27 @@ public:
     // => Block interactive properties
 
     //!
-    //! Interactive properties ids getter
+    //! Interactive property ids getter
     //!
-    const QMap<QString, quint8>& iPropIds()
+    const QMap<QString, quint8>& iPropertyIds()
     {
-        return _iPropIds;  
+        return _iPropertyIds;  
     }
 
     //!
     //! Interactive properties getter
     //!
-    const QMap<quint8, IProperty>& iProperties()
+    const QVector<QSharedPointer<IProperty> >& iProperties()
     {
         return _iProperties;
     }
 
     //!
-    //!
+    //! Get property value with the property id
     //!
     QVariant blockIPropertyValue(quint8 propid) const
     {
-        return this->property(_iPropIds.key(propid).toStdString().c_str());
+        return this->property(_iPropertyIds.key(propid).toStdString().c_str());
     }
 
     //!
@@ -513,40 +522,68 @@ public:
     //!
     void setBlockIPropertyValue(quint8 propid, const QVariant& value)
     {
-        this->setProperty(_iPropIds.key(propid).toStdString().c_str(), value);
+        this->setProperty(_iPropertyIds.key(propid).toStdString().c_str(), value);
     }
 
     //!
-    //! To append an interactive property
+    //! Define a interactive property with the given id
+    //! Interactive properties are limited to 256, therefore max id value is 255 
     //!
-    void appendBlockIProperty(const QString& pname, IProperty iprop)
+    void defineBlockIProperty(quint8 id, IProperty* iproperty)
     {
-        // Check if the property already exist
-        if( _iPropIds.find(pname) != _iPropIds.end() )
+        // Pointer basic check
+        if( !iproperty )
         {
-            BLOCK_LOG("Property " << pname << " already exists")
+            BLOCK_WARNING( "Null property provided" );
             return;
         }
-        iprop.setName( pname );
 
-        // Append the property in the id map
-        quint8 id = _iPropIds.size();
-        _iPropIds.insert(pname, id);
+        // Initialize an string with the name
+        QString name_str(iproperty->name());
+
+        // Check if the property is already appended
+        if( _iPropertyIds.find(name_str) == _iPropertyIds.end() )
+        {
+            BLOCK_WARNING( "the property (" << name_str << ") is already appended, previous property will be erased" );
+        }
+
+        // Link the property name with the id
+        _iPropertyIds[name_str] = id;
+
+        // Check if the id is already used
+        if( _iProperties[id] )
+        {
+            BLOCK_WARNING( "the property id (" << id << ") is already used, previous property will be erased" );
+        }
+
+        // Check if the vector is large enough
+        if( _iProperties.size() >= id )
+        {
+            _iProperties.resize(id + 1);
+        }
 
         // Append the property
-        _iProperties.insert(id, iprop);
+        _iProperties[id] = QSharedPointer<IProperty>(iproperty);
 
         // Log
-        BLOCK_LOG("New property [" << id << "] - " << pname);
+        BLOCK_LOG("New property [" << id << "] - " << name_str);
+    }
+
+    //!
+    //! To append an interactive property and the id does not matter
+    //!
+    void appendBlockIProperty(IProperty* iproperty)
+    {
+        defineBlockIProperty(_iProperties.size()+1, iproperty);
     }
     
     //!
     //! To remove an interactive property
     //!
-    void removeBlockIProperty(const QString& pname)
+    void removeBlockIProperty(const QString& name)
     {
-        _iProperties.remove( _iPropIds[pname] );
-        _iPropIds.remove(pname);
+        _iProperties.remove( _iPropertyIds[name] );
+        _iPropertyIds.remove( name );
     }
 
     // ========================================================================
@@ -943,14 +980,13 @@ protected:
     // ========================================================================
     // => Block interactive properties
 
-    //! Interactive property id
-    //! Properties are ordered, this map keep a link between the property id
-    //! and the property name
-    QMap<QString, quint8> _iPropIds;
+    //! Interactive property ids
+    //! This map keep a link between the property name and the property id
+    QMap<QString, quint8> _iPropertyIds;
 
     //! Interactive properties
-    //! Properties map that link the property name with the property structure
-    QMap<quint8 , IProperty> _iProperties;
+    //! Properties vectors that link the property id with the property structure
+    QVector<QSharedPointer<IProperty> > _iProperties;
 
     // ========================================================================
     // => Block architecture parameters

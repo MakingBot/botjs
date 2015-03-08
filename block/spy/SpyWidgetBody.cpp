@@ -59,6 +59,7 @@ void SpyWidgetBody::onSpiedBlockChange()
  * */
 void SpyWidgetBody::updateStructure()
 {
+    /*
     // Clean structure
     destroyStructure();
 
@@ -102,7 +103,7 @@ void SpyWidgetBody::updateStructure()
         _widgetMap[property.key()] = widget;
         ((QFormLayout*)layout())->addRow( propids.key(property.key()), widget );
     }
-
+*/
 /*
 
 
@@ -218,6 +219,7 @@ void SpyWidgetBody::updateStructure()
  * */
 void SpyWidgetBody::updateValues()
 {
+    /*
     // Check the spied block pointer
     QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
     if(!spied) { return; }
@@ -247,7 +249,7 @@ void SpyWidgetBody::updateValues()
                 break;
         }
     }
-
+*/
     /*
 
         // Get properties
