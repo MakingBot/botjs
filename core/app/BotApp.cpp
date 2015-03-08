@@ -68,23 +68,29 @@ QString BotApp::analyzeArguments()
     parser.addVersionOption();
     parser.addPositionalArgument("js_file", QApplication::translate("main", "Js file script"));
 
-    // A boolean option for dev (-d, --dev)
-    QCommandLineOption cfgDevOption(QStringList() << "d" << "dev",
-        QCoreApplication::translate("dev", "BotJs will use the dev configuration."));
-    parser.addOption(cfgDevOption);
+    // A boolean option for dev (-n, --new)
+    QCommandLineOption cfgNewOption(QStringList() << "n" << "new",
+        QCoreApplication::translate("new", "BotJs will use a new configuration."));
+    parser.addOption(cfgNewOption);
 
     // A boolean option for dev (-b, --bot)
     QCommandLineOption cfgBotOption(QStringList() << "b" << "bot",
         QCoreApplication::translate("bot", "BotJs will use the bot configuration."));
     parser.addOption(cfgBotOption);
 
+    // A boolean option for dev (-d, --dev)
+    QCommandLineOption cfgDevOption(QStringList() << "d" << "dev",
+        QCoreApplication::translate("dev", "BotJs will use the dev configuration."));
+    parser.addOption(cfgDevOption);
+
     // Process the actual command line arguments given by the user
     parser.process(*this);
 
     // Check cfg
-    _useCfgDev = parser.isSet(cfgDevOption);
+    _useCfgNew = parser.isSet(cfgNewOption);
     _useCfgBot = parser.isSet(cfgBotOption);
-
+    _useCfgDev = parser.isSet(cfgDevOption);
+    
     // If exist return the js file
     const QStringList args = parser.positionalArguments();
     if(args.size() >= 1)

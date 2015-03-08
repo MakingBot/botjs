@@ -47,6 +47,8 @@ public:
     QString analyzeArguments();
 
     //!
+    bool useCfgNew() { return _useCfgNew; }
+    //!
     bool useCfgBot() { return _useCfgBot; }
     //!
     bool useCfgDev() { return _useCfgDev; }
@@ -54,6 +56,13 @@ public:
     bool useCustom() { return _useCustom; }
 
 private:
+
+    // TODO convert boolean into enum with one choice at time
+
+    //!
+    //! Use new configuration
+    //!
+    bool _useCfgNew;
 
     //!
     //! Use bot configuration
@@ -90,6 +99,7 @@ private:
     //! Avoid orange focus on ubuntu
     //!
     inline void setTweaksStyle();
+
 };
 
 #endif // BOTAPP_HPP

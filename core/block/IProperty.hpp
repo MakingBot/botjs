@@ -23,6 +23,8 @@
 #include <QStringList>
 #include <QMapIterator>
 
+#include <iostream>
+
 //!
 //! An interactive property provide elements to dynamically modify QObject property.
 //!
@@ -52,8 +54,10 @@ public:
     //! Default constructor
     //!
     IProperty(const QString& name, IPropertyType t = IPTypeBool, bool w = false, QMap<QString, int> enu = QMap<QString, int>())
-        : _name(name.toStdString().c_str()), _writable(w), _type(t), _enum(enu)
-    { }
+        : _name(name), _writable(w), _type(t), _enum(enu)
+    {
+        std::cout << _name.toStdString() << std::endl;
+    }
     
     //!
     //! Constructor for block type
@@ -70,15 +74,11 @@ public:
     //!
     const char* name() const
     {
-        return _name;
+        return _name.toStdString().c_str();
     }
-
-    //!
-    //! Name setter
-    //!
-    void setName(const QString& name)
+    const QString& strName() const
     {
-        _name = name.toStdString().c_str();
+        return _name;
     }
     
     // ========================================================================
@@ -157,7 +157,7 @@ protected:
     
     //! Name of the property
     //! To be able to use directly the setProperty function
-    const char*                 _name;
+    const QString               _name;
     
     //! Is writable
     //! True if the property is writable

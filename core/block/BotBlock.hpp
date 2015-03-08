@@ -539,10 +539,10 @@ public:
         }
 
         // Initialize an string with the name
-        QString name_str(iproperty->name());
+        const QString& name_str = iproperty->strName();
 
         // Check if the property is already appended
-        if( _iPropertyIds.find(name_str) == _iPropertyIds.end() )
+        if( _iPropertyIds.find(name_str) != _iPropertyIds.end() )
         {
             BLOCK_WARNING( "the property (" << name_str << ") is already appended, previous property will be erased" );
         }

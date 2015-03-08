@@ -31,10 +31,6 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     std::cout << "===== BOTJS =====" << std::endl;
     std::cout << "++ Initial configuration start" << std::endl;
-
-
-    std::cout << "++ Je t'aime tata pau !!!!" << std::endl;
-
     
     // Start timer
     QTime timer;
@@ -46,9 +42,15 @@ int main(int argc, char *argv[])
 
     // Manage arguments
     QString js_file_path = app.analyzeArguments();
+    if     ( app.useCfgNew() )
+    {
+        #ifdef BOTJS_CORE_DEBUG_PRINT
+        std::cout << "++ Use new configuration script" << std::endl;
+        #endif
 
-
-    if     ( app.useCfgBot() )
+        BotBlock::JsEngine.eval("core.create('composer', 'composer'); composer.show();");
+    }
+    else if( app.useCfgBot() )
     {
         #ifdef BOTJS_CORE_DEBUG_PRINT
         std::cout << "++ Use bot configuration script" << std::endl;
