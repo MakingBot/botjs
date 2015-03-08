@@ -51,6 +51,11 @@ signals:
     //!
     void requestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type);
 
+    //!
+    //! Signal to request to be spied
+    //!
+    void requestBlockSpy(GraphicsBlockItem* me);
+
 protected:
 
     //! When mouse is hover

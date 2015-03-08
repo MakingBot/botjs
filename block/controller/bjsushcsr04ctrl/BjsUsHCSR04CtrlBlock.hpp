@@ -48,9 +48,6 @@ public:
     virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual BlockRole blockRole() const { return BotBlock::BlockController; }
-
-    //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("bjsushcsr04ctrl"); }
 
     // ========================================================================

@@ -176,6 +176,9 @@ void BotEngine::createCoreBlock()
     // Set the log id
     _coreBlock->setLogId( "core" );
 
+    // Set a bigger size
+    _coreBlock->setBlockSize( QSize( 300 , 300 ) );
+
     // Create a qt js object
     QJSValue js_val = _jsEngine->newQObject(_coreBlock.data());
     

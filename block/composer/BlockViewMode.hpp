@@ -19,6 +19,6 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-enum BlockViewMode { BSM_Editor, BSM_Zoom, BSM_Move, BSM_Kill, BSM_Connect };
+enum BlockViewMode { BSM_Editor, BSM_Zoom, BSM_Move, BSM_Kill, BSM_Connect, BSM_Spy };
 
 #endif // BLOCKSCENEMODE_HPP

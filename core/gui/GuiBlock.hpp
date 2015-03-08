@@ -43,6 +43,9 @@ public:
         appendBlockIProperty(new IProperty("visible", IProperty::IPTypeBool, true));
     }
 
+    //! FROM BotBlock
+    virtual BlockRole blockRole() const { return BotBlock::BlockUi; }
+
     //!
     //! Widget visibility getter
     //!

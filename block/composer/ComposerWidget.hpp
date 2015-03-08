@@ -71,6 +71,10 @@ protected:
     //! The graphic scene, where items are displayed
     GraphicsBlockScene  _scene;
 
+
+    //! Cursor
+    QCursor             _cursorSpy;
+
     //! Cursor
     QCursor             _cursorZoom;
 

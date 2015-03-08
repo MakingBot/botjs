@@ -37,8 +37,6 @@ void GraphicsBlockView::mouseMoveEvent(QMouseEvent* event)
 
     switch( _mode )
     {
-        case BlockViewMode::BSM_Editor  : break;
-        case BlockViewMode::BSM_Zoom    : break;
 
         case BlockViewMode::BSM_Move    :
         {
@@ -51,8 +49,7 @@ void GraphicsBlockView::mouseMoveEvent(QMouseEvent* event)
             break;
         }
 
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 
     QGraphicsView::mouseMoveEvent(event);

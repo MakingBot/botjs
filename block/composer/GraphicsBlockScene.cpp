@@ -70,6 +70,15 @@ void GraphicsBlockScene::onRequestBlockCreation(GraphicsBlockItem* creator, QPoi
 /* ============================================================================
  *
  * */
+void GraphicsBlockScene::onRequestBlockSpy(GraphicsBlockItem* me)
+{
+
+
+}
+
+/* ============================================================================
+ *
+ * */
 void GraphicsBlockScene::initialize()
 {
     // Create stack and store the core block to start

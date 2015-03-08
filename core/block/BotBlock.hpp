@@ -71,7 +71,12 @@ public:
     //!
     //! Define different block roles
     //!
-    enum BlockRole { BlockCore, BlockData, BlockSpy, BlockCom, BlockUi, BlockController, BlockInterface } ;
+    enum BlockRole {
+        BlockCore       ,
+        BlockUi         , BlockSpy       ,
+        BlockController , BlockInterface ,
+        BlockData       , BlockJoint     ,  BlockLink
+    } ;
 
     //!
     //! Define block state
@@ -694,12 +699,15 @@ public:
     {
         switch(role)
         {
-            case BlockCore: return QString("#795548"); break; // BROWN 500
-            case BlockData: return QString("#2196F3"); break; // BLEU  500
-            case BlockSpy : return QString("#9C27B0"); break; // PURPLE 500
-            case BlockCom : return QString("#009688"); break; // TEAL  500
-            case BlockUi  : return QString("#4CAF50"); break; // GREEN 500
-            default       : return QString("#424242"); break; // GREY  800
+            case BlockCore          : return QString("#F44336"); break; // RED      500
+            case BlockUi            : return QString("#4CAF50"); break; // GREEN    500
+            case BlockSpy           : return QString("#673ab7"); break; //          500
+            case BlockController    : return QString("#ff9800"); break; //          500
+            case BlockInterface     : return QString("#FF5722"); break; //          500
+            case BlockData          : return QString("#2196F3"); break; // BLEU     500
+            case BlockJoint         : return QString("#3F51B5"); break; // INDIGO   500
+            case BlockLink          : return QString("#009688"); break; // TEAL     500
+            default                 : return QString("#424242"); break; // GREY     800
         }
     }
     
@@ -710,12 +718,15 @@ public:
     {
         switch(role)
         {
-            case BlockCore: return QString("core");    break;
-            case BlockData: return QString("data");    break;
-            case BlockSpy : return QString("spy");     break;
-            case BlockCom : return QString("com");     break;
-            case BlockUi  : return QString("ui");      break;
-            default       : return QString("unknown"); break;
+            case BlockCore          : return QString("core");       break;
+            case BlockUi            : return QString("ui");         break;
+            case BlockSpy           : return QString("spy");        break;
+            case BlockController    : return QString("controller"); break;
+            case BlockInterface     : return QString("interface");  break;
+            case BlockData          : return QString("data");       break;
+            case BlockJoint         : return QString("joint");      break;
+            case BlockLink          : return QString("link");       break;
+            default                 : return QString("unknown");    break;
         }
     }
 

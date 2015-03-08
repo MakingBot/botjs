@@ -83,6 +83,11 @@ public slots:
     //!
     void onRequestBlockCreation(GraphicsBlockItem* creator, QPointF position, QString type);
 
+    //!
+    //! Spy the requested block
+    //!
+    void onRequestBlockSpy(GraphicsBlockItem* me);
+
 protected:
 
     //! Window parent

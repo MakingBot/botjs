@@ -50,6 +50,7 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     _view.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
     // Initialize cursors
+    _cursorSpy      = InitializeSvgCusor(":/icon/spy");
     _cursorConnect  = InitializeSvgCusor(":/icon/plug");
     _cursorKill     = InitializeSvgCusor(":/icon/skull");
     _cursorZoom     = InitializeSvgCusor(":/icon/magnifier");
@@ -138,6 +139,7 @@ void ComposerWidget::wheelEvent(QWheelEvent* event)
         case BlockViewMode::BSM_Move    : break;
         case BlockViewMode::BSM_Kill    : break;
         case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 }
 
@@ -182,6 +184,11 @@ void ComposerWidget::keyPressEvent(QKeyEvent* event)
         case Qt::Key_C :
             setCursor(_cursorConnect);
             _view.setMode( BlockViewMode::BSM_Connect );
+            break;
+
+        case Qt::Key_S :
+            setCursor(_cursorSpy);
+            _view.setMode( BlockViewMode::BSM_Spy );
             break;
     }
 }

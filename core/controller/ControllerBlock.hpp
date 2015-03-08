@@ -43,6 +43,12 @@ public:
 
     }
 
+    // ========================================================================
+    // => BotBlock redefinition
+
+    //! FROM BotBlock
+    virtual BlockRole blockRole() const { return BotBlock::BlockController; }
+
     //!
     //!
     //!

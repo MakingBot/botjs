@@ -273,10 +273,7 @@ void GraphicsBlockItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
             update();
             break;
 
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 }
 
@@ -296,10 +293,7 @@ void GraphicsBlockItem::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
             update();
             break;
 
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 }
 
@@ -324,10 +318,7 @@ void GraphicsBlockItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
             }
         }
 
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 }
 
@@ -345,17 +336,6 @@ void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
                 QSize new_size = blockSize();
                 QPointF diff = event->scenePos() - event->lastScenePos();
                 diff *= 2;
-                if( !hasChilds() )
-                {
-                    if( diff.x() > diff.y() )
-                    {
-                        diff.setY( diff.x() );
-                    }
-                    else
-                    {
-                        diff.setX( diff.y() );
-                    }
-                }
                 switch(_resizeCorner)
                 {
                     case BICornerTopLeft:
@@ -372,6 +352,17 @@ void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
                         new_size += QSize( diff.x() , -diff.y() );
                         break;
                 }
+                if( !hasChilds() )
+                {
+                    if( new_size.width() > new_size.height() )
+                    {
+                        new_size.setWidth ( new_size.height() );
+                    }
+                    else
+                    {
+                        new_size.setHeight( new_size.width() );
+                    }
+                }
                 setBlockSize( new_size );
             }
             else
@@ -379,11 +370,8 @@ void GraphicsBlockItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
                 QGraphicsItemGroup::mouseMoveEvent(event);        
             }
         }
-
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        
+        default: break;
     }
 }
 
@@ -394,6 +382,7 @@ void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     switch( bSceneMode() )
     {
+
         case BlockViewMode::BSM_Editor:
         {
             QMapIterator<BlockItemCorner, QRectF> c(_cHandler);
@@ -414,10 +403,12 @@ void GraphicsBlockItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
             break;
         }
 
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        case BlockViewMode::BSM_Spy:
+        {
+            emit( requestBlockSpy(this) );
+        }
+
+        default: break;
     }
 }
 
@@ -450,10 +441,7 @@ void GraphicsBlockItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* event)
             break;
         }
 
-        case BlockViewMode::BSM_Zoom    : break;
-        case BlockViewMode::BSM_Move    : break;
-        case BlockViewMode::BSM_Kill    : break;
-        case BlockViewMode::BSM_Connect : break;
+        default: break;
     }
 
 

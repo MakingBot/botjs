@@ -51,9 +51,6 @@ public:
     virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual BlockRole blockRole() const { return BotBlock::BlockSpy; }
-
-    //! FROM BotBlock
     virtual QString blockTypeName() const { return QString("bjsserialarduino"); }
 
 public slots:

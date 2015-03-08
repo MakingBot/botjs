@@ -53,6 +53,9 @@ public:
     // => BotBlock redefinition
 
     //! FROM BotBlock
+    virtual BlockRole blockRole() const { return BotBlock::BlockInterface; }
+
+    //! FROM BotBlock
     bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
     //! FROM BotBlock

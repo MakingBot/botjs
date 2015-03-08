@@ -44,9 +44,6 @@ public:
     // => BotBlock redefinition
 
     //! FROM BotBlock
-    virtual BlockRole blockRole() const { return BotBlock::BlockController; }
-
-    //! FROM BotBlock
     virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master)
     {
     	// Check if it is a distance sensor data
