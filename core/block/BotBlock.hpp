@@ -141,7 +141,7 @@ public:
         , _idNumber(0xFFFFFFFF)
         , _logBuffer(_blockName, BotBlock::JsEngine.getBlockLogDirectory(), this)
 
-        , _bsize     (150,150)
+        , _bsize     (100,100)
         , _bposition ( 0 , 0 )
 
         , _bstatus("Block initialization")

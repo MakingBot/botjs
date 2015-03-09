@@ -4,9 +4,10 @@ INCLUDE_DIRECTORIES( block/composer )
 SET(PROJECT_HEADER_FILES
     block/composer/BlockMenu.hpp
     block/composer/BlockMenuItem.hpp
-        
     block/composer/BlockViewMode.hpp
 
+    block/composer/ComposerStyle.hpp
+    
     block/composer/ComposerBlock.hpp
     block/composer/ComposerWidget.hpp
 

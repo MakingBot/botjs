@@ -10,6 +10,7 @@
 #include <QInputDialog>
 #include <QGraphicsItem>
 #include <QGraphicsView>
+#include <ComposerStyle.hpp>
 #include <QGraphicsSceneDragDropEvent>
 
 using namespace std;
@@ -32,7 +33,7 @@ GraphicsBlockScene::GraphicsBlockScene(QWidget* parent)
     }
 
     // Set the background color
-    setBackgroundBrush( QBrush(QColor( "#efefef" )) );
+    setBackgroundBrush( QBrush(QColor( COMPOSER_BACKGROUND_COLOR )) );
 }
 
 /* ============================================================================

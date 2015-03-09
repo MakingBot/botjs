@@ -5,6 +5,7 @@
 #include <QCursor>
 #include <QMimeData>
 #include <QMapIterator>
+#include <ComposerStyle.hpp>
 #include <GraphicsBlockScene.hpp>
 #include <QGraphicsSceneDragDropEvent>
 
@@ -72,34 +73,31 @@ void GraphicsBlockItem::computeGeometry()
 {
     prepareGeometryChange();
     
-    const int margin = 32;
     const QSize hsize(16,16);
     const int w2 = (blockSize().width() /2);
     const int h2 = (blockSize().height()/2);
 
-    //
+    // 
     _corner = QPointF( - w2 , - h2 );
 
     //
-    QPointF corner = QPointF( - w2 - hsize.width() - margin , - h2 - hsize.height() - margin );
-    _extCorner     = QPointF( - w2 - hsize.width()          , - h2 - hsize.height()          );
+    QPointF corner = QPointF( - w2 - hsize.width() , - h2 - hsize.height() );
+    _extCorner     = QPointF( - w2 - hsize.width() , - h2 - hsize.height() );
 
     // local size
     QSizeF  size(blockSize());
     size += (hsize*2);
-    size += QSize(margin,margin)*2;
 
     //
     _brect  = QRectF(corner, size);
 
-    // Handler rectangles
-    // _cHandler[BICornerTopLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() - h2 - hsize.height() ) , hsize);
-    _cHandler[BICornerBotLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() + h2                  ) , hsize);
-    // _cHandler[BICornerBotRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() + h2                  ) , hsize);
-    _cHandler[BICornerTopRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() - h2 - hsize.height() ) , hsize);
+    //_topTextZone = QRectF( _corner , QSize() );
 
-    //
-    _topTextZone = QRectF( corner, QSize(size.width(),margin) );
+    // Handler rectangles
+    _cHandler[BICornerTopLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() - h2 - hsize.height() ) , hsize);
+    _cHandler[BICornerBotLeft]  = QRectF( QPointF( _brect.center().x() - w2 - hsize.width() , _brect.center().y() + h2                  ) , hsize);
+    _cHandler[BICornerBotRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() + h2                  ) , hsize);
+    _cHandler[BICornerTopRight] = QRectF( QPointF( _brect.center().x() + w2                 , _brect.center().y() - h2 - hsize.height() ) , hsize);
 }
 
 /* ============================================================================
@@ -113,7 +111,6 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
     // ==========================================
     if( hasChilds() )
     {
-
         if( isSelected() )
         {
             // Draw corners if the item is selected
@@ -125,47 +122,33 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
             while(c.hasNext())
             {
                 c.next();
-                if( c.key() == BICornerTopLeft )
-                {
-                    continue;
-                }
                 painter->drawRect ( c.value() );
             }
         }
 
         // The body is always the same
-        pen.setStyle     ( Qt::SolidLine );
-        pen.setColor     ( _mainColor    );
+        pen.setStyle     ( Qt::NoPen     );
         pen.setWidth     ( 4             );
         painter->setPen  ( pen           );
         painter->setBrush( Qt::SolidPattern   );
-        painter->setBrush( QBrush(QColor( "#efefef" )) );
-
-        QVector<QPointF> point_chain;
-        point_chain << _brect.center();
-        point_chain << _extCorner;
-        point_chain << QPointF(_brect.x(), _extCorner.y());
-        QPolygonF line( point_chain );
-
-        painter->drawPolyline( line );
-
-        painter->drawRoundedRect( QRectF(_corner, blockSize()), 30, 30 );
+        painter->setBrush( QBrush(QColor( COMPOSER_BACKGROUND_LIGHT_1_COLOR )) );
+        painter->drawRoundedRect( QRectF(_corner, blockSize()), 10, 10 );
 
         // Write the block name
         QFont font( "Roboto" );
         font.setBold ( true );
         font.setPixelSize(20);
         painter->setFont(font);
-        pen.setColor( QColor("#000000") );
+        pen.setStyle( Qt::SolidLine     );
+        pen.setColor( QColor("#424242") );
         painter->setPen(pen);
-        painter->drawText(_topTextZone, Qt::AlignLeft, blockName());
-
+        painter->drawText(QRectF( _corner + QPointF(5,5) , blockSize()), Qt::AlignLeft | Qt::AlignTop, blockName());
     }
 
-    // ==========================================
+    // === No Childs ===
+
     else
     {
-
         if( isSelected() )
         {
             // Draw corners if the item is selected
@@ -177,67 +160,45 @@ void GraphicsBlockItem::paintStructure(QPainter* painter)
             while(c.hasNext())
             {
                 c.next();
-                if( c.key() == BICornerTopLeft )
-                {
-                    continue;
-                }
                 painter->drawRect ( c.value() );
             }
 
+            // Draw the circle
+            painter->setBrush( Qt::SolidPattern   );
+            painter->setBrush( QBrush(QColor( _mainColor )) );
+            painter->drawEllipse( QRectF(_corner, blockSize()) );
+
+            // Write the block name
+            QFont font( "Roboto" );
+            font.setBold  ( true );
+            font.setPixelSize (14);
+            painter->setFont(font);
+            pen.setStyle( Qt::SolidLine     );
+            pen.setColor( QColor("#FFFFFF") );
+            painter->setPen(pen);
+            painter->drawText(QRectF(_corner, blockSize()), Qt::AlignCenter, blockName());
+        }
+        else
+        {
+            // Draw the circle
             pen.setStyle     ( Qt::SolidLine );
             pen.setColor     ( _mainColor    );
             pen.setWidth     ( 4             );
             painter->setPen  ( pen           );
-
             painter->setBrush( Qt::SolidPattern   );
-            painter->setBrush( QBrush(QColor( "#FFFFFF" )) );
-
-            QVector<QPointF> point_chain;
-            point_chain << _brect.center();
-            point_chain << _extCorner;
-            point_chain << QPointF(_brect.x(), _extCorner.y());
-            QPolygonF line( point_chain );
-
-            painter->drawPolyline( line );
-
-            painter->drawEllipse ( QRectF(_corner, blockSize()) );
+            painter->setBrush( QBrush("#FFFFFF")  );
+            painter->drawEllipse( QRectF(_corner, blockSize()) );
 
             // Write the block name
             QFont font( "Roboto" );
-            font.setBold ( true );
-            font.setPixelSize(20);
-            painter->setFont(font);
-            pen.setColor( QColor("#000000") );
-            painter->setPen(pen);
-            painter->drawText(_topTextZone, Qt::AlignLeft, blockName());
-
-        }
-        else
-        {
-
-
-            pen.setStyle     ( Qt::NoPen        );
-            painter->setPen  ( pen              );
-
-            painter->setBrush( Qt::SolidPattern   );
-            painter->setBrush( QBrush(_mainColor) );
-            painter->drawEllipse ( QRectF(_corner, blockSize()) );
-
-            // Write the block name
-            QFont font( "Roboto" );
-            font.setBold ( false );
-            font.setPixelSize(20);
-            painter->setFont(font);
-
-            pen.setStyle     ( Qt::SolidLine );
-            pen.setColor( QColor("#FFFFFF") );
-            painter->setPen(pen);
+            font.setBold ( true  );
+            font.setPixelSize (14);
+            pen.setStyle ( Qt::SolidLine      );
+            pen.setColor ( QColor("#424242")  );
+            painter->setPen ( pen  );
+            painter->setFont( font );
             painter->drawText(QRectF(_corner, blockSize()), Qt::AlignCenter, blockName());
-
         }
-
-        
-
     }
 }
 

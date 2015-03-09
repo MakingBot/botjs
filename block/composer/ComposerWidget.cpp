@@ -50,10 +50,29 @@ ComposerWidget::ComposerWidget(ComposerBlock* parent_block, QWidget *parent)
     _view.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
     // Initialize cursors
-    _cursorSpy      = InitializeSvgCusor(":/icon/spy");
-    _cursorConnect  = InitializeSvgCusor(":/icon/plug");
     _cursorKill     = InitializeSvgCusor(":/icon/skull");
     _cursorZoom     = InitializeSvgCusor(":/icon/magnifier");
+
+    const unsigned int i = 100;
+
+    // === Spy ===
+    {
+        QSvgRenderer svgRender( QString(":/icon/spy") );
+        QImage image(i, i, QImage::Format_ARGB32);
+        QPainter painter(&image);
+        svgRender.render(&painter);
+        _cursorSpy = QCursor( QPixmap::fromImage( image ) );
+    }
+
+    // === Plug ===
+    {
+        QSvgRenderer svgRender2( QString(":/icon/plug") );
+        QImage image2(i, i, QImage::Format_ARGB32);
+        QPainter painter2(&image2);
+        svgRender2.render(&painter2);
+        _cursorConnect = QCursor( QPixmap::fromImage( image2 ) );
+    }
+
 
     // Build the menu bar with buttons
     QHBoxLayout* hlayout = new QHBoxLayout(&_menuBar);
@@ -93,7 +112,7 @@ void ComposerWidget::reset()
  * */
 QCursor ComposerWidget::InitializeSvgCusor(const QString& filename)
 {
-    const unsigned int i = 20;
+    const unsigned int i = 100;
 
     // Create the image and the renderer
     QSvgRenderer svgRender( filename );
