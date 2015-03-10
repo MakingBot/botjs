@@ -23,7 +23,8 @@
 #include <BotBlock.hpp>
 
 //!
-//! Gui block interface
+//! Gui block
+//! Provide an interface for block that implement a gui.
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
@@ -34,13 +35,16 @@ class GuiBlock : public BotBlock
 
 public:
 
+    //! Id of the visible property
+    static const quint8 IdPropertyVisible;
+
     //!
     //! Default constructor
     //!
     explicit GuiBlock(const QString& name = QString(), QObject *parent = 0)
         : BotBlock(name, parent), _visible(false)
     {
-        appendBlockIProperty(new IProperty("visible", IProperty::IPTypeBool, true));
+        defineBlockIProperty(IdPropertyVisible, new IProperty("visible", IProperty::IPTypeBool, true));
     }
 
     //! FROM BotBlock
@@ -80,10 +84,9 @@ public slots:
     //!
     virtual void show()
     {
-        
         _widget->show();
         _visible = true;
-        emit blockiPropertyValuesChanged();
+        emit blockiPropertyValuesChanged(IdPropertyVisible);
     }
 
     //!
@@ -93,7 +96,7 @@ public slots:
     {
         _widget->hide();
         _visible = false;
-        emit blockiPropertyValuesChanged();
+        emit blockiPropertyValuesChanged(IdPropertyVisible);
     }
 
 protected:
