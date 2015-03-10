@@ -75,7 +75,7 @@ public:
     void setDistancemm(quint16 dist)
     {
     	_distancemm = dist;
-    	emit blockiPropertyValuesChanged();
+    	//emit blockiPropertyValuesChanged();
     }
 
 protected:

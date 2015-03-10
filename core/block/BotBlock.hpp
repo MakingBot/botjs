@@ -52,7 +52,7 @@ class BotBlock : public QObject
     Q_OBJECT
     Q_ENUMS(BlockRole)
     
-    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _blockName   CONSTANT       )
+    Q_PROPERTY(QString      blockName               READ blockName           MEMBER _blockName   CONSTANT   )
     Q_PROPERTY(float        blockVersion            READ blockVersion                                       )
     Q_PROPERTY(QString      blockTypename           READ blockTypeName                                      )
     Q_PROPERTY(BlockRole    blockRole               READ blockRole                                          )
@@ -956,7 +956,7 @@ signals:
     //! Signal
     //! Emit when interactive property values has been modified
     //!
-    void blockiPropertyValuesChanged();
+    void blockiPropertyValuesChanged(quint8 id);
     
     //! Signal
     //! Emit when interactive property structure has been modified

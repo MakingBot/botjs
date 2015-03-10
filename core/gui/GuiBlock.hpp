@@ -83,7 +83,7 @@ public slots:
         
         _widget->show();
         _visible = true;
-        emit blockiPropertyValuesChanged();
+        // emit blockiPropertyValuesChanged();
     }
 
     //!
@@ -93,7 +93,7 @@ public slots:
     {
         _widget->hide();
         _visible = false;
-        emit blockiPropertyValuesChanged();
+        // emit blockiPropertyValuesChanged();
     }
 
 protected:

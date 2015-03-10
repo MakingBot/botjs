@@ -80,7 +80,7 @@ public:
     void setDevice(quint16 device)
     {
         _device = device;
-        emit blockiPropertyValuesChanged();
+        //emit blockiPropertyValuesChanged();
     }
 
 

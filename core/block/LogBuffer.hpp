@@ -238,7 +238,6 @@ public:
     LogBuffer& operator<< ( LogEnder            p ) { endLog();                             return *this; }
     LogBuffer& operator<< ( LogWarning          p ) { _warning = true;                      return *this; }
     
-
     LogBuffer& operator<< ( QChar               p ) { streamlog<QChar               >(p);   return *this; }
     LogBuffer& operator<< ( signed short        p ) { streamlog<signed short        >(p);   return *this; }
     LogBuffer& operator<< ( float               p ) { streamlog<float               >(p);   return *this; }
