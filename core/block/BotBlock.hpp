@@ -496,6 +496,25 @@ public:
         _logBuffer.setTalkEnable(e);
     }
 
+    //!
+    //! To log from a no-member function
+    //!
+    void registerBlockLog(const QString& msg)
+    {
+        if(blockLogSynthesis())
+        {
+            _logBuffer << msg << LogEnder();
+        }
+    }
+    
+    //!
+    //! To log a warning from a no-member function
+    //!
+    void registerBlockWarning(const QString& msg)
+    {
+        _logBuffer << LogWarning() << msg << LogEnder();
+    }
+
     // ========================================================================
     // => Block interactive properties
 
