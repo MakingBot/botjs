@@ -48,6 +48,8 @@ SET(PROJECT_SOURCE_FILES
     core/app/BotEngine.cpp
     core/app/CoreBlock.cpp
 
+    core/gui/GuiBlock.cpp
+
     core/block/BotBlock.cpp
     core/type/ShapeData.cpp
 
