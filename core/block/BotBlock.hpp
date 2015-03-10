@@ -733,10 +733,16 @@ public:
     // ========================================================================
     // => Block save function
 
+    static QString JsBool(bool value)
+    {
+        if(value) { return QString("true");  }
+        else      { return QString("false"); }
+    }
+
     //!
     //! To convert an interactive property to a js string line
     //!
-    QString JsIProperty(const QString& property_name);
+    QString jsIProperty(const QString& property_name);
 
     //!
     //! Provide the js creation phase of this block
@@ -766,13 +772,14 @@ public:
             var_name = blockName();
         }
 
+        // Log and talk
+        stream << var_name << "." << "blockLog  = " << JsBool(blockLog ()) << ";" << endl;
+        stream << var_name << "." << "blockTalk = " << JsBool(blockTalk()) << ";" << endl;
+    
         // Size and position
         stream << var_name << "." << "blockSize     = Type.size ([" << QString::number(_bsize.width()) << " , " << QString::number(_bsize.height()) << "])" << endl; 
         stream << var_name << "." << "blockPosition = Type.point([" << QString::number(_bposition.x()) << " , " << QString::number(_bposition.y() ) << "])" << endl;
-
-
     
-        
     }
 
     //!
@@ -797,6 +804,8 @@ public:
         {
             var_name = blockName();
         }
+
+
 
     }
     
