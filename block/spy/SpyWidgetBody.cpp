@@ -8,6 +8,7 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QMapIterator>
+#include <QVectorIterator>
 #include <QStyleOption>
 
 #include <QLabel>
@@ -59,19 +60,53 @@ void SpyWidgetBody::onSpiedBlockChange()
  * */
 void SpyWidgetBody::updateStructure()
 {
-    /*
     // Clean structure
-    destroyStructure();
-
+    destroyStructure();  
+    
     // Check the spied block pointer
     QSharedPointer<BotBlock> spied = _spyblock->weakSpiedBlock().toStrongRef();
     if(!spied) { return; }
 
-    // Get properties
-    const QMap<QString, quint8>& propids = spied->iPropIds();
-    const QMap<quint8, IProperty>& properties = spied->iProperties();
-
     // Go through properties
+    quint8 id = 0;
+    QVectorIterator<QSharedPointer<IProperty> > property( spied->iProperties() );
+    while (property.hasNext())
+    {
+        // New property, new widget
+        QSharedPointer<IProperty> cur_property = property.next();
+        QWidget* widget = 0;
+
+        // Go next if no property associated to this id
+        if(!cur_property) { id++; continue; }
+
+        // Create the widget in function of the property type
+        switch(cur_property->type())
+        {
+            
+            case IProperty::IPTypeInt:
+                widget = new ViewerInteger(id, !cur_property->isWritable());
+                if( cur_property->isWritable() )
+                {
+                    connect( (ViewerInteger*)widget, SIGNAL(newValueRequestedFor(quint8)), this, SLOT(onNewValueRequestFor(quint8)) );
+                }
+                
+            default:
+                // TODO log the warning
+                break;
+        }
+        
+        // Go next if no widget has been created 
+        if(!widget) { id++; continue; }
+
+        // Add it into the layout
+        // _widgetMap[property.key()] = widget;
+        // ((QFormLayout*)layout())->addRow( propids.key(property.key()), widget );
+        id++;
+    }
+    
+    
+    /*
+
     QMapIterator<quint8, IProperty> property(properties);
     while (property.hasNext())
     {

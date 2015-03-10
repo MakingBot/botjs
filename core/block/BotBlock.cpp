@@ -62,7 +62,7 @@ QString BotBlock::JsString(const QString& string)
 /* ============================================================================
  *
  * */
-QString BotBlock::JsIProperty(const QString& property_name)
+QString BotBlock::jsIProperty(const QString& property_name)
 {
     QString jsline;
     QTextStream stream(&jsline);

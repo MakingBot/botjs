@@ -27,6 +27,27 @@
 EXPORT_BLOCK(JointBlock)
 #endif
 
+/*
+position venant de PhysicBlock                      = 0;
+
+const quint8 JointBlock::IdPropertyAxe              = 1;
+const quint8 JointBlock::IdPropertyType             = 2;
+
+const quint8 JointBlock::IdPropertyMinValue         = 3;
+const quint8 JointBlock::IdPropertyMaxValue         = 4;
+const quint8 JointBlock::IdPropertyGoalValue        = 5;
+const quint8 JointBlock::IdPropertyCurrentValue     = 6;
+
+const quint8 JointBlock::IdPropertyMinSpeed         = 7;
+const quint8 JointBlock::IdPropertyMaxSpeed         = 8;
+const quint8 JointBlock::IdPropertyGoalSpeed        = 9;
+const quint8 JointBlock::IdPropertyCurrentSpeed     = 10;
+
+const quint8 JointBlock::IdPropertyMaxTorque        = 11;
+const quint8 JointBlock::IdPropertyGoalTorque       = 12;
+const quint8 JointBlock::IdPropertyCurrentTorque    = 13;
+*/
+
 /* ============================================================================
  *
  * */
