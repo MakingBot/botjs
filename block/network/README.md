@@ -46,3 +46,28 @@ This message required a TCP connection
 | MessageType |   NET_TEST   |       2      |
 |    String   |     Data     |     1022     |
 
+##### NET_BLOCK_CREATE
+
+This message required a TCP connection. It request a block creation in the receiver core. The father of the new block must be already created.
+
+|     Type    |     Value    | Size (bytes) |
+|:-----------:|:------------:|:------------:|
+| MessageType |   NET_BLOCK_CREATE   |       2      |
+|    String   |     Block Type   |     N     |
+|    String   |     Id Chain     |     N     |
+
+##### NET_BLOCK_UPDATE
+
+|     Type    |     Value    | Size (bytes) |
+|:-----------:|:------------:|:------------:|
+| MessageType |   NET_BLOCK_UPDATE   |       2      |
+| Data Stream | Block Config  |     N     |
+
+##### NET_BLOCK_CONNECT
+
+##### NET_BLOCK_DISCONNECT
+
+##### NET_BLOCK_DESTROY
+
+
+
