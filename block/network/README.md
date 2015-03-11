@@ -36,7 +36,7 @@ This message is sent by a bot core. It is used to answer to a network ping.
 
 ##### NET_TEST
 
-This message required a TCP connection
+This message require a TCP connection
 
 - Dev Core: Send 1022 bytes data to the bot core and wait for the return of every data.
 - Bot Core: Send back the message to the emitter.
@@ -48,7 +48,7 @@ This message required a TCP connection
 
 ##### NET_BLOCK_CREATE
 
-This message required a TCP connection. It request a block creation in the receiver core. The father of the new block must be already created.
+This message require a TCP connection. It request a block creation in the receiver core. The father of the new block must be already created.
 
 |     Type    |     Value    | Size (bytes) |
 |:-----------:|:------------:|:------------:|
@@ -65,7 +65,19 @@ This message required a TCP connection. It request a block creation in the recei
 
 ##### NET_BLOCK_CONNECT
 
+|     Type    |     Value    | Size (bytes) |
+|:-----------:|:------------:|:------------:|
+| MessageType |   NET_BLOCK_CONNECT   |       2      |
+| uint32 | Id nb block 1  |     4    |
+| uint32 | Id nb block 2  |     4    |
+
 ##### NET_BLOCK_DISCONNECT
+
+|     Type    |     Value    | Size (bytes) |
+|:-----------:|:------------:|:------------:|
+| MessageType |   NET_BLOCK_DISCONNECT   |       2      |
+| uint32 | Id nb block 1  |     4    |
+| uint32 | Id nb block 2  |     4    |
 
 ##### NET_BLOCK_DESTROY
 
