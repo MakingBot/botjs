@@ -213,28 +213,6 @@ protected:
     {
         return BotBlock::CoreConfiguration();
     }
-
-
-    // //! Role of this interface
-    // InterfaceRole _role;
-
-    // //! Configuration type of this interface
-    // InterfaceConfiguration _configuration;
-    
-
-    // // status: inactive, scanning, connected
-    
-
-    // QHostAddress  _target;
-    // QStringList <name,ip>
-    
-// master, manual
-// write port
-// start spy
-// start scan
-// write target
-// inactive -> activate
-    
     
 };
 
