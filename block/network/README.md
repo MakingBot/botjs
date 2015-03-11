@@ -81,5 +81,9 @@ This message require a TCP connection. It request a block creation in the receiv
 
 ##### NET_BLOCK_DESTROY
 
+|     Type    |     Value    | Size (bytes) |
+|:-----------:|:------------:|:------------:|
+| MessageType |   NET_BLOCK_DESTROY   |       2      |
+| uint32 | Id nb block  |     4    |
 
 
