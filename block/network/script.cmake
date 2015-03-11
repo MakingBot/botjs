@@ -3,7 +3,6 @@ INCLUDE_DIRECTORIES( block/network )
 # Headers
 SET(PROJECT_HEADER_FILES
     block/network/NetworkBlock.hpp
-    block/network/NetworkMessage.hpp
     )
 
 # Sources

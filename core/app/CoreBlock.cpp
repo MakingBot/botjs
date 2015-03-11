@@ -48,6 +48,7 @@ BotBlock* CoreBlock::create(const QString& btypename, const QString& varname)
     // Make the block accessible from js
     BotBlock::JsEngine.go().setProperty(varname.toStdString().c_str(), BotBlock::JsEngine.engine()->newQObject(block));
     
+    //
     return block;
 }
 

@@ -24,7 +24,6 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <BotBlock.hpp>
-#include <NetworkMessage.hpp>
 
 //!
 //! Block that provides a communication interface for Network using IP on UDP/TCP
@@ -35,10 +34,27 @@ class NetworkBlock : public BotBlock
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool     activated   READ isActivated WRITE setActivated MEMBER _isActivated)
-    Q_PROPERTY(quint16  port        READ port        WRITE setPort      MEMBER _port       )
+    Q_PROPERTY(bool     activated   READ isActivated WRITE setActivated)
+    Q_PROPERTY(quint16  port        READ port        WRITE setPort     )
 
 public:
+
+    //!
+    //! Define the possible message type
+    //!
+    enum NetMsgType : quint16
+    {
+        NET_PING                    = 10 ,
+        NET_PING_ACK                = 11 ,
+
+        NET_TEST                    = 20 ,
+
+        NET_BLOCK_CREATE            = 30 ,
+        NET_BLOCK_UPDATE            = 31 ,
+        NET_BLOCK_CONNECT           = 32 ,
+        NET_BLOCK_DISCONNECT        = 33 ,
+        NET_BLOCK_DESTROY           = 34 
+    };
 
     //!
     //! Default constructor
@@ -52,10 +68,10 @@ public:
     virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual BlockRole blockRole() const { return BotBlock::BlockSpy; }
+    virtual BlockRole blockRole() const { return BotBlock::BlockInterface; }
 
     //! FROM BotBlock
-    virtual QString blockTypeName() const { return QString("spy"); }
+    virtual QString blockTypeName() const { return QString("network"); }
 
     // ========================================================================
     // => Network activation
@@ -122,6 +138,21 @@ public:
         _udpSocket->bind(_port, QUdpSocket::ShareAddress);
     }
 
+
+    // QHostAddress _address;
+
+    // ========================================================================
+    // => Network actions
+
+    //!
+    //! Trig the actions associated to the incoming message
+    //!
+    void dispatch(const QHostAddress& sender, const QByteArray& datagram);
+    
+
+    void onRxPing(const QHostAddress& sender);
+    // void onRxPingAck( );
+
 public slots:
 
     //!
@@ -129,19 +160,14 @@ public slots:
     //!
     void processPendingUdpDatagrams();
 
+    //!
+    //! To scan the network
+    //! Search for an other BotJs in bot cfg
+    //! This function can be called only in dev cfg
+    //!
+    void ping();
 
-    void ping()
-    {
 
-        QByteArray datagram("un message venu du block !!!!ddddddddddddddddddddddddddddddd\n"
-       
-        );
-
-        _udpSocket->writeDatagram(datagram.data(),
-                                    datagram.size(),
-                                    QHostAddress::Broadcast,
-                                    _port);
-    }
 
 protected:
 
@@ -177,6 +203,16 @@ protected:
     QSharedPointer<QTcpSocket> _tcpSocket;
 
 
+    // ========================================================================
+    // => Utile functions
+
+    //!
+    //! Provide the core cfg
+    //!
+    inline CoreCfg coreCfg()
+    {
+        return BotBlock::CoreConfiguration();
+    }
 
 
     // //! Role of this interface

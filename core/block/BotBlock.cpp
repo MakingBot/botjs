@@ -18,9 +18,20 @@
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <BotBlock.hpp>
+#include <CoreBlock.hpp>
 
 // Static declaration
 BotEngine BotBlock::JsEngine;
+
+/* ============================================================================
+ *
+ * */
+CoreCfg BotBlock::CoreConfiguration()
+{
+    return qSharedPointerObjectCast<CoreBlock, BotBlock>( JsEngine.coreBlock() )->cfg();
+}
+
+
 
 // Static declaration
 quint32 BotBlock::BlockCounter;

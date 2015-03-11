@@ -47,27 +47,82 @@ NetworkBlock::NetworkBlock(const QString& name)
 
 }
 
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::dispatch(const QHostAddress& sender, const QByteArray& datagram)
+{
+    // Create a stream to parse the datagram
+    QDataStream stream( datagram );
+    
+    // Get the message type
+    quint16 type;
+    stream >> type;
+    NetMsgType msgType = (NetMsgType)type;
+    
+    // Action depend on the message type
+    switch( msgType )
+    {
+        case NET_PING               :
+            NetworkBlock::onRxPing(sender);
+            break;
+            
+        case NET_PING_ACK           :
+            break;
+            
+        case NET_TEST               :
+            break;
+            
+        case NET_BLOCK_CREATE       :
+            break;
+        
+        case NET_BLOCK_UPDATE       :
+            break;
+        
+        case NET_BLOCK_CONNECT      :
+            break;
+            
+        case NET_BLOCK_DISCONNECT   :
+            break;
+        
+        case NET_BLOCK_DESTROY      :
+            break;
+        
+        default:
+            BLOCK_WARNING("Unknown network message !");
+            break;
+    }
+}
+
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::onRxPing(const QHostAddress& sender)
+{
+    // Log
+    BLOCK_LOG("Ping received !");
 
 
+}
+    
 
 /* ============================================================================
  *
  * */
 void NetworkBlock::processPendingUdpDatagrams()
 {
-
-    std::cout << "data income: " << _udpSocket->pendingDatagramSize() << std::endl;
-
     quint16      port;
     QHostAddress sender;     
     QByteArray   datagram;
     
-    // Read data
+    // Prepare the datagram
     datagram.resize( _udpSocket->pendingDatagramSize() );
+    
+    // Read data
     _udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &port);
 
-    std::cout << QString(datagram).toStdString() << std::endl;
-
+    // Dispatch the message
+    dispatch(sender, datagram);
 }
 
 
@@ -85,3 +140,40 @@ void NetworkBlock::processPendingUdpDatagrams()
          processTheDatagram(datagram);
      }
  }*/
+
+
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::ping()
+{
+    switch( coreCfg() )
+    {
+        case CoreCfgDev :
+        {
+            // Declare the datagram
+            QByteArray datagram;
+
+            // Create a stream to fill it
+            QDataStream stream( &datagram, QIODevice::WriteOnly );
+
+            // Append the type
+            stream << (quint16)NET_PING;
+
+            // Broadcast the message
+            _udpSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, _port);
+            
+            // Log
+            BLOCK_LOG("Message broadcasted: Ping !");
+            break;
+        }
+
+        case CoreCfgBot :
+        {
+            BLOCK_WARNING("Core in Bot Cfg, Ping is not autorized");
+            break;
+        }
+    }
+}
+
+

@@ -696,6 +696,10 @@ public:
     //! JavaScript engine used by the application
     static BotEngine JsEngine;
 
+    //! 
+    static CoreCfg CoreConfiguration();
+
+
     //! Number of block created since the beginning of the session
     static quint32 BlockCounter;
 
@@ -707,6 +711,7 @@ public:
 
     //! To get a block with its Id number
     static QSharedPointer<BotBlock> IdNumberToBlock(quint32 id);
+
 
     //! To convert a string into a js string
     static QString JsString(const QString& string);
@@ -858,21 +863,21 @@ public:
     //!
     //! Append to 'out_stream' data to be able to create this block in a distant core.
     //!
-    void blockCreationDataStream(QDataStream& out_stream)
-    {
-        // First the type name
-        out_stream << blockTypename();
-        // Second the id chain for the block parent and the block name
-        out_stream << _idChain;
-    }
+    // void blockCreationDataStream(QDataStream& out_stream)
+    // {
+    //     // First the type name
+    //     out_stream << blockTypename();
+    //     // Second the id chain for the block parent and the block name
+    //     out_stream << _idChain;
+    // }
     
     //!
     //! Create a new block for the core with data from the 'in_stream'
     //!
-    static void CreateBlockFromDataStream(QDataStream& in_stream)
-    {
+    // static void CreateBlockFromDataStream(QDataStream& in_stream)
+    // {
         
-    }
+    // }
 
 
 public slots:

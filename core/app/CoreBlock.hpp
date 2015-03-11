@@ -31,7 +31,7 @@ class CoreBlock : public BotBlock
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString blockName READ cfgAsStr WRITE setCfgAsStr)
+    Q_PROPERTY(QString cfg READ cfgAsStr WRITE setCfgAsStr)
 
 public:
 
