@@ -32,7 +32,36 @@ bool NetworkMessage::Decrypt(const QByteArray& datagram)
     stream >> type;
     NetMsgType msgType = (NetMsgType)type;
     
+    // Action depend on the message type
     switch( msgType )
-    
+    {
+        case NET_PING               :
+            break;
+            
+        case NET_PING_ACK           :
+            break;
+            
+        case NET_TEST               :
+            break;
+            
+        case NET_BLOCK_CREATE       :
+            break;
+        
+        case NET_BLOCK_UPDATE       :
+            break;
+        
+        case NET_BLOCK_CONNECT      :
+            break;
+            
+        case NET_BLOCK_DISCONNECT   :
+            break;
+        
+        case NET_BLOCK_DESTROY      :
+            break;
+        
+        default:
+            return false;
+    }
+    return true;
 }
 
