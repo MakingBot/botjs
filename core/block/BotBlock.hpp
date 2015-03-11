@@ -852,6 +852,29 @@ public:
         }
     }
 
+    // ========================================================================
+    // => Block data stream
+    
+    //!
+    //! Append to 'out_stream' data to be able to create this block in a distant core.
+    //!
+    void blockCreationDataStream(QDataStream& out_stream)
+    {
+        // First the type name
+        out_stream << blockTypename();
+        // Second the id chain for the block parent and the block name
+        out_stream << _idChain;
+    }
+    
+    //!
+    //! Create a new block for the core with data from the 'in_stream'
+    //!
+    static void CreateBlockFromDataStream(QDataStream& in_stream)
+    {
+        
+    }
+
+
 public slots:
 
     // ========================================================================
