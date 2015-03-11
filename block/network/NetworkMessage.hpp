@@ -103,6 +103,11 @@ public:
         stream >> type;
         _type = (NetMsgType)type;
     }
+    
+    //!
+    //! Decrypt and call the correct function to manage the incoming message
+    //!
+    static bool Decrypt(const QByteArray& datagram);
 
 protected:
 
