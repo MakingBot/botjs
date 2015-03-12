@@ -182,7 +182,6 @@ public:
     //!
     void pingAck(const QHostAddress& sender);
 
-
 public slots:
 
     //!
@@ -197,8 +196,6 @@ public slots:
     //!
     void ping();
 
-
-
 protected:
 
     // ========================================================================
@@ -207,6 +204,10 @@ protected:
     //! Activated ?
     //! Activation status, True if the interface is activated
     bool _isActivated;
+
+    //! Is Connected ?
+    //! Connection status, True if this core is connected to a distant one
+    bool _isConnected;
     
     //! Thread
     //! Independant thread to support the communication
@@ -223,6 +224,10 @@ protected:
     //! Address of the target robot
     QHostAddress _address;
 
+    //! Bad messages
+    //! Number of no-readble message received
+    quint32 _badMsgReceived;
+
     // ========================================================================
     // => Network socket
 
@@ -232,6 +237,20 @@ protected:
     //! Tcp Socket
     QSharedPointer<QTcpSocket> _tcpSocket;
 
+    // ========================================================================
+    // => Network ping and test variables
+    
+    //! Test Timer
+    //! To measure the time between the test message emission and the reception
+    QTime _testTimer;
+
+    //! Test Number 
+    //! Number of test messages sent to the distant core 
+    quint16 _testNumber;
+
+    //! Distant core
+    //! Cores that have answer the ping message
+    QMap<QString, QHostAddress> _distantCore;
 
     // ========================================================================
     // => Utile functions
