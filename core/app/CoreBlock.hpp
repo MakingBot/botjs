@@ -32,6 +32,7 @@ class CoreBlock : public BotBlock
     Q_OBJECT
 
     Q_PROPERTY(QString cfg READ cfgAsStr WRITE setCfgAsStr)
+    Q_PROPERTY(QString tag READ tag      WRITE setTag     )
 
 public:
 
@@ -91,6 +92,25 @@ public:
     }
 
     // ========================================================================
+    // => Property core tag
+
+    //!
+    //! Tag getter
+    //!
+    const QString& tag()
+    {
+        return _tag;
+    }
+    
+    //!
+    //! Tag setter
+    //!
+    void setTag(const QString& tag)
+    {
+        _tag = tag;    
+    }
+    
+    // ========================================================================
     // => Save architecture functions
 
     //!
@@ -138,9 +158,18 @@ protected:
     //! - Dev for computer developer 
     //! - Bot for the embeded robot configuration
     CoreCfg _cfg;
-
+    
+    //!
     //! Mapper for core cfg
+    //!
     EnumStringMapper _coreCfgMapper;
+
+    //!
+    //! Core tag
+    //! The tag is used as global identifier in network communication.
+    //! It is recommended to give a unique tag for each robot you have.
+    //!
+    QString _tag;
 
 };
 
