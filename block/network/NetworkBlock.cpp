@@ -68,6 +68,7 @@ void NetworkBlock::dispatch(const QHostAddress& sender, const QByteArray& datagr
             break;
             
         case NET_TEST               :
+            onRxTest(datagram);
             break;
             
         case NET_BLOCK_CREATE       :
@@ -96,10 +97,11 @@ void NetworkBlock::dispatch(const QHostAddress& sender, const QByteArray& datagr
  * */
 void NetworkBlock::onRxPing(const QHostAddress& sender)
 {
-    
-    
     // Log
     BLOCK_LOG("Ping received from " << sender.toString() << " !");
+ 
+    // Ack   
+    // pingAck(const QHostAddress& target);
 }
 
 /* ============================================================================
@@ -110,6 +112,25 @@ void NetworkBlock::onRxPingAck(const QHostAddress& sender, QDataStream& stream)
     
     // Log
     BLOCK_LOG("Ping ack received from " << sender.toString() << " !");
+}
+
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::onRxTest(const QByteArray& datagram)
+{
+    switch( coreCfg() )
+    {
+        case CoreCfgDev :
+        {
+            break;
+        }
+
+        case CoreCfgBot :
+        {
+            // Just send the message back
+            break;
+        }
 }
 
 /* ============================================================================
