@@ -54,6 +54,19 @@ This message require a TCP connection. It request a block update in the receiver
 | MessageType | NET_BLOCK_UPDATE |       2      |
 | Data Stream |   Block Config   |       N      |
 
+##### NET_BLOCK_UPDATE_I_PROPERTY
+
+This message require a TCP connection.
+
+|     Type    |       Value      | Size (bytes) |
+|:-----------:|:----------------:|:------------:|
+| MessageType | NET_BLOCK_UPDATE_I_PROPERTY |       2      |
+|  uint32   |   Id Nb Block    |       4      |
+|  uint8   |   Id Property    |       4      |
+|  uint32   |   Value    |       N      |
+
+
+
 ##### NET_BLOCK_CONNECT
 
 This message require a TCP connection. It request a block connection in the receiver core. Blocks must be already created.
@@ -61,8 +74,8 @@ This message require a TCP connection. It request a block connection in the rece
 |     Type    |        Value      | Size (bytes) |
 |:-----------:|:-----------------:|:------------:|
 | MessageType | NET_BLOCK_CONNECT |       2      |
-|    uint32   |   Id Nb block 1   |       4      |
-|    uint32   |   Id Nb block 2   |       4      |
+|    uint32   |   Id Nb Block 1   |       4      |
+|    uint32   |   Id Nb Block 2   |       4      |
 
 ##### NET_BLOCK_DISCONNECT
 
@@ -71,8 +84,8 @@ This message require a TCP connection. It request a block disconnection in the r
 |     Type    |         Value        | Size (bytes) |
 |:-----------:|:--------------------:|:------------:|
 | MessageType | NET_BLOCK_DISCONNECT |       2      |
-|    uint32   |   Id Nb block 1      |       4      |
-|    uint32   |   Id Nb block 2      |       4      |
+|    uint32   |   Id Nb Block 1      |       4      |
+|    uint32   |   Id Nb Block 2      |       4      |
 
 ##### NET_BLOCK_DESTROY
 
@@ -81,5 +94,5 @@ This message require a TCP connection. It request a block destruction in the rec
 |     Type    |     Value         | Size (bytes) |
 |:-----------:|:-----------------:|:------------:|
 | MessageType | NET_BLOCK_DESTROY |       2      |
-|    uint32   |   Id Nb block     |       4      |
+|    uint32   |   Id Nb Block     |       4      |
 
