@@ -31,6 +31,13 @@ CoreCfg BotBlock::CoreConfiguration()
     return qSharedPointerObjectCast<CoreBlock, BotBlock>( JsEngine.coreBlock() )->cfg();
 }
 
+/* ============================================================================
+ *
+ * */
+QString BotBlock::CoreTag()
+{
+    return qSharedPointerObjectCast<CoreBlock, BotBlock>( JsEngine.coreBlock() )->tag();
+}
 
 
 // Static declaration
