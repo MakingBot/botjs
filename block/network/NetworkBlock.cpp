@@ -64,10 +64,11 @@ void NetworkBlock::dispatch(const QHostAddress& sender, const QByteArray& datagr
     switch( msgType )
     {
         case NET_PING               :
-            NetworkBlock::onRxPing(sender);
+            onRxPing(sender);
             break;
             
         case NET_PING_ACK           :
+            onRxPingAck(sender, stream);
             break;
             
         case NET_TEST               :
@@ -104,7 +105,8 @@ void NetworkBlock::onRxPing(const QHostAddress& sender)
 
 
 }
-    
+
+void NetworkBlock::onRxPingAck(const QHostAddress& sender, QDataStream& stream);
 
 /* ============================================================================
  *
