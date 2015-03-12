@@ -121,7 +121,7 @@ public:
     //!
     //! Port getter
     //!
-    quint16 port()
+    quint16 port() const
     {
         return _port;
     }
@@ -138,8 +138,21 @@ public:
         _udpSocket->bind(_port, QUdpSocket::ShareAddress);
     }
 
+    //!
+    //! Address setter
+    //!
+    void setAddress(const QString& addr)
+    {
+        _address.setAddress(addr);
+    }
 
-    // QHostAddress _address;
+    //!
+    //! Address getter
+    //!
+    QString address() const
+    { 
+        return _address.toString();
+    }
 
     // ========================================================================
     // => Network rx actions
