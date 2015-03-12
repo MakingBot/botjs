@@ -36,6 +36,7 @@ class NetworkBlock : public BotBlock
 
     Q_PROPERTY(bool     activated   READ isActivated WRITE setActivated)
     Q_PROPERTY(quint16  port        READ port        WRITE setPort     )
+    Q_PROPERTY(QString  address     READ address     WRITE setAddress  )
 
 public:
 
@@ -139,19 +140,19 @@ public:
     }
 
     //!
-    //! Address setter
-    //!
-    void setAddress(const QString& addr)
-    {
-        _address.setAddress(addr);
-    }
-
-    //!
     //! Address getter
     //!
     QString address() const
     { 
         return _address.toString();
+    }
+
+    //!
+    //! Address setter
+    //!
+    void setAddress(const QString& addr)
+    {
+        _address.setAddress(addr);
     }
 
     // ========================================================================
