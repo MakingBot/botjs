@@ -54,20 +54,7 @@ This message require a TCP connection. It request a block update in the receiver
 | MessageType | NET_BLOCK_UPDATE |       2      |
 | Data Stream |   Block Config   |       N      |
 
-##### NET_BLOCK_UPDATE_I_PROPERTY
 
-This message require a TCP connection.
-
-|     Type    |       Value      | Size (bytes) |
-|:-----------:|:----------------:|:------------:|
-| MessageType | NET_BLOCK_UPDATE_I_PROPERTY |       2      |
-|  uint32   |   Id Nb Block    |       4      |
-|  uint8   |   Id Property    |       4      |
-|  uint32   |   Value    |       N      |
-... List
-|  uint32   |   Id Nb Block    |       4      |
-|  uint8   |   Id Property    |       4      |
-|  uint32   |   Value    |       N      |
 
 
 
@@ -100,3 +87,17 @@ This message require a TCP connection. It request a block destruction in the rec
 | MessageType | NET_BLOCK_DESTROY |       2      |
 |    uint32   |   Id Nb Block     |       4      |
 
+
+##### NET_I_PROPERTY_UPDATE
+
+This message require a TCP connection. It provide a way to update specific properties. This message is composed as a list.
+
+|     Type    |          Value        | Size (bytes) |
+|:-----------:|:---------------------:|:------------:|
+| MessageType | NET_I_PROPERTY_UPDATE |       2      |
+|    uint32   |     Id Nb Block 1     |       4      |
+|     uint8   |     Id Property 1     |       4      |
+|    uint32   |        Value 1        |       N      |
+|    uint32   |     Id Nb Block 2     |       4      |
+|     uint8   |     Id Property 2     |       4      |
+|    uint32   |        Value 2        |       N      |
