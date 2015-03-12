@@ -693,12 +693,20 @@ public:
     // ========================================================================
     // => Block static members
 
+    //!
     //! JavaScript engine used by the application
+    //!
     static BotEngine JsEngine;
 
-    //! 
+    //!
+    //! Core cfg static accessor
+    //!
     static CoreCfg CoreConfiguration();
 
+    //!
+    //! Core tag static accessor
+    //!
+    static QString CoreTag();
 
     //! Number of block created since the beginning of the session
     static quint32 BlockCounter;
