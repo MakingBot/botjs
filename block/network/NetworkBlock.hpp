@@ -173,6 +173,11 @@ public:
     //!
     void onRxPingAck(const QHostAddress& sender, QDataStream& stream);
 
+    //!
+    //! Called when a test message is received
+    //!
+    void onRxTest(const QByteArray& datagram);
+
     // ========================================================================
     // => Network tx actions
 
@@ -261,6 +266,14 @@ protected:
     inline CoreCfg coreCfg()
     {
         return BotBlock::CoreConfiguration();
+    }
+    
+    //!
+    //! Provide the core cfg
+    //!
+    inline QString coreTag()
+    {
+        return BotBlock::CoreTag();
     }
     
 };
