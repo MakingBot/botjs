@@ -40,11 +40,7 @@ NetworkBlock::NetworkBlock(const QString& name)
 
 //   _udpSocket->moveToThread(this);
 
-
-    
-    
     connect(_udpSocket.data(), SIGNAL(readyRead()), this, SLOT(processPendingUdpDatagrams()));
-
 }
 
 /* ============================================================================
@@ -100,13 +96,21 @@ void NetworkBlock::dispatch(const QHostAddress& sender, const QByteArray& datagr
  * */
 void NetworkBlock::onRxPing(const QHostAddress& sender)
 {
+    
+    
     // Log
-    BLOCK_LOG("Ping received !");
-
-
+    BLOCK_LOG("Ping received from " << sender.toString() << " !");
 }
 
-void NetworkBlock::onRxPingAck(const QHostAddress& sender, QDataStream& stream);
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::onRxPingAck(const QHostAddress& sender, QDataStream& stream)
+{
+    
+    // Log
+    BLOCK_LOG("Ping ack received from " << sender.toString() << " !");
+}
 
 /* ============================================================================
  *
@@ -143,7 +147,6 @@ void NetworkBlock::processPendingUdpDatagrams()
      }
  }*/
 
-
 /* ============================================================================
  *
  * */
@@ -166,7 +169,7 @@ void NetworkBlock::ping()
             _udpSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, _port);
             
             // Log
-            BLOCK_LOG("Message broadcasted: Ping !");
+            BLOCK_LOG("Message UDP broadcasted: Ping !");
             break;
         }
 
@@ -178,4 +181,37 @@ void NetworkBlock::ping()
     }
 }
 
+/* ============================================================================
+ *
+ * */
+void NetworkBlock::pingAck(const QHostAddress& target)
+{
+    switch( coreCfg() )
+    {
+        case CoreCfgDev :
+        {
+            break;
+        }
 
+        case CoreCfgBot :
+        {
+            // Declare the datagram
+            QByteArray datagram;
+
+            // Create a stream to fill it
+            QDataStream stream( &datagram, QIODevice::WriteOnly );
+
+            // Append the type
+            stream << (quint16)NET_PING_ACK;
+            
+            // Append the core tag
+
+            // Send the message
+            _udpSocket->writeDatagram(datagram.data(), datagram.size(), target, _port);
+            
+            // Log
+            BLOCK_LOG("Message UDP sent to " << target.toString() << ": Ping ack !");
+            break;
+        }
+    }
+}
