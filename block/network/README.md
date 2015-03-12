@@ -64,6 +64,10 @@ This message require a TCP connection.
 |  uint32   |   Id Nb Block    |       4      |
 |  uint8   |   Id Property    |       4      |
 |  uint32   |   Value    |       N      |
+... List
+|  uint32   |   Id Nb Block    |       4      |
+|  uint8   |   Id Property    |       4      |
+|  uint32   |   Value    |       N      |
 
 
 
