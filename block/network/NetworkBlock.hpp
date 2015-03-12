@@ -142,16 +142,32 @@ public:
     // QHostAddress _address;
 
     // ========================================================================
-    // => Network actions
+    // => Network rx actions
 
     //!
     //! Trig the actions associated to the incoming message
     //!
     void dispatch(const QHostAddress& sender, const QByteArray& datagram);
     
-
+    //!
+    //! Called when a ping message is received
+    //!
     void onRxPing(const QHostAddress& sender);
-    // void onRxPingAck( );
+    
+    //!
+    //! Called when a ping ack message is received
+    //!
+    void onRxPingAck(const QHostAddress& sender, QDataStream& stream);
+
+    // ========================================================================
+    // => Network tx actions
+
+    //!
+    //! In response to a ping message
+    //! This function can be called only in bot cfg
+    //!
+    void pingAck(const QHostAddress& sender);
+
 
 public slots:
 
