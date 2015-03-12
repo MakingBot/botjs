@@ -1,19 +1,8 @@
 Network Block
 =============
 
-## Configuration
 
-- Master: Master interface on Host computer dev
-- Slave: Interface mode for the code embeded in the robot
 
-## Start Up mode
-
-A master interface have 2 startup mode
-
-- Manual: NetworkBlock create a spy on it and user have to configure and start the network interface.
-- Auto: NetworkBlock start scan and connect to the first that respond
-
-A slave interface just wait for a connection
 
 ## Message Types
 
@@ -32,7 +21,7 @@ This message is sent by a bot core. It is used to answer to a network ping.
 |     Type    |     Value    | Size (bytes) |
 |:-----------:|:------------:|:------------:|
 | MessageType | NET_PING_ACK |       2      |
-|    String   |   Core Tag   |       5      |
+|    String   |   Core Tag   |       N      |
 
 ##### NET_TEST
 
@@ -50,40 +39,47 @@ This message require a TCP connection
 
 This message require a TCP connection. It request a block creation in the receiver core. The father of the new block must be already created.
 
-|     Type    |     Value    | Size (bytes) |
-|:-----------:|:------------:|:------------:|
-| MessageType |   NET_BLOCK_CREATE   |       2      |
-|    String   |     Block Type   |     N     |
-|    String   |     Id Chain     |     N     |
+|     Type    |     Value        | Size (bytes) |
+|:-----------:|:----------------:|:------------:|
+| MessageType | NET_BLOCK_CREATE |       2      |
+|    String   |     Block Type   |       N      |
+|    String   |     Id Chain     |       N      |
 
 ##### NET_BLOCK_UPDATE
 
-|     Type    |     Value    | Size (bytes) |
-|:-----------:|:------------:|:------------:|
-| MessageType |   NET_BLOCK_UPDATE   |       2      |
-| Data Stream | Block Config  |     N     |
+This message require a TCP connection. It request a block update in the receiver core. The block must be already created.
+
+|     Type    |       Value      | Size (bytes) |
+|:-----------:|:----------------:|:------------:|
+| MessageType | NET_BLOCK_UPDATE |       2      |
+| Data Stream |   Block Config   |       N      |
 
 ##### NET_BLOCK_CONNECT
 
-|     Type    |     Value    | Size (bytes) |
-|:-----------:|:------------:|:------------:|
-| MessageType |   NET_BLOCK_CONNECT   |       2      |
-| uint32 | Id nb block 1  |     4    |
-| uint32 | Id nb block 2  |     4    |
+This message require a TCP connection. It request a block connection in the receiver core. Blocks must be already created.
+
+|     Type    |        Value      | Size (bytes) |
+|:-----------:|:-----------------:|:------------:|
+| MessageType | NET_BLOCK_CONNECT |       2      |
+|    uint32   |   Id Nb block 1   |       4      |
+|    uint32   |   Id Nb block 2   |       4      |
 
 ##### NET_BLOCK_DISCONNECT
 
-|     Type    |     Value    | Size (bytes) |
-|:-----------:|:------------:|:------------:|
-| MessageType |   NET_BLOCK_DISCONNECT   |       2      |
-| uint32 | Id nb block 1  |     4    |
-| uint32 | Id nb block 2  |     4    |
+This message require a TCP connection. It request a block disconnection in the receiver core. Blocks must be already created.
+
+|     Type    |         Value        | Size (bytes) |
+|:-----------:|:--------------------:|:------------:|
+| MessageType | NET_BLOCK_DISCONNECT |       2      |
+|    uint32   |   Id Nb block 1      |       4      |
+|    uint32   |   Id Nb block 2      |       4      |
 
 ##### NET_BLOCK_DESTROY
 
-|     Type    |     Value    | Size (bytes) |
-|:-----------:|:------------:|:------------:|
-| MessageType |   NET_BLOCK_DESTROY   |       2      |
-| uint32 | Id nb block  |     4    |
+This message require a TCP connection. It request a block destruction in the receiver core. Block must be already created.
 
+|     Type    |     Value         | Size (bytes) |
+|:-----------:|:-----------------:|:------------:|
+| MessageType | NET_BLOCK_DESTROY |       2      |
+|    uint32   |   Id Nb block     |       4      |
 
