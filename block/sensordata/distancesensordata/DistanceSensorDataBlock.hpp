@@ -30,17 +30,20 @@ class DistanceSensorDataBlock : public SensorDataBlock
 {
     Q_OBJECT
 
-    Q_PROPERTY(quint16 distancemm READ distancemm WRITE setDistancemm MEMBER _distancemm)
+    Q_PROPERTY(quint32 distance READ distance WRITE setDistance)
 
 public:
+
+    //! Id of the visible property
+    static const quint8 IdPropertyDistance;
 
     //!
     //! Default constructor
     //!
-    explicit DistanceSensorDataBlock(const QString& name = QString("distancesensordata"))
-        : SensorDataBlock(name), _distancemm(0)
+    explicit DistanceSensorDataBlock(const QString& name = QString("distancesensor"))
+        : SensorDataBlock(name), _distance(0)
     {
-    	//appendBlockIProperty("distancemm", IProperty(IProperty::IPTypeInt, false));
+        defineBlockIProperty(IdPropertyDistance, new IProperty("distance", IProperty::IPTypeInt, false));
     }
 
     // ========================================================================
@@ -50,7 +53,7 @@ public:
     virtual float blockVersion() const { return 1.0; }
 
     //! FROM BotBlock
-    virtual QString blockTypeName() const { return QString("distancesensordata"); }
+    virtual QString blockTypeName() const { return QString("distancesensor"); }
 
     //! FROM BotBlock
     virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
@@ -59,29 +62,38 @@ public:
     virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
     // ========================================================================
-    // => Property distance mm
+    // => Property distance
 
     //!
     //! Distance in mm getter
     //!
-    quint16 distancemm()
+    quint32 distance()
     {
-    	return _distancemm;
+        QReadLocker locker(&_distanceLock);
+    	return _distance;
     }
 
     //!
     //! Distance in mm setter
     //!
-    void setDistancemm(quint16 dist)
+    void setDistance(quint32 dist)
     {
-    	_distancemm = dist;
+        _distanceLock.lockForWrite();
+        _distance = dist;
+        _distanceLock.unlock();
+    	
     	//emit blockiPropertyValuesChanged();
     }
 
 protected:
 
-    //! Distance in mm
-    quint16 _distancemm;
+    //! Distance
+    //! Distance measured by the sensor in mm
+    quint32 _distance;
+    
+    //! Lock
+    //! Smart mutex for distance property
+    QReadWriteLock _distanceLock;
 
 };
 
