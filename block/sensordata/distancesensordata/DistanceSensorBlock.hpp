@@ -19,14 +19,14 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <SensorDataBlock.hpp>
+#include <SensorBlock.hpp>
 
 //! \class DistanceSensorBlock
 //! \brief Provides data for sensor that get a distance
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class DistanceSensorBlock : public SensorDataBlock
+class DistanceSensorBlock : public SensorBlock
 {
     Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
     //! \brief Default constructor
     //!
     explicit DistanceSensorDataBlock(const QString& name = QString("distancesensor"))
-        : SensorDataBlock(name), _distance(0)
+        : SensorDataBlock(name), m_distance(0)
     {
         defineBlockIProperty(IdPropertyDistance, new IProperty("distance", IProperty::IPTypeInt, false));
     }
@@ -76,7 +76,13 @@ public:
 
     //! \brief Distance member setter
     //!
-    void setDistance(quint32 dist);
+    void setDistance(quint32 distance);
+ 
+    //! \brief Distance member setter
+    //! 
+    //! Non Thread Safe
+    //!
+	void nts_setDistance(quint32 distance);
 
 protected:
 
@@ -109,10 +115,22 @@ inline quint32 DistanceSensorBlock::distance()
 inline void DistanceSensorBlock::setDistance(quint32 distance)
 {
     m_distanceLock.lockForWrite();
+    if(m_distance != distance)
+    {
+    	return;
+    }
     m_distance = distance;
     m_distanceLock.unlock();
 	
 	//emit blockiPropertyValuesChanged();
+}
+
+/* ============================================================================
+ *
+ * */
+inline void DistanceSensorBlock::nts_setDistance(quint32 distance)
+{
+	m_distance = distance;
 }
 
 #endif // DISTANCESENSORBLOCK_HPP
