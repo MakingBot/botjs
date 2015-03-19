@@ -88,11 +88,15 @@ public:
 protected:
 
     //! Distance
-    //! Distance measured by the sensor in mm
+    /*!
+    Distance measured by the sensor. The unity is the mm.
+    */
     quint32 _distance;
     
-    //! Lock
-    //! Smart mutex for distance property
+    //! Distance lock
+    /*!
+    Smart mutex for distance.
+    */
     QReadWriteLock _distanceLock;
 
 };
