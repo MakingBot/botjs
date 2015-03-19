@@ -30,6 +30,8 @@ class DistanceSensorDataBlock : public SensorDataBlock
 {
     Q_OBJECT
 
+    //! \brief Distance property
+    //!
     Q_PROPERTY(quint32 distance READ distance WRITE setDistance)
 
 public:
@@ -87,17 +89,17 @@ public:
 
 protected:
 
-    //! Distance
-    /*!
-    Distance measured by the sensor. The unity is the mm.
-    */
-    quint32 _distance;
+    //! \brief Distance member
+    //!
+    //! Distance measured by the sensor. Unit is the mm.
+    //!
+    quint32 m_distance;
     
-    //! Distance lock
-    /*!
-    Smart mutex for distance.
-    */
-    QReadWriteLock _distanceLock;
+    //! \brief Distance lock
+    //!
+    //! Smart mutex for distance.
+    //!
+    QReadWriteLock m_distanceLock;
 
 };
 
