@@ -1,7 +1,7 @@
 #ifndef DISTANCESENSORBLOCK_HPP
 #define DISTANCESENSORBLOCK_HPP
 //!
-//! \file DistanceSensorDataBlock.hpp
+//! \file DistanceSensorBlock.hpp
 //!
 // Copyright 2015 MakingBot
 // This file is part of BotJs.
@@ -21,12 +21,12 @@
 
 #include <SensorDataBlock.hpp>
 
-//!
-//!
+//! \class DistanceSensorBlock
+//! \brief Provides data for sensor that get a distance
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
-class DistanceSensorDataBlock : public SensorDataBlock
+class DistanceSensorBlock : public SensorDataBlock
 {
     Q_OBJECT
 
@@ -36,11 +36,11 @@ class DistanceSensorDataBlock : public SensorDataBlock
 
 public:
 
-    //! Id of the visible property
+    //! \brief Distance property id
+    //!
     static const quint8 IdPropertyDistance;
 
-    //!
-    //! Default constructor
+    //! \brief Default constructor
     //!
     explicit DistanceSensorDataBlock(const QString& name = QString("distancesensor"))
         : SensorDataBlock(name), _distance(0)
@@ -51,41 +51,32 @@ public:
     // ========================================================================
     // => BotBlock redefinition
 
-    //! FROM BotBlock
+    //! \brief FROM BotBlock
+    //!
     virtual float blockVersion() const { return 1.0; }
 
-    //! FROM BotBlock
+    //! \brief FROM BotBlock
+    //!
     virtual QString blockTypeName() const { return QString("distancesensor"); }
 
-    //! FROM BotBlock
+    //! \brief FROM BotBlock
+    //!
     virtual bool connectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
-    //! FROM BotBlock
+    //! \brief FROM BotBlock
+    //!
     virtual bool disconnectionHook(QWeakPointer<BotBlock> weakblock, bool master);
 
     // ========================================================================
-    // => Property distance
+    // => Member distance
 
+    //! \brief Distance member getter
     //!
-    //! Distance in mm getter
-    //!
-    quint32 distance()
-    {
-        QReadLocker locker(&_distanceLock);
-    	return _distance;
-    }
+    quint32 distance();
 
+    //! \brief Distance member setter
     //!
-    //! Distance in mm setter
-    //!
-    void setDistance(quint32 dist)
-    {
-        _distanceLock.lockForWrite();
-        _distance = dist;
-        _distanceLock.unlock();
-    	
-    	//emit blockiPropertyValuesChanged();
-    }
+    void setDistance(quint32 dist);
 
 protected:
 
@@ -102,5 +93,26 @@ protected:
     QReadWriteLock m_distanceLock;
 
 };
+
+/* ============================================================================
+ *
+ * */
+inline quint32 DistanceSensorBlock::distance()
+{
+    QReadLocker locker(&m_distanceLock);
+	return m_distance;
+}
+
+/* ============================================================================
+ *
+ * */
+inline void DistanceSensorBlock::setDistance(quint32 distance)
+{
+    m_distanceLock.lockForWrite();
+    m_distance = distance;
+    m_distanceLock.unlock();
+	
+	//emit blockiPropertyValuesChanged();
+}
 
 #endif // DISTANCESENSORBLOCK_HPP
