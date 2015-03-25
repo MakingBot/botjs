@@ -23,8 +23,8 @@
 #include <QStringList>
 #include <QMapIterator>
 
-//!
-//! An interactive property provide elements to dynamically modify QObject property.
+//! \class IProperty
+//! \brief An interactive property provide elements to dynamically modify a QObject property.
 //!
 //! \author [XR]MakingBot ( http://makingbot.fr )
 //!
@@ -32,11 +32,11 @@ class IProperty
 {
 
 public:
-    
+
+    //! \enum IPropertyType
+    //! \brief Define type of property
     //!
-    //! Define the different type of property
-    //!
-    enum IPropertyType{
+    enum IPropertyType {
         IPTypeBool              ,
         IPTypeInt               ,
         IPTypeReal              ,
@@ -48,17 +48,16 @@ public:
         IPTypeRealList          ,
         IPTypeVector3D          ,
         IPTypeVector4D          ,
-        IPTypeMatrix44          };
+        IPTypeMatrix44          
+    };
 
-    //!
-    //! Default constructor
+    //! \brief Default constructor
     //!
     IProperty(const QString& name, IPropertyType t = IPTypeBool, bool w = false, QMap<QString, int> enu = QMap<QString, int>())
         : _name(name), _writable(w), _type(t), _enum(enu)
     { }
     
-    //!
-    //! Constructor for block type
+    //! \brief Constructor for type : IPTypeBlock, IPTypeSonBlock and IPTypeBrotherBlock
     //!
     IProperty(const QString& name, IPropertyType t, QStringList cmp)
         : _writable(true), _type(t), _compat(cmp)
