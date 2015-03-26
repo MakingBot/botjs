@@ -1,0 +1,10 @@
+
+
+
+
+class BrainBlock : public BotBlock
+{
+
+
+};
+
