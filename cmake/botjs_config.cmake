@@ -11,6 +11,7 @@ FIND_PATH(
     $ENV{HOME}/Qt/5.4/*/lib/cmake/Qt5Widgets
     /opt/Qt/5.4/*/lib/cmake/Qt5Widgets
     /opt/Qt5.4/5.4/*/lib/cmake/Qt5Widgets
+    $ENV{HOME}/opt/qt5.4/lib/cmake/Qt5Widgets/
     )
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_CMAKE_CONFIG})
 

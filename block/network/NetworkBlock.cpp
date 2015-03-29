@@ -131,6 +131,7 @@ void NetworkBlock::onRxTest(const QByteArray& datagram)
             // Just send the message back
             break;
         }
+    }
 }
 
 /* ============================================================================

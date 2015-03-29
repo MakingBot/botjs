@@ -14,6 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with BotJs.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <BotDevice.h>
+#include <BotDeviceManager.h>
+
+#include <NewPing.h>
+#include <HcSr04Device.h>
+
+// Initialize manager
+BotDeviceManager Manager(Serial);
+
+// Initialize devices
+HcSr04Device UcSensor(0, Serial, 30, 32, 500);
+
+//! \brief Setup function
+//!
+void setup()
+{
+    Serial.begin(115200);
+  
+    Manager.registerDevice(&UcSensor);
+  
+}
+
+//! \brief Loop function
+//!
+void loop()
+{
+    Manager.step();
+}
+
+
+
+/*
 #include <NewPing.h>
 
 //! Mail structure
@@ -122,4 +154,5 @@ void loop()
 
 }
 
+*/
 
